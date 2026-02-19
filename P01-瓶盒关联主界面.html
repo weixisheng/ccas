@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1366">
+<title>瓶盒关联采集系统 - 1号机</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Microsoft YaHei', '微软雅黑', 'Segoe UI', sans-serif;
+    background: #E9EEF5;
+    width: 1366px;
+    height: 768px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    color: #1F2937;
+  }
+
+  /* 菜单栏 */
+  .menu-bar {
+    height: 32px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 24px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100;
+  }
+  .menu-item {
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    user-select: none;
+    position: relative;
+  }
+  .menu-item:hover { background: #f0f4ff; }
+  .menu-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    min-width: 140px;
+    z-index: 1000;
+  }
+  .menu-item:hover .menu-dropdown { display: block; }
+  .menu-dropdown-item {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .menu-dropdown-item:hover { background: #f0f4ff; color: #2563EB; }
+
+  /* 主内容区 */
+  .main-content {
+    display: flex;
+    flex: 1;
+    gap: 16px;
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  /* 左侧栏 */
+  .left-panel {
+    width: 420px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* 卡片 */
+  .card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #D9E1EC;
+    padding: 14px 16px;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #E5E7EB;
+  }
+
+  /* 内部卡片 */
+  .inner-card {
+    background: #F8FBFF;
+    border-radius: 10px;
+    border: 1px solid #D7E7FF;
+    padding: 12px 14px;
+  }
+
+  /* 包装比例设置 */
+  .ratio-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ratio-label {
+    font-size: 14px;
+    color: #374151;
+  }
+  .ratio-input {
+    width: 90px;
+    height: 44px;
+    border: 1px solid #D7E7FF;
+    border-radius: 6px;
+    background: #fff;
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1F2937;
+    font-family: inherit;
+    outline: none;
+  }
+  .ratio-input:focus { border-color: #2563EB; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+
+  /* 操作按钮 */
+  .op-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .btn {
+    height: 44px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary {
+    background: #2563EB;
+    color: #fff;
+    width: 140px;
+  }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-primary.running {
+    background: #DC2626;
+  }
+  .btn-primary.running:hover { background: #b91c1c; }
+  .btn-secondary {
+    background: #6B7280;
+    color: #fff;
+    width: 100px;
+  }
+  .btn-secondary:hover { background: #4B5563; }
+  .btn-warning {
+    background: #F59E0B;
+    color: #fff;
+  }
+  .btn-warning:hover { background: #D97706; }
+  .btn-danger {
+    background: #DC2626;
+    color: #fff;
+  }
+  .btn-danger:hover { background: #b91c1c; }
+
+  /* 计数区域 */
+  .count-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .count-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+  .count-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+  }
+  .count-value {
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .count-value.red { color: #DC2626; }
+  .count-value.blue { color: #2563EB; }
+
+  /* 设备状态 */
+  .device-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .device-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .device-name { font-size: 14px; color: #374151; }
+  .device-status {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .device-status.connected { color: #16A34A; }
+  .device-status.disconnected { color: #DC2626; font-weight: 700; }
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .dot-green { background: #16A34A; }
+  .dot-red { background: #DC2626; }
+
+  /* 右侧栏 */
+  .right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 600px;
+  }
+
+  /* 读码区 */
+  .read-area {
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #D9E1EC;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .read-area-header {
+    padding: 10px 16px;
+    background: #F8FBFF;
+    border-bottom: 1px solid #D7E7FF;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    flex-shrink: 0;
+  }
+  .read-area-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+  }
+  .box-area { flex: 0 0 auto; min-height: 120px; max-height: 220px; }
+  .bottle-area { flex: 1; }
+
+  .log-entry {
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .log-success {
+    background: #F0FDF4;
+    border-left: 3px solid #16A34A;
+    color: #15803D;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .log-error {
+    background: #FEF2F2;
+    border-left: 3px solid #DC2626;
+    color: #DC2626;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .log-normal {
+    background: #F9FAFB;
+    border-left: 3px solid #9CA3AF;
+    color: #374151;
+  }
+  .log-time {
+    color: #9CA3AF;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+
+  /* 状态栏 */
+  .status-bar {
+    height: 32px;
+    background: #F5F7FA;
+    border-top: 1px solid #D0D0D0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 16px;
+    flex-shrink: 0;
+    font-size: 14px;
+    color: #374151;
+  }
+
+  /* 弹窗 */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #2563EB;
+    width: 780px;
+    max-height: 680px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal-header {
+    background: #2563EB;
+    color: #fff;
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .modal-title { font-size: 18px; font-weight: 700; }
+  .modal-close {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.35); }
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  /* 系统设置弹窗Tabs */
+  .sys-tabs {
+    display: flex;
+    border-bottom: 1px solid #E5E7EB;
+    background: #F9FAFB;
+    padding: 0 16px;
+  }
+  .sys-tab {
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #6B7280;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+  }
+  .sys-tab.active { color: #2563EB; border-color: #2563EB; font-weight: 600; }
+  .sys-tab-content { display: none; padding: 20px 24px; }
+  .sys-tab-content.active { display: block; }
+
+  /* 表单 */
+  .form-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .form-label {
+    width: 120px;
+    font-size: 14px;
+    color: #374151;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .form-input {
+    flex: 1;
+    height: 40px;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    color: #1F2937;
+  }
+  .form-input:focus { border-color: #2563EB; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+  .form-select {
+    flex: 1;
+    height: 40px;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    background: #fff;
+    color: #1F2937;
+  }
+
+  /* 设备表格 */
+  .device-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .device-table th {
+    background: #F3F4F6;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border: 1px solid #E5E7EB;
+  }
+  .device-table td {
+    padding: 8px 12px;
+    border: 1px solid #E5E7EB;
+    color: #374151;
+  }
+  .device-table tr:nth-child(even) td { background: #F9FAFB; }
+  .device-table .btn-sm {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-sm-blue { background: #EFF6FF; color: #2563EB; }
+  .btn-sm-red { background: #FEF2F2; color: #DC2626; }
+  .btn-sm-green { background: #F0FDF4; color: #16A34A; }
+  .btn-sm-blue:hover { background: #DBEAFE; }
+  .btn-sm-red:hover { background: #FEE2E2; }
+
+  /* 密码弹窗 */
+  .pwd-modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 380px;
+    padding: 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    border: 1px solid #D9E1EC;
+  }
+  .pwd-title { font-size: 18px; font-weight: 700; color: #1F2937; margin-bottom: 20px; text-align: center; }
+  .pwd-input {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 18px;
+    font-family: inherit;
+    outline: none;
+    text-align: center;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+  .pwd-input:focus { border-color: #2563EB; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+  .pwd-error { color: #DC2626; font-size: 13px; text-align: center; min-height: 20px; margin-bottom: 16px; }
+  .pwd-btn-row { display: flex; gap: 12px; }
+  .pwd-btn {
+    flex: 1; height: 44px; border-radius: 6px; border: none;
+    font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .pwd-btn-cancel { background: #6B7280; color: #fff; }
+  .pwd-btn-ok { background: #2563EB; color: #fff; }
+  .pwd-btn-ok:hover { background: #1d4ed8; }
+  .pwd-btn-cancel:hover { background: #4B5563; }
+
+  /* 状态标签 */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-green { background: #D1FAE5; color: #065F46; }
+  .badge-red { background: #FEE2E2; color: #991B1B; }
+  .badge-blue { background: #DBEAFE; color: #1E40AF; }
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #F1F5F9; }
+  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+  /* 运行状态提示 */
+  .running-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #16A34A;
+    font-weight: 600;
+  }
+  .running-dot {
+    width: 8px; height: 8px;
+    background: #16A34A;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+
+  .section-divider {
+    height: 1px;
+    background: #E5E7EB;
+    margin: 10px 0;
+  }
+
+  .toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #374151;
+  }
+  .toggle-track {
+    width: 40px; height: 22px;
+    background: #E5E7EB;
+    border-radius: 11px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-track.on { background: #2563EB; }
+  .toggle-thumb {
+    width: 18px; height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px; left: 2px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-track.on .toggle-thumb { transform: translateX(18px); }
+
+  .alarm-bar {
+    display: none;
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: #DC2626;
+    font-size: 14px;
+    font-weight: 600;
+    align-items: center;
+    gap: 10px;
+    animation: alarmBlink 1s step-start infinite;
+  }
+  .alarm-bar.show { display: flex; }
+  @keyframes alarmBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 菜单栏 -->
+<div class="menu-bar">
+  <div class="menu-item">
+    文件(F)
+    <div class="menu-dropdown">
+      <div class="menu-dropdown-item" onclick="confirmExit()">退出软件</div>
+    </div>
+  </div>
+  <div class="menu-item">
+    配置
+    <div class="menu-dropdown">
+      <div class="menu-dropdown-item" onclick="openSysSettings()">系统设置</div>
+    </div>
+  </div>
+  <div class="menu-item">
+    数据
+    <div class="menu-dropdown">
+      <div class="menu-dropdown-item" onclick="alert('操作日志功能')">操作日志</div>
+    </div>
+  </div>
+  <div class="menu-item">
+    帮助(H)
+    <div class="menu-dropdown">
+      <div class="menu-dropdown-item" onclick="alert('操作帮助文档')">操作帮助</div>
+      <div class="menu-dropdown-item" onclick="alert('瓶盒关联采集系统 v1.2\n石湾产线 1号机')">关于系统</div>
+    </div>
+  </div>
+  <div style="margin-left:auto; display:flex; align-items:center; gap:12px;">
+    <span id="runningIndicator" class="running-indicator" style="display:none;">
+      <span class="running-dot"></span>采集中
+    </span>
+    <span style="font-size:13px; color:#6B7280;">瓶盒关联采集系统 - 1号机</span>
+  </div>
+</div>
+
+<!-- 主内容区 -->
+<div class="main-content">
+
+  <!-- 左侧栏 -->
+  <div class="left-panel">
+
+    <!-- 包装比例设置 + 操作 卡片合并 -->
+    <div class="card" style="padding:14px 16px;">
+      <!-- 包装比例 -->
+      <div class="inner-card" style="margin-bottom:10px;">
+        <div style="font-size:13px; font-weight:600; color:#374151; margin-bottom:8px;">包装比例设置</div>
+        <div class="ratio-row">
+          <span class="ratio-label">每盒瓶数</span>
+          <input type="number" class="ratio-input" id="bottlesPerBox" value="6" min="1" max="24">
+        </div>
+      </div>
+      <!-- 操作 -->
+      <div class="inner-card" style="padding:10px 14px;">
+        <div class="op-row">
+          <button class="btn btn-primary" id="startBtn" onclick="toggleCapture()">开始采集</button>
+          <button class="btn btn-secondary" onclick="clearScreen()">清屏</button>
+        </div>
+      </div>
+      <!-- 报警提示 -->
+      <div id="alarmBar" class="alarm-bar" style="margin-top:10px;">
+        <span>⚠</span>
+        <span id="alarmMsg">关联失败，请检查码读取情况</span>
+        <button onclick="closeAlarm()" style="margin-left:auto; background:#DC2626; color:#fff; border:none; border-radius:4px; padding:2px 10px; cursor:pointer; font-size:12px;">关闭报警</button>
+      </div>
+    </div>
+
+    <!-- 计数 -->
+    <div class="card">
+      <div class="card-title">计数</div>
+      <div class="inner-card">
+        <div class="count-grid">
+          <div class="count-item">
+            <span class="count-label">合计瓶数</span>
+            <span class="count-value red" id="totalBottles">0</span>
+          </div>
+          <div class="section-divider"></div>
+          <div class="count-item">
+            <span class="count-label">当前盒数</span>
+            <span class="count-value blue" id="totalBoxes">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设备连接状态 -->
+    <div class="card">
+      <div class="card-title">设备连接状态</div>
+      <div class="inner-card">
+        <div class="device-list">
+          <div class="device-item">
+            <span class="device-name">瓶1读码器</span>
+            <span class="device-status connected" id="dev1Status">
+              <span class="status-dot dot-green"></span>已连接
+            </span>
+          </div>
+          <div class="device-item">
+            <span class="device-name">瓶2读码器</span>
+            <span class="device-status connected" id="dev2Status">
+              <span class="status-dot dot-green"></span>已连接
+            </span>
+          </div>
+          <div class="device-item">
+            <span class="device-name">盒读码器</span>
+            <span class="device-status connected" id="dev3Status">
+              <span class="status-dot dot-green"></span>已连接
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /left-panel -->
+
+  <!-- 右侧栏 -->
+  <div class="right-panel">
+
+    <!-- 盒码读码区（约30%）-->
+    <div class="read-area box-area" style="flex: 0 0 200px;">
+      <div class="read-area-header">
+        盒码读码区 <span style="font-size:12px; color:#9CA3AF; font-weight:400;">（最新在上，最多1000条）</span>
+      </div>
+      <div class="read-area-content" id="boxLogArea">
+        <div class="log-entry log-success">
+          <span class="log-time">10:30:16</span>
+          盒读码：20241201001002 &nbsp;|&nbsp; <strong>1盒码关联成功</strong>
+        </div>
+        <div class="log-entry log-normal">
+          <span class="log-time">10:30:08</span>
+          盒读码：20241201001001 &nbsp;|&nbsp; 1盒码关联成功
+        </div>
+        <div class="log-entry log-normal">
+          <span class="log-time">10:29:55</span>
+          盒读码：20241201001000 &nbsp;|&nbsp; 1盒码关联成功
+        </div>
+      </div>
+    </div>
+
+    <!-- 瓶码读码区（约70%）-->
+    <div class="read-area bottle-area" style="flex: 1;">
+      <div class="read-area-header">
+        瓶码读码区 <span style="font-size:12px; color:#9CA3AF; font-weight:400;">（最新在上，最多1000条）</span>
+      </div>
+      <div class="read-area-content" id="bottleLogArea">
+        <div class="log-entry log-success">
+          <span class="log-time">10:30:14</span>
+          瓶1读码：<span style="color:#2563EB;">20241201010001</span>、<span style="color:#2563EB;">20241201010002</span>、<span style="color:#2563EB;">20241201010003</span>、<span style="color:#2563EB;">20241201010004</span>
+          &nbsp;&nbsp;
+          瓶2读码：<span style="color:#2563EB;">20241201010005</span>、<span style="color:#2563EB;">20241201010006</span>
+        </div>
+        <div class="log-entry log-normal">
+          <span class="log-time">10:30:06</span>
+          瓶1读码：20241201009995、20241201009996、20241201009997、20241201009998 &nbsp;&nbsp; 瓶2读码：20241201009999、20241201010000
+        </div>
+        <div class="log-entry log-error">
+          <span class="log-time">10:29:52</span>
+          瓶1读码：20241201009989 &nbsp;&nbsp; 瓶2读码：<span style="background:#FEE2E2; padding:1px 4px; border-radius:3px;">20241201009990（重码）</span>、20241201009991 &nbsp;|&nbsp; ⚠ 检测到重码，已标记剔除
+        </div>
+        <div class="log-entry log-normal">
+          <span class="log-time">10:29:44</span>
+          瓶1读码：20241201009983、20241201009984、20241201009985 &nbsp;&nbsp; 瓶2读码：20241201009986、20241201009987、20241201009988
+        </div>
+        <div class="log-entry log-normal">
+          <span class="log-time">10:29:36</span>
+          瓶1读码：20241201009977、20241201009978、20241201009979 &nbsp;&nbsp; 瓶2读码：20241201009980、20241201009981、20241201009982
+        </div>
+        <div class="log-entry log-normal">
+          <span class="log-time">10:29:28</span>
+          瓶1读码：20241201009971、20241201009972、20241201009973 &nbsp;&nbsp; 瓶2读码：20241201009974、20241201009975、20241201009976
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /right-panel -->
+
+</div><!-- /main-content -->
+
+<!-- 状态栏 -->
+<div class="status-bar">
+  <span id="currentTime">2024-12-01 10:30:00</span>
+</div>
+
+<!-- 密码验证弹窗 -->
+<div class="modal-overlay" id="pwdOverlay" onclick="closePwdIfOutside(event)">
+  <div class="pwd-modal" onclick="event.stopPropagation()">
+    <div class="pwd-title">🔒 请输入系统密码</div>
+    <input type="password" class="pwd-input" id="pwdInput" placeholder="••••••" maxlength="12"
+           onkeydown="if(event.key==='Enter')verifyPwd()">
+    <div class="pwd-error" id="pwdError"></div>
+    <div class="pwd-btn-row">
+      <button class="pwd-btn pwd-btn-cancel" onclick="closePwd()">取消</button>
+      <button class="pwd-btn pwd-btn-ok" onclick="verifyPwd()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 系统设置弹窗 -->
+<div class="modal-overlay" id="sysOverlay" onclick="closeSysIfOutside(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">系统设置（1号机）</span>
+      <button class="modal-close" onclick="closeSys()">✕</button>
+    </div>
+    <div class="sys-tabs">
+      <div class="sys-tab active" onclick="switchSysTab(this,'tab-io')">IO设备管理</div>
+      <div class="sys-tab" onclick="switchSysTab(this,'tab-printer')">打印机管理</div>
+      <div class="sys-tab" onclick="switchSysTab(this,'tab-alarm')">报警设置</div>
+      <div class="sys-tab" onclick="switchSysTab(this,'tab-db')">数据库连接</div>
+    </div>
+    <div class="modal-body">
+      <!-- IO设备管理 -->
+      <div class="sys-tab-content active" id="tab-io">
+        <div style="margin-bottom:12px; display:flex; gap:8px;">
+          <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('添加设备')">+ 添加设备</button>
+        </div>
+        <table class="device-table">
+          <thead>
+            <tr>
+              <th>设备名称</th>
+              <th>设备类型</th>
+              <th>连接地址</th>
+              <th>端口</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>瓶1相机</td>
+              <td>网络相机</td>
+              <td>192.168.1.101</td>
+              <td>3000</td>
+              <td><span class="badge badge-green">已连接</span></td>
+              <td style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn-sm btn-sm-blue" onclick="alert('编辑设备')">编辑</button>
+                <button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button>
+                <button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button>
+              </td>
+            </tr>
+            <tr>
+              <td>瓶2相机</td>
+              <td>网络相机</td>
+              <td>192.168.1.102</td>
+              <td>3000</td>
+              <td><span class="badge badge-green">已连接</span></td>
+              <td style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn-sm btn-sm-blue" onclick="alert('编辑设备')">编辑</button>
+                <button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button>
+                <button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button>
+              </td>
+            </tr>
+            <tr>
+              <td>盒码相机</td>
+              <td>网络相机</td>
+              <td>192.168.1.103</td>
+              <td>3000</td>
+              <td><span class="badge badge-green">已连接</span></td>
+              <td style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn-sm btn-sm-blue" onclick="alert('编辑设备')">编辑</button>
+                <button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button>
+                <button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button>
+              </td>
+            </tr>
+            <tr>
+              <td>报警灯</td>
+              <td>串口RS485</td>
+              <td>COM3</td>
+              <td>9600</td>
+              <td><span class="badge badge-green">已连接</span></td>
+              <td style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn-sm btn-sm-blue" onclick="alert('编辑设备')">编辑</button>
+                <button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button>
+                <button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 打印机管理 -->
+      <div class="sys-tab-content" id="tab-printer">
+        <div class="form-row">
+          <span class="form-label">打印机名称</span>
+          <input type="text" class="form-input" value="Canon LBP2900" placeholder="打印机名称">
+        </div>
+        <div class="form-row">
+          <span class="form-label">打印机IP</span>
+          <input type="text" class="form-input" value="192.168.1.200">
+        </div>
+        <div class="form-row">
+          <span class="form-label">打印端口</span>
+          <input type="text" class="form-input" value="9100">
+        </div>
+        <div class="form-row">
+          <span class="form-label">纸张大小</span>
+          <select class="form-select"><option>A4</option><option>A5</option><option>自定义</option></select>
+        </div>
+        <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('打印机设置已保存')">保存</button>
+      </div>
+
+      <!-- 报警设置 -->
+      <div class="sys-tab-content" id="tab-alarm">
+        <div class="form-row" style="margin-bottom:20px;">
+          <span class="form-label">声音报警</span>
+          <div class="toggle-switch">
+            <div class="toggle-track on" id="alarmSound" onclick="this.classList.toggle('on')">
+              <div class="toggle-thumb"></div>
+            </div>
+            <span>开启</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <span class="form-label">报警延时(ms)</span>
+          <input type="number" class="form-input" value="500">
+        </div>
+        <div class="form-row">
+          <span class="form-label">报警间隔(ms)</span>
+          <input type="number" class="form-input" value="2000">
+        </div>
+        <div style="margin-top:16px; display:flex; gap:12px;">
+          <button class="btn btn-warning" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('测试报警已触发')">测试报警</button>
+          <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('报警设置已保存')">保存</button>
+        </div>
+      </div>
+
+      <!-- 数据库连接 -->
+      <div class="sys-tab-content" id="tab-db">
+        <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#92400E;">
+          ⚠ 1号机数据存入2号机数据库（局域网访问），请正确配置2号机IP和数据库信息
+        </div>
+        <div class="form-row">
+          <span class="form-label">2号机IP地址</span>
+          <input type="text" class="form-input" value="192.168.1.200" placeholder="如：192.168.1.200">
+        </div>
+        <div class="form-row">
+          <span class="form-label">数据库端口</span>
+          <input type="number" class="form-input" value="3306" placeholder="3306">
+        </div>
+        <div class="form-row">
+          <span class="form-label">数据库名</span>
+          <input type="text" class="form-input" value="production_db" placeholder="数据库名称">
+        </div>
+        <div class="form-row">
+          <span class="form-label">用户名</span>
+          <input type="text" class="form-input" value="admin" placeholder="数据库用户名">
+        </div>
+        <div class="form-row">
+          <span class="form-label">密码</span>
+          <input type="password" class="form-input" value="123456" placeholder="数据库密码">
+        </div>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <button class="btn btn-secondary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="testDbConn()">连接测试</button>
+          <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('数据库配置已保存')">保存</button>
+          <span id="dbTestResult" style="font-size:13px;"></span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="closeSys()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 实时时钟
+function updateTime() {
+  const now = new Date();
+  const s = d => String(d).padStart(2,'0');
+  document.getElementById('currentTime').textContent =
+    `${now.getFullYear()}-${s(now.getMonth()+1)}-${s(now.getDate())} ${s(now.getHours())}:${s(now.getMinutes())}:${s(now.getSeconds())}`;
+}
+updateTime(); setInterval(updateTime, 1000);
+
+// 采集状态
+let isRunning = false;
+let totalBottles = 0, totalBoxes = 0;
+let simInterval = null;
+
+function toggleCapture() {
+  const btn = document.getElementById('startBtn');
+  const ind = document.getElementById('runningIndicator');
+  if (!isRunning) {
+    // 开始采集
+    isRunning = true;
+    btn.textContent = '停止采集';
+    btn.classList.add('running');
+    ind.style.display = 'inline-flex';
+    startSimulation();
+  } else {
+    // 停止采集
+    isRunning = false;
+    btn.textContent = '开始采集';
+    btn.classList.remove('running');
+    ind.style.display = 'none';
+    if (simInterval) { clearInterval(simInterval); simInterval = null; }
+  }
+}
+
+function startSimulation() {
+  let cycle = 0;
+  simInterval = setInterval(() => {
+    if (!isRunning) return;
+    cycle++;
+    const n = document.getElementById('bottlesPerBox').value;
+    const batchNum = String(Date.now()).slice(-6);
+    const now = new Date();
+    const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
+    // 生成瓶码
+    const codes1 = [], codes2 = [];
+    const halfN = Math.ceil(n/2);
+    for(let i=0; i<halfN; i++) codes1.push(`2024${batchNum}${String(cycle*10+i+1).padStart(4,'0')}`);
+    for(let i=halfN; i<n; i++) codes2.push(`2024${batchNum}${String(cycle*10+i+1).padStart(4,'0')}`);
+
+    const hasError = cycle % 7 === 0; // 每7次模拟一次重码
+
+    let bottleHtml = `<div class="log-entry ${hasError ? 'log-error' : 'log-success'}">`;
+    bottleHtml += `<span class="log-time">${ts}</span>`;
+    bottleHtml += `瓶1读码：${codes1.map(c=>`<span style="color:#2563EB;">${c}</span>`).join('、')}`;
+    if(codes2.length > 0) bottleHtml += ` &nbsp;&nbsp; 瓶2读码：${codes2.map(c=>`<span style="color:#2563EB;">${c}</span>`).join('、')}`;
+    if(hasError) {
+      bottleHtml += ` &nbsp;|&nbsp; <span style="background:#FEE2E2;padding:1px 4px;border-radius:3px;">⚠ 检测到重码，已标记剔除</span>`;
+      showAlarm('检测到重码：20241201'+batchNum+'，已标记剔除');
+    }
+    bottleHtml += '</div>';
+
+    prependLog('bottleLogArea', bottleHtml);
+
+    // 关联盒码
+    const boxCode = `2024${batchNum}${String(9000+cycle).padStart(4,'0')}`;
+    totalBottles += parseInt(n);
+    totalBoxes++;
+    document.getElementById('totalBottles').textContent = totalBottles;
+    document.getElementById('totalBoxes').textContent = totalBoxes;
+
+    const boxHtml = `<div class="log-entry log-success">
+      <span class="log-time">${ts}</span>
+      盒读码：${boxCode} &nbsp;|&nbsp; <strong>${totalBoxes}盒码关联成功</strong>
+    </div>`;
+    prependLog('boxLogArea', boxHtml);
+
+  }, 2500);
+}
+
+function prependLog(areaId, html) {
+  const area = document.getElementById(areaId);
+  area.insertAdjacentHTML('afterbegin', html);
+  // 限制1000条
+  const entries = area.querySelectorAll('.log-entry');
+  if(entries.length > 100) entries[entries.length-1].remove();
+}
+
+function clearScreen() {
+  if(confirm('确认清屏？将清除所有读码记录')) {
+    document.getElementById('bottleLogArea').innerHTML = '';
+    document.getElementById('boxLogArea').innerHTML = '';
+  }
+}
+
+function showAlarm(msg) {
+  document.getElementById('alarmMsg').textContent = msg || '关联异常，请检查';
+  document.getElementById('alarmBar').classList.add('show');
+}
+
+function closeAlarm() {
+  document.getElementById('alarmBar').classList.remove('show');
+}
+
+// 系统设置 - 密码验证
+function openSysSettings() {
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('pwdError').textContent = '';
+  document.getElementById('pwdOverlay').classList.add('active');
+  setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+}
+
+function closePwd() {
+  document.getElementById('pwdOverlay').classList.remove('active');
+}
+
+function closePwdIfOutside(e) {
+  if(e.target === document.getElementById('pwdOverlay')) closePwd();
+}
+
+function verifyPwd() {
+  const pwd = document.getElementById('pwdInput').value;
+  if(pwd === '123456') {
+    closePwd();
+    document.getElementById('sysOverlay').classList.add('active');
+  } else {
+    document.getElementById('pwdError').textContent = '密码错误，请重新输入';
+    document.getElementById('pwdInput').value = '';
+    document.getElementById('pwdInput').focus();
+  }
+}
+
+function closeSys() {
+  document.getElementById('sysOverlay').classList.remove('active');
+}
+
+function closeSysIfOutside(e) {
+  if(e.target === document.getElementById('sysOverlay')) closeSys();
+}
+
+function switchSysTab(el, tabId) {
+  document.querySelectorAll('.sys-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sys-tab-content').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+function testDbConn() {
+  const result = document.getElementById('dbTestResult');
+  result.textContent = '正在连接...';
+  result.style.color = '#6B7280';
+  setTimeout(() => {
+    result.textContent = '✓ 连接成功';
+    result.style.color = '#16A34A';
+  }, 1200);
+}
+
+function confirmExit() {
+  if(confirm('确认退出系统？')) window.close();
+}
+
+// ESC关闭弹窗
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') {
+    closePwd(); closeSys();
+  }
+});
+</script>
+</body>
+</html>

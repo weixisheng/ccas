@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>赋码采集关联系统 - 石湾产线 v1.2 原型导航</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Microsoft YaHei', '微软雅黑', 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563EB 50%, #1e40af 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.container {
+  text-align: center;
+  padding: 40px;
+  max-width: 900px;
+  width: 100%;
+}
+.header {
+  margin-bottom: 48px;
+}
+.header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.header p {
+  font-size: 16px;
+  opacity: 0.8;
+}
+.badge-v {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.cards {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.card {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 36px 40px;
+  width: 360px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  color: #fff;
+  display: block;
+}
+.card:hover {
+  background: rgba(255,255,255,0.22);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+.card-icon { font-size: 48px; margin-bottom: 16px; }
+.card-title { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+.card-subtitle { font-size: 14px; opacity: 0.75; margin-bottom: 20px; line-height: 1.6; }
+.card-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.tag {
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+  margin: 40px 0;
+}
+.pages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+.page-link {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: block;
+  text-align: left;
+}
+.page-link:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+.page-link .page-num { font-size: 11px; opacity: 0.6; display: block; margin-bottom: 4px; }
+.footer {
+  margin-top: 40px;
+  font-size: 13px;
+  opacity: 0.5;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="badge-v">v1.2 石湾产线 · 高保真原型</div>
+    <h1>赋码采集关联系统</h1>
+  </div>
+
+  <div class="cards">
+    <a href="P01-瓶盒关联主界面.html" class="card" target="_blank">
+      <div class="card-icon">🏭</div>
+      <div class="card-title">1号机 - 瓶盒关联</div>
+      <div class="card-subtitle">瓶盒关联数据采集主界面<br>负责瓶码采集与盒码关联（第1、2级）</div>
+      <div class="card-tags">
+        <span class="tag">P01-01 主界面</span>
+        <span class="tag">P01-02 系统设置</span>
+      </div>
+    </a>
+    <a href="P02-盒箱垛关联主界面.html" class="card" target="_blank">
+      <div class="card-icon">📦</div>
+      <div class="card-title">2号机 - 盒箱垛关联</div>
+      <div class="card-subtitle">盒箱垛关联数据采集主界面<br>负责四级关联（瓶-盒-箱-垛）</div>
+      <div class="card-tags">
+        <span class="tag">P02-01 数据采集</span>
+        <span class="tag">P02-02 手工采集</span>
+        <span class="tag">P02-03 码包管理</span>
+        <span class="tag">+5个Tab</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="divider"></div>
+
+  <div style="font-size:16px; font-weight:700; margin-bottom:16px; opacity:0.9;">2号机所有页面（Tab子界面）</div>
+  <div class="pages-grid">
+    <a href="P02-盒箱垛关联主界面.html#tab-collection" class="page-link" target="_blank">
+      <span class="page-num">P02-01</span>主界面 - 数据采集
+    </a>
+    <a href="P02-盒箱垛关联主界面.html#tab-manual" class="page-link" target="_blank">
+      <span class="page-num">P02-02</span>手工采集
+    </a>
+    <a href="P02-盒箱垛关联主界面.html#tab-package" class="page-link" target="_blank">
+      <span class="page-num">P02-03</span>码包管理
+    </a>
+    <a href="P02-盒箱垛关联主界面.html#tab-query" class="page-link" target="_blank">
+      <span class="page-num">P02-04</span>数据查询
+    </a>
+    <a href="P02-盒箱垛关联主界面.html#tab-replace" class="page-link" target="_blank">
+      <span class="page-num">P02-05</span>数据替换
+    </a>
+    <a href="P02-盒箱垛关联主界面.html#tab-cancel" class="page-link" target="_blank">
+      <span class="page-num">P02-06</span>取消关联
+    </a>
+    <a href="P02-盒箱垛关联主界面.html#tab-stats" class="page-link" target="_blank">
+      <span class="page-num">P02-07</span>生产统计
+    </a>
+    <a href="P02-盒箱垛关联主界面.html#tab-upload" class="page-link" target="_blank">
+      <span class="page-num">P02-08</span>数据上传
+    </a>
+  </div>
+</div>
+</body>
+</html>
