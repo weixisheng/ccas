@@ -849,6 +849,91 @@ body {
 .toggle-thumb { width: 18px; height: 18px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 .toggle-track.on .toggle-thumb { transform: translateX(18px); }
 
+/* ==================== 操作帮助弹窗 ==================== */
+.help-toc-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+}
+.help-toc-item:hover { background: #EFF6FF; color: #2563EB; }
+.help-toc-item.active { background: #EFF6FF; color: #2563EB; border-left-color: #2563EB; font-weight: 600; }
+.help-toc-sub {
+  padding: 5px 16px 5px 28px;
+  font-size: 13px;
+  color: #6B7280;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+}
+.help-toc-sub:hover { background: #F0F4FF; color: #2563EB; }
+.help-toc-sub.active { color: #2563EB; font-weight: 600; }
+.help-section { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #E5E7EB; }
+.help-section:last-child { border-bottom: none; }
+.help-h1 {
+  font-size: 20px; font-weight: 700; color: #1F2937;
+  margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 2px solid #2563EB;
+}
+.help-h2 {
+  font-size: 16px; font-weight: 700; color: #1F2937;
+  margin: 16px 0 8px;
+}
+.help-step-title {
+  font-size: 15px; font-weight: 700; color: #374151;
+  margin: 12px 0 6px;
+}
+.help-ul, .help-ol {
+  margin: 0 0 8px 20px;
+  color: #374151;
+}
+.help-ul li, .help-ol li { margin-bottom: 4px; }
+.help-warn {
+  color: #DC2626; font-weight: 600;
+  list-style: none !important;
+}
+.help-warn::before { content: ''; }
+.help-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 14px; margin: 10px 0;
+}
+.help-table th {
+  background: #F3F4F6; padding: 8px 12px;
+  text-align: left; font-weight: 600; color: #374151;
+  border: 1px solid #E5E7EB;
+}
+.help-table td {
+  padding: 8px 12px; border: 1px solid #E5E7EB; color: #374151;
+}
+.help-table tr:nth-child(even) td { background: #FAFAFA; }
+.help-info-box {
+  background: #FFF7ED; border: 1px solid #FCD34D;
+  border-radius: 8px; padding: 14px 16px;
+  margin: 10px 0; color: #92400E; font-size: 14px;
+}
+.help-faq-item {
+  background: #F9FAFB; border: 1px solid #E5E7EB;
+  border-radius: 8px; padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.help-faq-q {
+  font-size: 15px; font-weight: 700; color: #1D4ED8;
+  margin-bottom: 8px;
+}
+.help-faq-a { font-size: 14px; color: #374151; line-height: 1.7; }
+.help-badge-warn {
+  display: inline-flex; align-items: center;
+  background: #FEF3C7; color: #92400E;
+  border-radius: 20px; padding: 2px 10px;
+  font-size: 13px; font-weight: 600;
+  border: 1px solid #FCD34D;
+  margin-left: 8px;
+}
+
 /* 帮助浮层 */
 .help-popup {
   display: none;
@@ -886,7 +971,7 @@ body {
     <div class="menu-dropdown-item" onclick="alert('操作日志功能')">操作日志</div>
   </div></div>
   <div class="menu-item">帮助(H)<div class="menu-dropdown">
-    <div class="menu-dropdown-item" onclick="alert('操作帮助文档')">操作帮助</div>
+    <div class="menu-dropdown-item" onclick="openHelpModal()">操作帮助</div>
     <div class="menu-dropdown-item" onclick="alert('盒箱垛关联采集系统 v1.2\n石湾产线 2号机')">关于系统</div>
   </div></div>
   <div style="margin-left:auto; font-size:13px; color:#6B7280;">盒箱垛关联采集系统 - 2号机</div>
@@ -1508,6 +1593,361 @@ body {
 </div>
 
 <!-- ==================== 弹窗区域 ==================== -->
+
+<!-- 操作帮助弹窗 -->
+<div class="modal-overlay" id="helpOverlay" onclick="if(event.target===this)closeHelpModal()">
+  <div class="modal-box" style="width:900px; height:80vh; display:flex; flex-direction:column;">
+    <div class="modal-header">
+      <span class="modal-title">📖 操作帮助</span>
+      <button class="modal-close-btn" onclick="closeHelpModal()">✕</button>
+    </div>
+    <div style="flex:1; display:flex; overflow:hidden; min-height:0;">
+      <!-- 左侧目录 -->
+      <div id="helpToc" style="width:180px; flex-shrink:0; border-right:1px solid #E5E7EB; overflow-y:auto; padding:16px 0; background:#F9FAFB;">
+        <div style="font-size:12px; color:#9CA3AF; font-weight:700; padding:0 16px 8px; letter-spacing:1px;">目录</div>
+        <div class="help-toc-item" onclick="scrollHelpTo('h-intro')">一、系统简介</div>
+        <div class="help-toc-item" onclick="scrollHelpTo('h-m1')">二、1号机操作</div>
+        <div class="help-toc-item" onclick="scrollHelpTo('h-m2')">三、2号机操作</div>
+        <div class="help-toc-item" onclick="scrollHelpTo('h-funcs')">四、各功能说明</div>
+        <div class="help-toc-sub" onclick="scrollHelpTo('h-manual')">↳ 手工采集</div>
+        <div class="help-toc-sub" onclick="scrollHelpTo('h-package')">↳ 码包管理</div>
+        <div class="help-toc-sub" onclick="scrollHelpTo('h-query')">↳ 数据查询</div>
+        <div class="help-toc-sub" onclick="scrollHelpTo('h-replace')">↳ 数据替换</div>
+        <div class="help-toc-sub" onclick="scrollHelpTo('h-cancel')">↳ 取消关联</div>
+        <div class="help-toc-sub" onclick="scrollHelpTo('h-stats')">↳ 生产统计</div>
+        <div class="help-toc-sub" onclick="scrollHelpTo('h-upload')">↳ 数据上传</div>
+        <div class="help-toc-item" onclick="scrollHelpTo('h-faq')">五、常见问题</div>
+        <div class="help-toc-item" onclick="scrollHelpTo('h-notes')">六、注意事项</div>
+      </div>
+      <!-- 右侧正文 -->
+      <div id="helpContent" style="flex:1; overflow-y:auto; padding:28px 32px; font-size:15px; line-height:1.8; color:#1F2937;">
+
+        <div class="help-section" id="h-intro">
+          <div class="help-h1">一、系统简介</div>
+          <div class="help-h2">1.1 系统组成</div>
+          <p>本系统采用<strong>四级关联模式</strong>（瓶-盒-箱-垛），由两个独立软件组成：</p>
+          <ul class="help-ul">
+            <li><strong>1号机（瓶盒关联软件）</strong>：负责瓶码和盒码的采集关联，数据实时同步至2号机</li>
+            <li><strong>2号机（盒箱垛关联软件）</strong>：负责盒箱垛关联采集、数据管理和数据上传</li>
+          </ul>
+          <div class="help-h2">1.2 包装规格</div>
+          <p style="color:#6B7280; font-size:13px;">默认值，可在系统设置中配置，勿随意修改</p>
+          <table class="help-table">
+            <thead><tr><th>层级</th><th>关系</th></tr></thead>
+            <tbody>
+              <tr><td>1盒</td><td>= 6瓶</td></tr>
+              <tr><td>1箱</td><td>= 4盒（24瓶）</td></tr>
+              <tr><td>1垛</td><td>= 70箱（280盒，1680瓶）</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="help-section" id="h-m1">
+          <div class="help-h1">二、1号机操作指南（瓶盒关联软件）</div>
+          <div class="help-h2">2.1 日常操作流程</div>
+          <div class="help-step-title">步骤1：确认包装比例</div>
+          <ul class="help-ul">
+            <li>在左侧「包装比例设置」区域，确认「每盒瓶数」设置正确（默认6瓶）</li>
+            <li class="help-warn">⚠ 开始采集后不可修改</li>
+          </ul>
+          <div class="help-step-title">步骤2：开始采集</div>
+          <ol class="help-ol">
+            <li>点击「开始采集」按钮</li>
+            <li>系统自动检测设备状态（瓶1读码器、瓶2读码器、盒读码器）</li>
+            <li>检测通过后开始采集；按钮变为「停止采集」</li>
+          </ol>
+          <div class="help-step-title">步骤3：监控采集过程</div>
+          <ul class="help-ul">
+            <li><strong>右侧上方 - 盒码读码区</strong>：绿色=关联成功，红色=关联失败或异常</li>
+            <li><strong>右侧下方 - 瓶码读码区</strong>：黑色=正常，红色=重码/错码（系统自动标记，产线正常移动，下游按箱剔除）</li>
+            <li><strong>左侧 - 计数</strong>：「合计瓶数」「当前盒数」实时更新</li>
+          </ul>
+          <div class="help-step-title">步骤4：停止采集</div>
+          <ul class="help-ul"><li>点击「停止采集」按钮，未满盒的数据会保留</li></ul>
+          <div class="help-h2">2.2 设备连接状态</div>
+          <ul class="help-ul">
+            <li>左侧下方显示读码器连接状态</li>
+            <li>绿色文字：设备已连接 ✓</li>
+            <li>红色文字：设备未连接，请检查设备连接后重启</li>
+          </ul>
+          <div class="help-h2">2.3 清屏</div>
+          <ul class="help-ul">
+            <li>点击「清屏」按钮：清空读码区显示记录</li>
+            <li class="help-warn">⚠ 清屏不影响计数和数据库数据</li>
+          </ul>
+        </div>
+
+        <div class="help-section" id="h-m2">
+          <div class="help-h1">三、2号机操作指南（盒箱垛关联软件）</div>
+          <div class="help-h2">3.1 功能入口</div>
+          <table class="help-table">
+            <thead><tr><th>Tab 名称</th><th>功能说明</th></tr></thead>
+            <tbody>
+              <tr><td><strong>数据采集</strong></td><td>主界面，默认选中</td></tr>
+              <tr><td>手工采集</td><td>相机损坏时备用</td></tr>
+              <tr><td>码包管理</td><td>导入码包数据</td></tr>
+              <tr><td>数据查询</td><td>查询码关联关系</td></tr>
+              <tr><td>数据替换</td><td>码替换操作</td></tr>
+              <tr><td>取消关联</td><td>单个或批量解除关联</td></tr>
+              <tr><td>生产统计</td><td>查看生产数据统计</td></tr>
+              <tr><td>数据上传</td><td>管理数据上传状态</td></tr>
+            </tbody>
+          </table>
+          <p>系统设置通过菜单「配置」→「系统设置」进入（弹窗形式，需要密码）。</p>
+          <div class="help-h2">3.2 数据采集主界面操作流程</div>
+          <div class="help-step-title">生产前准备：</div>
+          <ol class="help-ol">
+            <li>点击「产品选择」下拉框，在弹窗中搜索并选择生产产品</li>
+            <li>确认生产单号（系统自动生成，可手动修改）</li>
+            <li>确认包装比例（每箱盒数、每垛箱数）</li>
+          </ol>
+          <div class="help-step-title">开始采集：</div>
+          <ol class="help-ol">
+            <li>点击右侧「开始采集」按钮</li>
+            <li>系统检测设备状态，检测通过后开始采集</li>
+            <li><strong>报警灯绿灯常亮</strong>，表示系统正常工作</li>
+          </ol>
+          <div class="help-step-title">监控采集过程：</div>
+          <ul class="help-ul">
+            <li><strong>中间上方 - 数据接收区</strong>（约60%高）：扫码数据和关联结果，最新在上</li>
+            <li><strong>中间中部 - 操作日志</strong>（约20%）：用户操作记录，最新在上</li>
+            <li><strong>中间下方 - 报警信息</strong>（约20%）：重码、关联失败等异常，最新在上</li>
+            <li><strong>左侧 - 数量统计</strong>：以「实时数/预设数」形式显示（如 4/4、6/70）</li>
+          </ul>
+          <div class="help-step-title">成垛与自动上传：</div>
+          <ul class="help-ul">
+            <li>箱数达到预设值时自动成垛，成垛后<strong>自动上传</strong>数据至云端</li>
+            <li>上传成功：绿灯常亮 + 声音提醒</li>
+            <li class="help-warn">上传失败：红灯常亮 + 声音提醒（需处理后手动重传）</li>
+          </ul>
+          <div class="help-h2">3.3 右侧按钮功能说明</div>
+          <div class="help-step-title">采集控制组：</div>
+          <table class="help-table">
+            <thead><tr><th>按钮</th><th>功能说明</th></tr></thead>
+            <tbody>
+              <tr><td>开始/停止采集</td><td>启动或停止数据采集；停止后未满垛数据保留</td></tr>
+              <tr><td>无需采集码</td><td>当天不生产五码合一产品时开启，所有读码设备不工作</td></tr>
+              <tr><td>关闭报警</td><td>上传失败触发报警后，点击可重置报警状态（停止声光报警器、蜂鸣器）</td></tr>
+            </tbody>
+          </table>
+          <div class="help-step-title">垛相关操作组：</div>
+          <table class="help-table">
+            <thead><tr><th>按钮</th><th>功能说明</th></tr></thead>
+            <tbody>
+              <tr><td>强制满垛</td><td>未达到预设箱数时，强制结束当前垛，生成垛码</td></tr>
+              <tr><td>清空垛</td><td>清除当前垛计数，重置统计数据</td></tr>
+              <tr><td>提取工单未成垛</td><td>提取之前未完成垛的数据（如隔天继续生产时使用），弹窗选择后恢复继续</td></tr>
+            </tbody>
+          </table>
+          <div class="help-step-title">剔除相关操作组：</div>
+          <table class="help-table">
+            <thead><tr><th>按钮</th><th>功能说明</th></tr></thead>
+            <tbody>
+              <tr><td>收回剔除</td><td>剔除设备动作后未自动收回时，点击手动收回</td></tr>
+              <tr><td>总剔除数</td><td>显示累计剔除数量</td></tr>
+              <tr><td>清零</td><td>将总剔除数重置为 0</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="help-section" id="h-funcs">
+          <div class="help-h1">四、各功能操作说明</div>
+        </div>
+
+        <div class="help-section" id="h-manual">
+          <div class="help-h2">4.1 手工采集（相机损坏时使用）</div>
+          <ol class="help-ol">
+            <li>点击「手工采集」Tab</li>
+            <li>选择关联类型：○ 瓶盒关联 / ○ 盒箱关联</li>
+            <li>设置包装比例（每瓶码数 / 每盒码数，根据选择变化）</li>
+            <li>按提示顺序用扫码枪扫码：<br>— 瓶盒模式：先扫瓶码（足够数量后）→ 扫盒码<br>— 盒箱模式：先扫盒码（足够数量后）→ 扫箱码</li>
+            <li>扫码完成后自动关联，当前已读数量归零，继续下一组</li>
+          </ol>
+          <p class="help-warn">⚠ 注意：手工采集不支持垛级关联</p>
+        </div>
+
+        <div class="help-section" id="h-package">
+          <div class="help-h2">4.2 码包管理</div>
+          <p><strong>用途</strong>：导入包材厂提供的码包文件，用于采集时比对校验（不在码包内的码会被剔除）。</p>
+          <table class="help-table">
+            <thead><tr><th>操作</th><th>步骤</th></tr></thead>
+            <tbody>
+              <tr><td>启动时在线导入</td><td>软件启动时自动执行，同名码包跳过不重复导入</td></tr>
+              <tr><td>本地导入</td><td>点击「本地导入」→ 选择 TXT 格式码包文件 → 系统解析入库</td></tr>
+              <tr><td>在线更新</td><td>点击「在线更新」→ 从在线源拉取码包（同名跳过）</td></tr>
+              <tr><td>查看码包</td><td>点击操作列「查看」→ 弹窗显示该码包所有码，支持搜索</td></tr>
+              <tr><td>删除码包</td><td>点击操作列「删除」→ 确认后标记为已删除</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="help-section" id="h-query">
+          <div class="help-h2">4.3 数据查询</div>
+          <p><strong>用途</strong>：查询码的关联关系，用于产品追溯。</p>
+          <table class="help-table">
+            <thead><tr><th>查询类型</th><th>操作</th><th>结果说明</th></tr></thead>
+            <tbody>
+              <tr><td>正向查询（查下级）</td><td>输入码 → 点击「正向查询」或回车</td><td>显示该码的直接下级码：垛→箱，箱→盒，盒→瓶</td></tr>
+              <tr><td>反向查询（查上级）</td><td>输入码 → 点击「反向查询」或 Ctrl+Enter</td><td>显示该码的所有上级码 + 同级其他码</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="help-section" id="h-replace">
+          <div class="help-h2">4.4 数据替换 <span class="help-badge-warn">需要密码 123456</span></div>
+          <p><strong>用途</strong>：码损坏或码错误时，将旧码替换为新码。</p>
+          <ol class="help-ol">
+            <li>输入原码（待替换）</li>
+            <li>输入新码（替换后）</li>
+            <li>输入替换原因（可选）</li>
+            <li>点击「确认替换」→ 弹窗核对信息 → 输入密码 <strong>123456</strong> → 确认执行</li>
+          </ol>
+          <p><strong>新码要求（需同时满足）：</strong></p>
+          <ul class="help-ul">
+            <li>✅ 在导入的码包范围内</li>
+            <li>✅ 未被使用过（系统中无关联关系）</li>
+            <li>✅ 格式有效，且不能与原码相同</li>
+          </ul>
+          <p class="help-warn">⚠ 替换操作不可恢复，请务必核对无误再执行</p>
+        </div>
+
+        <div class="help-section" id="h-cancel">
+          <div class="help-h2">4.5 取消关联 <span class="help-badge-warn">需要密码 123456</span></div>
+          <p><strong>用途</strong>：解除码的关联关系（如数据错误、产品需要重新处理时）。</p>
+          <div class="help-info-box">
+            <strong>重要规则：</strong>
+            <ul class="help-ul" style="margin-top:6px;">
+              <li>必须<strong>从大到小逐级解除</strong>（垛 → 箱 → 盒 → 瓶），不可一次性解除全部</li>
+              <li>系统自动检查上级关联状态，有上级时「确认」按钮禁用，提示先解除上级</li>
+              <li>系统自动检查云端数据并先解除云端关联，确保数据一致</li>
+            </ul>
+          </div>
+          <div class="help-step-title">单个取消关联操作步骤：</div>
+          <ol class="help-ol">
+            <li>选择「单个取消关联」模式</li>
+            <li>输入同一包装内的任意两个码</li>
+            <li>点击「识别」→ 右侧显示识别结果（含上级关联链路）</li>
+            <li>如有上级关联，先从垛开始逐级解除上级，再回来解除当前级</li>
+            <li>无上级关联后，点击「确认取消关联」→ 输入密码 <strong>123456</strong> → 确认执行</li>
+          </ol>
+          <div class="help-step-title">批量取消关联操作步骤：</div>
+          <ol class="help-ol">
+            <li>选择「批量取消关联」模式</li>
+            <li>逐一输入大码（盒码/箱码/垛码）→ 点击「添加」</li>
+            <li>点击「识别」→ 右侧显示所有包装单元的识别结果</li>
+            <li>处理有上级关联的单元后，点击「确认批量取消关联」→ 输入密码 <strong>123456</strong> → 执行</li>
+          </ol>
+          <p class="help-warn">⚠ 操作不可恢复，请确认无误后操作</p>
+        </div>
+
+        <div class="help-section" id="h-stats">
+          <div class="help-h2">4.6 生产统计</div>
+          <p><strong>用途</strong>：查看生产数据统计和各垛上传状态。</p>
+          <table class="help-table">
+            <thead><tr><th>操作</th><th>步骤</th></tr></thead>
+            <tbody>
+              <tr><td>生产统计查询</td><td>左侧选择日期范围 → 点击「查询」→ 显示垛数/箱数/盒数</td></tr>
+              <tr><td>查看垛码列表</td><td>点击蓝色下划线的「垛数」数字 → 弹窗显示垛码列表，支持模糊筛选</td></tr>
+              <tr><td>上传统计查询</td><td>右侧选择日期范围和状态（全部/成功/异常）→ 点击「查询」</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="help-section" id="h-upload">
+          <div class="help-h2">4.7 数据上传</div>
+          <p><strong>用途</strong>：管理上传任务和状态，处理上传异常。</p>
+          <table class="help-table">
+            <thead><tr><th>功能</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr><td>手动上传</td><td>点击「手动上传」→ 批量上传所有未上传的垛</td></tr>
+              <tr><td>查询状态</td><td>输入垛码 → 点击「查询状态」→ 查看上传详情</td></tr>
+              <tr><td>设为未上传</td><td>输入垛码 → 点击「设为未上传」→ 确认（用于异常修复后重新补传）</td></tr>
+              <tr><td>设为已上传</td><td>输入垛码 → 点击「设为已上传」→ 确认（避免系统重复上传）</td></tr>
+            </tbody>
+          </table>
+          <p>左侧「上传信息展示区」实时显示自动上传日志：</p>
+          <ul class="help-ul">
+            <li><span style="color:#9CA3AF;">■</span> 灰色：开始上传</li>
+            <li><span style="color:#2563EB;">■</span> 蓝色：上传中</li>
+            <li><span style="color:#16A34A;">■</span> 绿色：上传成功</li>
+            <li><span style="color:#DC2626;">■</span> 红色：上传失败（含失败原因）</li>
+          </ul>
+        </div>
+
+        <div class="help-section" id="h-faq">
+          <div class="help-h1">五、常见问题 &amp; 异常处理</div>
+          <div class="help-faq-item">
+            <div class="help-faq-q">Q1：1号机显示红色码，怎么处理？</div>
+            <div class="help-faq-a">红色码 = 重码（已存在）或错码（格式错误）。系统自动标记待剔除，产线正常移动，下游龙门架按箱剔除，<strong>无需手动干预</strong>。</div>
+          </div>
+          <div class="help-faq-item">
+            <div class="help-faq-q">Q2：设备显示未连接怎么办？</div>
+            <ol class="help-ol">
+              <li>检查读码器/相机的电源和网线是否插好</li>
+              <li>重启设备后，查看连接状态是否恢复绿色</li>
+              <li>若仍未连接，联系技术人员</li>
+            </ol>
+          </div>
+          <div class="help-faq-item">
+            <div class="help-faq-q">Q3：数据上传失败，红灯亮了怎么办？</div>
+            <ol class="help-ol">
+              <li>查看「数据上传」Tab 中的失败原因</li>
+              <li>根据失败原因进行数据处理或等待网络恢复</li>
+              <li>点击「关闭报警」重置报警灯和蜂鸣器</li>
+              <li>处理完成后，点击「手动上传」重新上传</li>
+            </ol>
+          </div>
+          <div class="help-faq-item">
+            <div class="help-faq-q">Q4：生产结束时还有尾数（未满垛），怎么处理？</div>
+            <div class="help-faq-a">
+              <strong>方式一（推荐）</strong>：点击「强制满垛」，将当前数据强制成垛并上传<br>
+              <strong>方式二</strong>：直接停止采集，不做处理。下次生产时点击「提取工单未成垛」，选择该条数据继续生产
+            </div>
+          </div>
+          <div class="help-faq-item">
+            <div class="help-faq-q">Q5：剔除装置剔出去后没有自动收回，怎么办？</div>
+            <div class="help-faq-a">点击右侧「收回剔除」按钮，手动触发收回指令。</div>
+          </div>
+          <div class="help-faq-item">
+            <div class="help-faq-q">Q6：忘记密码怎么办？</div>
+            <div class="help-faq-a">系统设置、码替换、取消关联的密码统一为：<strong style="color:#2563EB; font-size:18px;">123456</strong></div>
+          </div>
+          <div class="help-faq-item">
+            <div class="help-faq-q">Q7：如何知道码属于哪一层级（瓶/盒/箱/垛）？</div>
+            <div class="help-faq-a">在「数据查询」Tab 中输入码值，点击「正向查询」或「反向查询」，查询结果会显示该码的层级和关联关系。</div>
+          </div>
+          <div class="help-faq-item">
+            <div class="help-faq-q">Q8：取消关联时提示「请先解除上级」，怎么操作？</div>
+            <ol class="help-ol">
+              <li>在「识别结果」中查看完整链路（如：垛码xxx → 箱码xxx → 盒码xxx）</li>
+              <li>先输入最顶层的垛码，执行取消关联</li>
+              <li>再输入箱码，执行取消关联</li>
+              <li>最后输入盒码，执行取消关联</li>
+              <li>每次解除都需要输入密码 123456</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-section" id="h-notes">
+          <div class="help-h1">六、注意事项</div>
+          <div class="help-info-box">
+            <ol class="help-ol" style="margin:0;">
+              <li><strong>密码保护</strong>：系统设置、码替换、取消关联均需要密码 <strong>123456</strong>，请妥善保管</li>
+              <li><strong>不可恢复操作</strong>：码替换、取消关联执行后<strong>无法撤销</strong>，操作前请仔细核对</li>
+              <li><strong>包装比例</strong>：不可随意修改，如需变更请联系管理员</li>
+              <li><strong>生产前检查</strong>：每次开始生产前，确认码包已导入、设备连接正常</li>
+              <li><strong>异常优先处理</strong>：发现报警信息（中间下方红色区域）应及时处理，避免影响数据准确性</li>
+            </ol>
+          </div>
+        </div>
+
+      </div><!-- /helpContent -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" style="height:40px; padding:0 24px;" onclick="closeHelpModal()">关闭</button>
+    </div>
+  </div>
+</div>
 
 <!-- 密码弹窗 -->
 <div class="modal-overlay" id="pwdOverlay" onclick="if(event.target===this)closePwd()">
@@ -2534,10 +2974,60 @@ function hideHelp() { document.getElementById('helpPopup').classList.remove('sho
 
 function confirmExit() { if(confirm('确认退出系统？')) window.close(); }
 
+// ── 操作帮助弹窗 ──
+function openHelpModal() {
+  const overlay = document.getElementById('helpOverlay');
+  overlay.classList.add('active');
+  // 滚动到顶部
+  document.getElementById('helpContent').scrollTop = 0;
+  // 激活第一个目录项
+  updateHelpToc('h-intro');
+  // 监听正文滚动 → 更新目录高亮
+  document.getElementById('helpContent').addEventListener('scroll', onHelpScroll);
+}
+
+function closeHelpModal() {
+  document.getElementById('helpOverlay').classList.remove('active');
+  document.getElementById('helpContent').removeEventListener('scroll', onHelpScroll);
+}
+
+function scrollHelpTo(id) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const content = document.getElementById('helpContent');
+  content.scrollTo({ top: el.offsetTop - 16, behavior: 'smooth' });
+  updateHelpToc(id);
+}
+
+function updateHelpToc(activeId) {
+  document.querySelectorAll('.help-toc-item, .help-toc-sub').forEach(el => {
+    el.classList.remove('active');
+  });
+  // 找到对应目录项（通过 onclick 属性匹配）
+  document.querySelectorAll('.help-toc-item, .help-toc-sub').forEach(el => {
+    if(el.getAttribute('onclick') && el.getAttribute('onclick').includes(activeId)) {
+      el.classList.add('active');
+    }
+  });
+}
+
+const helpSectionIds = ['h-intro','h-m1','h-m2','h-funcs','h-manual','h-package','h-query','h-replace','h-cancel','h-stats','h-upload','h-faq','h-notes'];
+function onHelpScroll() {
+  const content = document.getElementById('helpContent');
+  const scrollTop = content.scrollTop + 60;
+  let current = helpSectionIds[0];
+  helpSectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if(el && el.offsetTop <= scrollTop) current = id;
+  });
+  updateHelpToc(current);
+}
+
 // ESC关闭
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') {
     closePwd(); closeSys(); closeConfirm(); closePackage(); closePalletList();
+    closeHelpModal();
     document.getElementById('helpPopup').classList.remove('show');
   }
 });
