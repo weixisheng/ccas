@@ -1288,22 +1288,53 @@ body {
       <button class="btn btn-outline" style="height:36px; padding:0 16px; font-size:13px;">重置</button>
     </div>
     <div class="card" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column;">
-      <table class="data-table" style="flex-shrink:0;">
-        <thead><tr>
-          <th>码包名称</th><th>导入时间</th><th>导入方式</th><th>码包数量（去重）</th><th>状态</th><th>备注</th><th>操作</th>
-        </tr></thead>
-      </table>
       <div style="flex:1; overflow-y:auto;">
-        <table class="data-table">
+        <table class="data-table" style="table-layout:fixed; width:100%;">
+          <colgroup>
+            <col style="width:200px;">
+            <col style="width:160px;">
+            <col style="width:90px;">
+            <col style="width:130px;">
+            <col style="width:80px;">
+            <col style="width:120px;">
+            <col style="width:120px;">
+          </colgroup>
+          <thead>
+            <tr>
+              <th style="position:sticky;top:0;z-index:2;">码包名称</th>
+              <th style="position:sticky;top:0;z-index:2;">导入时间</th>
+              <th style="position:sticky;top:0;z-index:2;">导入方式</th>
+              <th style="position:sticky;top:0;z-index:2;">码包数量（去重）</th>
+              <th style="position:sticky;top:0;z-index:2;">状态</th>
+              <th style="position:sticky;top:0;z-index:2;">备注</th>
+              <th style="position:sticky;top:0;z-index:2;">操作</th>
+            </tr>
+          </thead>
           <tbody>
-            <tr><td>瓶码包2024120101</td><td>2024-12-01 10:00:00</td><td>在线</td><td>10,000</td><td><span class="badge badge-green">正常</span></td><td>石湾批次1</td><td style="display:flex;gap:6px;"><button class="btn-sm btn-sm-blue" onclick="viewPackage('瓶码包2024120101')">查看</button><button class="btn-sm btn-sm-red" onclick="if(confirm('确认删除此码包？'))alert('已删除')">删除</button></td></tr>
-            <tr class="row-even"><td>箱码包2024120101</td><td>2024-12-01 09:00:00</td><td>本地</td><td>5,000</td><td><span class="badge badge-green">正常</span></td><td>石湾批次1</td><td style="display:flex;gap:6px;"><button class="btn-sm btn-sm-blue" onclick="viewPackage('箱码包2024120101')">查看</button><button class="btn-sm btn-sm-red" onclick="if(confirm('确认删除此码包？'))alert('已删除')">删除</button></td></tr>
-            <tr><td>瓶码包2024113001</td><td>2024-11-30 16:00:00</td><td>在线</td><td>8,500</td><td><span class="badge badge-green">正常</span></td><td>昨日批次</td><td style="display:flex;gap:6px;"><button class="btn-sm btn-sm-blue" onclick="viewPackage('瓶码包2024113001')">查看</button><button class="btn-sm btn-sm-red" onclick="if(confirm('确认删除此码包？'))alert('已删除')">删除</button></td></tr>
-            <tr class="row-even"><td>垛码包20241130</td><td>2024-11-30 08:00:00</td><td>本地</td><td>200</td><td><span class="badge badge-gray">已删除</span></td><td>旧批次</td><td style="display:flex;gap:6px;"><button class="btn-sm btn-sm-blue" onclick="viewPackage('垛码包20241130')">查看</button></td></tr>
+            <tr>
+              <td>瓶码包2024120101</td><td>2024-12-01 10:00:00</td><td>在线</td><td>10,000</td>
+              <td><span class="badge badge-green">正常</span></td><td>石湾批次1</td>
+              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('瓶码包2024120101')">查看</button> <button class="btn-sm btn-sm-red" onclick="if(confirm('确认删除此码包？'))alert('已删除')">删除</button></td>
+            </tr>
+            <tr class="row-even">
+              <td>箱码包2024120101</td><td>2024-12-01 09:00:00</td><td>本地</td><td>5,000</td>
+              <td><span class="badge badge-green">正常</span></td><td>石湾批次1</td>
+              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('箱码包2024120101')">查看</button> <button class="btn-sm btn-sm-red" onclick="if(confirm('确认删除此码包？'))alert('已删除')">删除</button></td>
+            </tr>
+            <tr>
+              <td>瓶码包2024113001</td><td>2024-11-30 16:00:00</td><td>在线</td><td>8,500</td>
+              <td><span class="badge badge-green">正常</span></td><td>昨日批次</td>
+              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('瓶码包2024113001')">查看</button> <button class="btn-sm btn-sm-red" onclick="if(confirm('确认删除此码包？'))alert('已删除')">删除</button></td>
+            </tr>
+            <tr class="row-even">
+              <td>垛码包20241130</td><td>2024-11-30 08:00:00</td><td>本地</td><td>200</td>
+              <td><span class="badge badge-gray">已删除</span></td><td>旧批次</td>
+              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('垛码包20241130')">查看</button></td>
+            </tr>
           </tbody>
         </table>
       </div>
-      <div style="padding:10px 16px; border-top:1px solid #E5E7EB; display:flex; align-items:center; justify-content:space-between; font-size:14px; color:#374151;">
+      <div style="padding:10px 16px; border-top:1px solid #E5E7EB; display:flex; align-items:center; justify-content:space-between; font-size:14px; color:#374151; flex-shrink:0;">
         <span>共 4 条</span>
         <div style="display:flex; align-items:center; gap:8px;">
           <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;">上一页</button>
