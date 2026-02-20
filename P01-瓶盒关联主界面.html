@@ -319,16 +319,18 @@
     justify-content: center;
   }
   .modal-overlay.active { display: flex; }
-  .modal {
+  .modal, .modal-box {
     background: #fff;
     border-radius: 16px;
     border: 2px solid #2563EB;
-    width: 780px;
-    max-height: 680px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal {
+    width: 780px;
+    max-height: 680px;
   }
   .modal-header {
     background: #2563EB;
@@ -341,7 +343,7 @@
     flex-shrink: 0;
   }
   .modal-title { font-size: 18px; font-weight: 700; }
-  .modal-close {
+  .modal-close, .modal-close-btn {
     width: 28px; height: 28px;
     border-radius: 50%;
     background: rgba(255,255,255,0.2);
@@ -351,7 +353,7 @@
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
   }
-  .modal-close:hover { background: rgba(255,255,255,0.35); }
+  .modal-close:hover, .modal-close-btn:hover { background: rgba(255,255,255,0.35); }
   .modal-body {
     flex: 1;
     overflow-y: auto;
@@ -1494,9 +1496,6 @@ document.addEventListener('keydown', e => {
         </div>
 
       </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" style="height:40px; padding:0 24px;" onclick="closeHelpModal()">关闭</button>
     </div>
   </div>
 </div>
