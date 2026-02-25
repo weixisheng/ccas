@@ -1354,15 +1354,15 @@ document.addEventListener('keydown', e => {
         </div>
 
         <div class="help-section" id="h-manual">
-          <div class="help-h2">4.1 手工采集（相机损坏时使用）</div>
+          <div class="help-h2">4.1 手工采集（1号机相机损坏时使用，仅支持瓶盒关联）</div>
           <ol class="help-ol">
             <li>点击「手工采集」Tab</li>
-            <li>选择关联类型：○ 瓶盒关联 / ○ 盒箱关联</li>
-            <li>设置包装比例（每瓶码数 / 每盒码数，根据选择变化）</li>
-            <li>按提示顺序用扫码枪扫码（瓶盒模式：先扫瓶码 → 扫盒码；盒箱模式：先扫盒码 → 扫箱码）</li>
-            <li>扫码完成后自动关联，当前已读数量归零，继续下一组</li>
+            <li>设置包装比例（每瓶码数，如每盒6瓶则填6）；<strong>采集开始后不可修改</strong></li>
+            <li>点击「开始采集」按钮，按钮变为「停止采集」</li>
+            <li>按提示顺序用扫码枪扫码：先扫瓶码（足够数量后）→ 扫盒码</li>
+            <li>状态灯提示当前应扫的层级（如「瓶码灯亮」→「够了扫盒码」）</li>
+            <li>扫码完成后自动完成瓶盒关联，当前已读数量归零，继续下一组</li>
           </ol>
-          <p class="help-warn">⚠ 注意：手工采集不支持垛级关联</p>
         </div>
 
         <div class="help-section" id="h-package">

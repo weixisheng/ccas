@@ -1127,14 +1127,6 @@ body {
 <div class="tab-content" id="tab-manual">
   <div class="manual-layout">
     <div class="manual-left">
-      <!-- 关联类型选择 -->
-      <div class="card">
-        <div class="card-title">关联类型选择</div>
-        <div class="radio-group">
-          <label class="radio-item"><input type="radio" name="assocType" value="bottle-box" checked onchange="updateManualUI()"> 瓶盒关联</label>
-          <label class="radio-item"><input type="radio" name="assocType" value="box-case" onchange="updateManualUI()"> 盒箱关联</label>
-        </div>
-      </div>
       <!-- 包装比例设置 -->
       <div class="card">
         <div class="card-title" id="manualRatioTitle">产品包装比例设置</div>
@@ -1542,9 +1534,10 @@ body {
 <div class="tab-content" id="tab-upload">
   <div class="upload-layout">
     <div class="upload-left">
-      <div class="card" style="flex-shrink:0;">
+      <div class="card" style="flex-shrink:0; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
         <button class="btn btn-primary" style="height:48px; font-size:15px; width:120px;" onclick="doManualUpload()">手动上传</button>
-        <span class="help-icon" style="margin-left:8px;" onclick="showHelp('手动上传','批量上传所有未上传的垛数据')">?</span>
+        <button class="btn btn-secondary" style="height:48px; font-size:15px; width:120px;" onclick="doUploadReset()">数据上传复位</button>
+        <span class="help-icon" style="margin-left:4px;" onclick="showHelp('手动上传与复位','手动上传：批量上传所有未上传的垛数据。\n数据上传复位：恢复指示灯不亮、蜂鸣不响（上传异常处理完成后用于归位）。')">?</span>
       </div>
       <div class="card" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column;">
         <div class="log-section-header" style="border-radius:12px 12px 0 0;">
@@ -1755,15 +1748,15 @@ body {
         </div>
 
         <div class="help-section" id="h-manual">
-          <div class="help-h2">4.1 手工采集（相机损坏时使用）</div>
+          <div class="help-h2">4.1 手工采集（1号机相机损坏时使用，仅支持瓶盒关联）</div>
           <ol class="help-ol">
             <li>点击「手工采集」Tab</li>
-            <li>选择关联类型：○ 瓶盒关联 / ○ 盒箱关联</li>
-            <li>设置包装比例（每瓶码数 / 每盒码数，根据选择变化）</li>
-            <li>按提示顺序用扫码枪扫码：<br>— 瓶盒模式：先扫瓶码（足够数量后）→ 扫盒码<br>— 盒箱模式：先扫盒码（足够数量后）→ 扫箱码</li>
-            <li>扫码完成后自动关联，当前已读数量归零，继续下一组</li>
+            <li>设置包装比例（每瓶码数，如每盒6瓶则填6）；<strong>采集开始后不可修改</strong></li>
+            <li>点击「开始采集」按钮，按钮变为「停止采集」</li>
+            <li>按提示顺序用扫码枪扫码：先扫瓶码（足够数量后）→ 扫盒码</li>
+            <li>状态灯提示当前应扫的层级（如「瓶码灯亮」→「够了扫盒码」）</li>
+            <li>扫码完成后自动完成瓶盒关联，当前已读数量归零，继续下一组</li>
           </ol>
-          <p class="help-warn">⚠ 注意：手工采集不支持垛级关联</p>
         </div>
 
         <div class="help-section" id="h-package">
@@ -1860,6 +1853,7 @@ body {
             <thead><tr><th>功能</th><th>操作</th></tr></thead>
             <tbody>
               <tr><td>手动上传</td><td>点击「手动上传」→ 批量上传所有未上传的垛</td></tr>
+              <tr><td>数据上传复位</td><td>点击「数据上传复位」→ 恢复指示灯不亮、蜂鸣不响（上传异常处理完成后归位）</td></tr>
               <tr><td>查询状态</td><td>输入垛码 → 点击「查询状态」→ 查看上传详情</td></tr>
               <tr><td>设为未上传</td><td>输入垛码 → 点击「设为未上传」→ 确认（用于异常修复后重新补传）</td></tr>
               <tr><td>设为已上传</td><td>输入垛码 → 点击「设为已上传」→ 确认（避免系统重复上传）</td></tr>
@@ -2861,6 +2855,13 @@ function doManualUpload() {
       area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts3}</span>手动上传完成，成功1个，失败0个</div>`);
     }, 2000);
   }, 1000);
+}
+
+function doUploadReset() {
+  const ts = getTs();
+  const area = document.getElementById('uploadLogArea');
+  area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-gray"><span class="ts">${ts}</span>数据上传复位：指示灯已归位不亮、蜂鸣已停止</div>`);
+  if (typeof alert === 'function') alert('数据上传复位完成：指示灯与蜂鸣器已归位');
 }
 
 function queryUploadStatus() {
