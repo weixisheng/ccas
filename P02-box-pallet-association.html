@@ -198,7 +198,12 @@ body {
 .badge-gray { background: #F3F4F6; color: #6B7280; }
 
 .form-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-.form-label { font-size: 14px; color: #374151; font-weight: 600; flex-shrink: 0; }
+.form-label { font-size: 14px; color: #374151; font-weight: 600; flex-shrink: 0; text-align: right; }
+.form-label.db { width: 110px; }
+.form-label.code { width: 140px; }
+.form-label.virtual { width: 90px; }
+.form-input.fixed { width: 200px; min-width: 200px; }
+.form-input.fixed-sm { width: 120px; min-width: 120px; }
 .form-input {
   height: 40px;
   border: 1px solid #D1D5DB;
@@ -295,6 +300,7 @@ body {
 .modal-title { font-size: 18px; font-weight: 700; }
 .modal-close-btn {
   width: 28px; height: 28px;
+  min-width: 28px; flex-shrink: 0;
   border-radius: 50%;
   background: rgba(255,255,255,0.2);
   border: none;
@@ -960,10 +966,14 @@ body {
 
 /* 系统设置 */
 .sys-tab-bar { display: flex; border-bottom: 1px solid #E5E7EB; background: #F9FAFB; padding: 0 16px; }
+.sys-tab-bar-sub { display: none; padding-left: 24px; }
+.sys-tab-bar-sub.visible { display: flex; }
 .sys-tab { padding: 10px 18px; font-size: 14px; color: #6B7280; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; }
 .sys-tab.active { color: #2563EB; border-color: #2563EB; font-weight: 600; }
 .sys-tab-panel { display: none; padding: 20px 24px; overflow-y: auto; }
-.sys-tab-panel.active { display: block; }
+.sys-tab-panel.active { display: flex; }
+#st-basic > .sys-tab-panel { display: none; padding: 20px 24px; }
+#st-basic > .sys-tab-panel.active { display: block; }
 .device-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .device-table th { background: #F3F4F6; padding: 8px 12px; text-align: left; font-weight: 600; color: #374151; border: 1px solid #E5E7EB; }
 .device-table td { padding: 8px 12px; border: 1px solid #E5E7EB; color: #374151; }
@@ -1501,8 +1511,9 @@ body {
 <div class="tab-content" id="tab-package">
   <div class="package-layout">
     <div class="toolbar">
-      <button class="btn btn-primary" style="height:40px; padding:0 20px; font-size:14px;" onclick="alert('选择本地码包文件导入')">本地导入</button>
+      <button class="btn btn-primary" style="height:40px; padding:0 20px; font-size:14px;" onclick="openPackageImport()">本地导入</button>
       <button class="btn btn-secondary" style="height:40px; padding:0 20px; font-size:14px;" onclick="alert('正在从在线源拉取码包...')">在线更新</button>
+      <span class="ctrl-help-icon" style="margin-left:4px;" onclick="showPackageHelp()" title="码包导入说明">?</span>
     </div>
     <div class="filter-bar">
       <span style="font-size:13px; color:#374151; font-weight:600;">关键词：</span>
@@ -1522,16 +1533,18 @@ body {
       <div style="flex:1; overflow-y:auto;">
         <table class="data-table" style="table-layout:fixed; width:100%;">
           <colgroup>
-            <col style="width:200px;">
+            <col style="width:120px;">
+            <col style="width:180px;">
             <col style="width:160px;">
             <col style="width:90px;">
-            <col style="width:130px;">
+            <col style="width:120px;">
             <col style="width:80px;">
             <col style="width:120px;">
             <col style="width:120px;">
           </colgroup>
           <thead>
             <tr>
+              <th style="position:sticky;top:0;z-index:2;">码包类型</th>
               <th style="position:sticky;top:0;z-index:2;">码包名称</th>
               <th style="position:sticky;top:0;z-index:2;">导入时间</th>
               <th style="position:sticky;top:0;z-index:2;">导入方式</th>
@@ -1543,24 +1556,24 @@ body {
           </thead>
           <tbody>
             <tr>
-              <td>瓶码包2024120101</td><td>2024-12-01 10:00:00</td><td>在线</td><td>10,000</td>
+              <td>盖外码小标</td><td>瓶码包01</td><td>2024-12-01 10:00:00</td><td>在线</td><td>10,000</td>
               <td><span class="badge badge-green">正常</span></td><td>石湾批次1</td>
-              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('瓶码包2024120101')">查看</button> <button class="btn-sm btn-sm-red" onclick="if(confirm('确认删除此码包？'))alert('已删除')">删除</button></td>
+              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('瓶码包01')">查看</button> <button class="btn-sm btn-sm-red" onclick="tryDeletePackage('瓶码包01')">删除</button></td>
             </tr>
             <tr class="row-even">
-              <td>箱码包2024120101</td><td>2024-12-01 09:00:00</td><td>本地</td><td>5,000</td>
+              <td>箱外码大标</td><td>箱码包01</td><td>2024-12-01 09:00:00</td><td>本地</td><td>5,000</td>
               <td><span class="badge badge-green">正常</span></td><td>石湾批次1</td>
-              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('箱码包2024120101')">查看</button> <button class="btn-sm btn-sm-red" onclick="if(confirm('确认删除此码包？'))alert('已删除')">删除</button></td>
+              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('箱码包01')">查看</button> <button class="btn-sm btn-sm-red" onclick="tryDeletePackage('箱码包01')">删除</button></td>
             </tr>
             <tr>
-              <td>瓶码包2024113001</td><td>2024-11-30 16:00:00</td><td>在线</td><td>8,500</td>
+              <td>盒外码中标</td><td>盒码包01</td><td>2024-11-30 15:30:00</td><td>在线</td><td>8,000</td>
               <td><span class="badge badge-green">正常</span></td><td>昨日批次</td>
-              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('瓶码包2024113001')">查看</button> <button class="btn-sm btn-sm-red" onclick="if(confirm('确认删除此码包？'))alert('已删除')">删除</button></td>
+              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('盒码包01')">查看</button> <button class="btn-sm btn-sm-red" onclick="tryDeletePackage('盒码包01')">删除</button></td>
             </tr>
             <tr class="row-even">
-              <td>垛码包20241130</td><td>2024-11-30 08:00:00</td><td>本地</td><td>200</td>
+              <td>盖外码小标</td><td>瓶码包20241130</td><td>2024-11-30 08:00:00</td><td>本地</td><td>200</td>
               <td><span class="badge badge-gray">已删除</span></td><td>旧批次</td>
-              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('垛码包20241130')">查看</button></td>
+              <td><button class="btn-sm btn-sm-blue" onclick="viewPackage('瓶码包20241130')">查看</button></td>
             </tr>
           </tbody>
         </table>
@@ -1901,17 +1914,18 @@ body {
 
         <div class="help-section" id="h-package">
           <div class="help-h2">4.2 码包管理</div>
-          <p><strong>用途</strong>：导入包材厂提供的码包文件，用于采集时比对校验（不在码包内的码会被剔除）。</p>
+          <p><strong>用途</strong>：导入包材厂提供的码包文件，用于采集时比对校验（不在码包内的码会被剔除）。支持的码包类型：盖外码小标、盒外码中标、箱外码大标。</p>
           <table class="help-table">
             <thead><tr><th>操作</th><th>步骤</th></tr></thead>
             <tbody>
               <tr><td>启动时在线导入</td><td>软件启动时自动执行，同名码包跳过不重复导入</td></tr>
-              <tr><td>本地导入</td><td>点击「本地导入」→ 选择 TXT 格式码包文件 → 系统解析入库</td></tr>
-              <tr><td>在线更新</td><td>点击「在线更新」→ 从在线源拉取码包（同名跳过）</td></tr>
-              <tr><td>查看码包</td><td>点击操作列「查看」→ 弹窗显示该码包所有码，支持搜索</td></tr>
-              <tr><td>删除码包</td><td>点击操作列「删除」→ 确认后标记为已删除</td></tr>
+              <tr><td>本地导入</td><td>点击「本地导入」→ 先选择码包类型（盖外码小标/盒外码中标/箱外码大标）→ 选择 TXT 文件 → 确认导入。因文件格式相同，系统无法自动识别类型，需人工指定</td></tr>
+              <tr><td>在线更新</td><td>点击「在线更新」→ 从在线源拉取码包（同名跳过），分别拉取三种类型</td></tr>
+              <tr><td>查看码包</td><td>点击操作列「查看」→ 弹窗显示该码包所有码，支持搜索与分页</td></tr>
+              <tr><td>删除码包</td><td>仅当该码包内无任何已关联码时允许删除；若有已关联码则禁止删除并提示。删除为逻辑删除</td></tr>
             </tbody>
           </table>
+          <p><strong>帮助提示</strong>：点击顶部操作区「?」图标可查看详细的码包导入说明、格式说明及删除规则。</p>
         </div>
 
         <div class="help-section" id="h-query">
@@ -2094,15 +2108,19 @@ body {
       <span class="modal-title">系统设置（2号机）</span>
       <button class="modal-close-btn" onclick="closeSys()">✕</button>
     </div>
-    <div class="sys-tab-bar">
-      <div class="sys-tab" onclick="switchSysTab2(this,'st-io')">IO设备管理</div>
-      <div class="sys-tab" onclick="switchSysTab2(this,'st-printer')">打印机管理</div>
-      <div class="sys-tab" onclick="switchSysTab2(this,'st-alarm')">报警设置</div>
-      <div class="sys-tab active" onclick="switchSysTab2(this,'st-db')">数据库连接</div>
-      <div class="sys-tab" onclick="switchSysTab2(this,'st-codedigits')">码位数配置</div>
+    <div class="sys-tab-bar" id="sysTabs2">
+      <div class="sys-tab" onclick="switchSysTab2_1(this,'st-io')">IO设备管理</div>
+      <div class="sys-tab" onclick="switchSysTab2_1(this,'st-printer')">打印机管理</div>
+      <div class="sys-tab" onclick="switchSysTab2_1(this,'st-alarm')">报警设置</div>
+      <div class="sys-tab active" onclick="switchSysTab2_1(this,'st-basic')">基础设置</div>
     </div>
-    <div style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
-      <div class="sys-tab-panel" id="st-io" style="flex:1;">
+    <div class="sys-tab-bar sys-tab-bar-sub visible" id="sysSubTabs2">
+      <div class="sys-tab active" onclick="switchSysTab2_2(this,'st-db')">数据库连接</div>
+      <div class="sys-tab" onclick="switchSysTab2_2(this,'st-codedigits')">码位数配置</div>
+      <div class="sys-tab" onclick="switchSysTab2_2(this,'st-virtual')">虚拟垛标规则</div>
+    </div>
+    <div id="sysPanels2" style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
+      <div class="sys-tab-panel" id="st-io" style="flex:1; overflow-y:auto;">
         <div style="margin-bottom:10px;"><button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('添加设备')">+ 添加设备</button></div>
         <table class="device-table">
           <thead><tr><th>设备名称</th><th>设备类型</th><th>连接地址</th><th>端口</th><th>状态</th><th>操作</th></tr></thead>
@@ -2115,13 +2133,13 @@ body {
           </tbody>
         </table>
       </div>
-      <div class="sys-tab-panel" id="st-printer">
+      <div class="sys-tab-panel" id="st-printer" style="overflow-y:auto;">
         <div class="form-row"><span class="form-label" style="width:120px;">打印机名称</span><input type="text" class="form-input" value="Canon LBP2900" style="flex:1;"></div>
         <div class="form-row"><span class="form-label" style="width:120px;">打印机IP</span><input type="text" class="form-input" value="192.168.1.201" style="flex:1;"></div>
         <div class="form-row"><span class="form-label" style="width:120px;">打印端口</span><input type="number" class="form-input" value="9100" style="flex:1;"></div>
         <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('打印机设置已保存')">保存</button>
       </div>
-      <div class="sys-tab-panel" id="st-alarm">
+      <div class="sys-tab-panel" id="st-alarm" style="overflow-y:auto;">
         <div class="form-row" style="margin-bottom:16px;"><span class="form-label" style="width:120px;">声音报警</span><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
         <div class="form-row"><span class="form-label" style="width:120px;">报警延时(ms)</span><input type="number" class="form-input" value="500" style="flex:1;"></div>
         <div class="form-row"><span class="form-label" style="width:120px;">报警间隔(ms)</span><input type="number" class="form-input" value="2000" style="flex:1;"></div>
@@ -2130,28 +2148,39 @@ body {
           <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('报警设置已保存')">保存</button>
         </div>
       </div>
-      <div class="sys-tab-panel active" id="st-db">
+      <div class="sys-tab-panel active" id="st-basic" style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
+        <div class="sys-tab-panel active" id="st-db" style="flex:1; overflow-y:auto; padding:20px 24px;">
         <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; margin-bottom:14px; font-size:13px; color:#92400E;">
           ⚠ 2号机部署数据库，1号机通过局域网访问此库，请正确配置数据库信息
         </div>
-        <div class="form-row"><span class="form-label" style="width:120px;">数据库地址</span><input type="text" class="form-input" value="192.168.1.200" style="flex:1;"></div>
-        <div class="form-row"><span class="form-label" style="width:120px;">数据库端口</span><input type="number" class="form-input" value="3306" style="flex:1;"></div>
-        <div class="form-row"><span class="form-label" style="width:120px;">数据库名</span><input type="text" class="form-input" value="production_db" style="flex:1;"></div>
-        <div class="form-row"><span class="form-label" style="width:120px;">用户名</span><input type="text" class="form-input" value="admin" style="flex:1;"></div>
-        <div class="form-row"><span class="form-label" style="width:120px;">密码</span><input type="password" class="form-input" value="123456" style="flex:1;"></div>
+        <div class="form-row"><span class="form-label db">数据库地址</span><input type="text" class="form-input fixed" value="192.168.1.200"></div>
+        <div class="form-row"><span class="form-label db">数据库端口</span><input type="number" class="form-input fixed" value="3306"></div>
+        <div class="form-row"><span class="form-label db">数据库名</span><input type="text" class="form-input fixed" value="production_db"></div>
+        <div class="form-row"><span class="form-label db">用户名</span><input type="text" class="form-input fixed" value="admin"></div>
+        <div class="form-row"><span class="form-label db">密码</span><input type="password" class="form-input fixed" value="123456"></div>
         <div style="display:flex; gap:10px; align-items:center;">
           <button class="btn btn-secondary" style="height:36px; padding:0 16px; font-size:13px;" onclick="testDbConn2()">连接测试</button>
           <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('数据库配置已保存')">保存</button>
           <span id="dbTestResult2" style="font-size:13px;"></span>
         </div>
-      </div>
-      <div class="sys-tab-panel" id="st-codedigits">
+        </div>
+        <div class="sys-tab-panel" id="st-codedigits" style="flex:1; overflow-y:auto; padding:20px 24px;">
         <div style="font-size:16px; font-weight:600; color:#1F2937; margin-bottom:16px;">码位数配置（采集时校验码位数，-1表示不校验）</div>
-        <div class="form-row"><span class="form-label" style="width:120px;">小标位数（瓶码/盖外码）</span><input type="number" class="form-input" value="14" placeholder="14" style="width:100px;"></div>
-        <div class="form-row"><span class="form-label" style="width:120px;">中标位数（盒码）</span><input type="number" class="form-input" value="14" placeholder="14" style="width:100px;"></div>
-        <div class="form-row"><span class="form-label" style="width:120px;">大标位数（箱码）</span><input type="number" class="form-input" value="-1" placeholder="-1" style="width:100px;"></div>
+        <div class="form-row"><span class="form-label code">小标位数（瓶码）</span><input type="number" class="form-input fixed-sm" value="14" placeholder="14"></div>
+        <div class="form-row"><span class="form-label code">中标位数（盒码）</span><input type="number" class="form-input fixed-sm" value="14" placeholder="14"></div>
+        <div class="form-row"><span class="form-label code">大标位数（箱码）</span><input type="number" class="form-input fixed-sm" value="-1" placeholder="-1"></div>
         <div style="font-size:12px; color:#6B7280; margin-bottom:12px;">说明：-1 表示不校验该层级位数；采集时若实际采码位数与配置值不一致，则异常告警、关联失败。</div>
         <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('码位数配置已保存')">保存</button>
+        </div>
+        <div class="sys-tab-panel" id="st-virtual" style="flex:1; overflow-y:auto; padding:20px 24px;">
+          <div style="font-size:16px; font-weight:600; color:#1F2937; margin-bottom:16px;">虚拟垛标规则（成垛时生成虚拟垛标，格式示例：V20260226001A）</div>
+          <div class="form-row"><span class="form-label virtual">前缀</span><input type="text" class="form-input fixed-sm" value="V" placeholder="默认 V"></div>
+          <div class="form-row"><span class="form-label virtual">时间</span><input type="text" class="form-input fixed-sm" value="YYYYMMDD" placeholder="只读" style="background:#F3F4F6; color:#6B7280;" readonly></div>
+          <div class="form-row"><span class="form-label virtual">序号</span><input type="text" class="form-input fixed-sm" value="001" placeholder="只读，3位起" style="background:#F3F4F6; color:#6B7280;" readonly></div>
+          <div class="form-row"><span class="form-label virtual">产线号</span><input type="text" class="form-input fixed-sm" value="A" placeholder="如 A、B"></div>
+          <div style="font-size:12px; color:#6B7280; margin-bottom:12px;">说明：时间、序号为生成时自动取值，不可修改；前缀、产线号可修改。</div>
+          <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('虚拟垛标规则已保存')">保存</button>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -2174,6 +2203,39 @@ body {
     <div style="display:flex; gap:12px; justify-content:flex-end;">
       <button class="btn btn-secondary" style="height:44px; width:80px; font-size:14px;" onclick="closeConfirm()">取消</button>
       <button class="btn btn-danger" style="height:44px; width:120px; font-size:14px;" id="confirmOkBtn" onclick="execConfirm()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 码包导入弹窗 -->
+<div class="modal-overlay" id="packageImportOverlay" onclick="if(event.target===this)closePackageImport()">
+  <div class="modal-box" style="width:420px;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">码包导入</span>
+      <button class="modal-close-btn" onclick="closePackageImport()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px;">
+      <div class="form-row" style="margin-bottom:16px;">
+        <span class="form-label" style="width:100px;">码包类型 <span style="color:#DC2626;">*</span></span>
+        <select class="form-select" id="packageImportType" style="flex:1;">
+          <option value="">请选择</option>
+          <option value="small">盖外码小标</option>
+          <option value="medium">盒外码中标</option>
+          <option value="large">箱外码大标</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin-bottom:16px;">
+        <span class="form-label" style="width:100px;">选择文件</span>
+        <div style="display:flex; align-items:center; gap:8px; flex:1;">
+          <input type="file" id="packageFileInput" accept=".txt" style="display:none;" onchange="onPackageFileSelect(this)">
+          <button class="btn btn-outline" style="height:36px; padding:0 16px; font-size:13px;" onclick="document.getElementById('packageFileInput').click()">浏览...</button>
+          <span id="packageFileName" style="font-size:13px; color:#6B7280;">未选择文件</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" style="height:36px; padding:0 16px; font-size:13px;" onclick="closePackageImport()">取消</button>
+      <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="doPackageImport()">确认导入</button>
     </div>
   </div>
 </div>
@@ -3031,9 +3093,25 @@ function verifyPwd() {
 
 function closeSys() { document.getElementById('sysOverlay').classList.remove('active'); }
 
-function switchSysTab2(el, tabId) {
-  document.querySelectorAll('.sys-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.sys-tab-panel').forEach(c => c.classList.remove('active'));
+function switchSysTab2_1(el, tabId) {
+  document.querySelectorAll('#sysTabs2 .sys-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#sysPanels2 > .sys-tab-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+  const subBar = document.getElementById('sysSubTabs2');
+  if (tabId === 'st-basic') {
+    subBar.classList.add('visible');
+    document.querySelectorAll('#sysSubTabs2 .sys-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('#st-basic > .sys-tab-panel').forEach(c => c.classList.remove('active'));
+    document.getElementById('st-db').classList.add('active');
+    subBar.querySelector('.sys-tab').classList.add('active');
+  } else {
+    subBar.classList.remove('visible');
+  }
+}
+function switchSysTab2_2(el, tabId) {
+  document.querySelectorAll('#sysSubTabs2 .sys-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#st-basic > .sys-tab-panel').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   document.getElementById(tabId).classList.add('active');
 }
@@ -3051,6 +3129,38 @@ function execConfirm() {
   if(currentConfirmAction) currentConfirmAction();
 }
 
+function openPackageImport() {
+  document.getElementById('packageImportType').value = '';
+  document.getElementById('packageFileName').textContent = '未选择文件';
+  document.getElementById('packageFileInput').value = '';
+  document.getElementById('packageImportOverlay').classList.add('active');
+}
+function closePackageImport() { document.getElementById('packageImportOverlay').classList.remove('active'); }
+function onPackageFileSelect(el) {
+  const name = el.files.length ? el.files[0].name : '未选择文件';
+  document.getElementById('packageFileName').textContent = name;
+}
+function doPackageImport() {
+  const type = document.getElementById('packageImportType').value;
+  const file = document.getElementById('packageFileInput').files[0];
+  if (!type) { alert('请先选择码包类型'); return; }
+  if (!file) { alert('请选择要导入的 TXT 文件'); return; }
+  alert('导入成功，列表已刷新');
+  closePackageImport();
+}
+function showPackageHelp() {
+  showHelp('码包导入说明',
+    '本地导入（包材厂给的码包文件）\n1. 点击「本地导入」\n2. 选择码包类型：瓶码 / 盒码 / 箱码（三种文件格式一样，需您指定是哪种）\n3. 选择 TXT 文件，确认导入\n4. 导入成功后列表会自动刷新\n\n在线更新（从服务器拉取最新码包）\n点击「在线更新」后，系统会自动拉取瓶码、盒码、箱码三种码包。已导入过的同名码包不会重复导入。拉取完成后列表自动刷新。\n\n启动自动导入\n软件每次启动时会自动执行一次在线更新，已导入过的不会重复。\n\n码包文件格式（包材厂提供的 TXT 文件）\n- 瓶码：每行一个瓶码\n- 盒码：每行一个盒码\n- 箱码：每行一个箱码\n\n删除\n只有该码包里的码都还没用过时才能删除；有已用过的码则不能删（码替换时需要校验）。删除后数据仍保留，可查记录。\n\n提醒\n生产前请确保码包已正确导入，否则采集时会报错。可通过「查看」检查码包内容。'
+  );
+}
+function tryDeletePackage(name) {
+  if (!confirm('确认删除此码包？')) return;
+  if (name === '箱码包01') {
+    alert('已删除（该码包内无已关联码，允许逻辑删除）');
+  } else {
+    alert('该码包内存在已关联码，禁止删除。删除后码替换时新码无法校验。');
+  }
+}
 function viewPackage(name) {
   document.getElementById('packageModalTitle').textContent = `查看码包：${name}`;
   const tbody = document.getElementById('packageTableBody');
@@ -3132,7 +3242,7 @@ function onHelpScroll() {
 // ESC关闭
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') {
-    closePwd(); closeSys(); closeConfirm(); closePackage(); closePalletList();
+    closePwd(); closeSys(); closeConfirm(); closePackage(); closePackageImport(); closePalletList();
     closeHelpModal();
     document.getElementById('helpPopup').classList.remove('show');
   }

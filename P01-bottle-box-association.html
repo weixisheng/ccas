@@ -347,6 +347,7 @@
   .modal-title { font-size: 18px; font-weight: 700; }
   .modal-close, .modal-close-btn {
     width: 28px; height: 28px;
+    min-width: 28px; flex-shrink: 0;
     border-radius: 50%;
     background: rgba(255,255,255,0.2);
     border: none;
@@ -420,8 +421,11 @@
     margin-bottom: -1px;
   }
   .sys-tab.active { color: #2563EB; border-color: #2563EB; font-weight: 600; }
+  .sys-tabs-sub { display: none; padding-left: 24px; }
+  .sys-tabs-sub.visible { display: flex; }
   .sys-tab-content { display: none; padding: 20px 24px; }
   .sys-tab-content.active { display: block; }
+  #tab-basic > .sys-tab-content { padding: 20px 24px; }
 
   /* 表单 */
   .form-row {
@@ -431,12 +435,16 @@
     margin-bottom: 14px;
   }
   .form-label {
-    width: 120px;
     font-size: 14px;
     color: #374151;
     font-weight: 600;
     flex-shrink: 0;
+    text-align: right;
   }
+  .form-label.db { width: 110px; }
+  .form-label.code { width: 140px; }
+  .form-input.fixed { width: 200px; min-width: 200px; flex: none; }
+  .form-input.fixed-sm { width: 120px; min-width: 120px; flex: none; }
   .form-input {
     flex: 1;
     height: 40px;
@@ -783,12 +791,15 @@
       <span class="modal-title">系统设置（1号机）</span>
       <button class="modal-close" onclick="closeSys()">✕</button>
     </div>
-    <div class="sys-tabs">
-      <div class="sys-tab" onclick="switchSysTab(this,'tab-io')">IO设备管理</div>
-      <div class="sys-tab" onclick="switchSysTab(this,'tab-printer')">打印机管理</div>
-      <div class="sys-tab" onclick="switchSysTab(this,'tab-alarm')">报警设置</div>
-      <div class="sys-tab active" onclick="switchSysTab(this,'tab-db')">数据库连接</div>
-      <div class="sys-tab" onclick="switchSysTab(this,'tab-codedigits')">码位数配置</div>
+    <div class="sys-tabs" id="sysTabs1">
+      <div class="sys-tab" onclick="switchSysTab1(this,'tab-io')">IO设备管理</div>
+      <div class="sys-tab" onclick="switchSysTab1(this,'tab-printer')">打印机管理</div>
+      <div class="sys-tab" onclick="switchSysTab1(this,'tab-alarm')">报警设置</div>
+      <div class="sys-tab active" onclick="switchSysTab1(this,'tab-basic')">基础设置</div>
+    </div>
+    <div class="sys-tabs sys-tabs-sub visible" id="sysSubTabs1">
+      <div class="sys-tab active" onclick="switchSysTab2(this,'tab-db')">数据库连接</div>
+      <div class="sys-tab" onclick="switchSysTab2(this,'tab-codedigits')">码位数配置</div>
     </div>
     <div class="modal-body">
       <!-- IO设备管理 -->
@@ -906,30 +917,31 @@
         </div>
       </div>
 
-      <!-- 数据库连接 -->
-      <div class="sys-tab-content active" id="tab-db">
+      <!-- 基础设置（含二级Tab内容） -->
+      <div class="sys-tab-content active" id="tab-basic">
+        <div class="sys-tab-content active" id="tab-db">
         <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#92400E;">
           ⚠ 1号机数据存入2号机数据库（局域网访问），请正确配置2号机IP和数据库信息
         </div>
         <div class="form-row">
-          <span class="form-label">2号机IP地址</span>
-          <input type="text" class="form-input" value="192.168.1.200" placeholder="如：192.168.1.200">
+          <span class="form-label db">2号机IP地址</span>
+          <input type="text" class="form-input fixed" value="192.168.1.200" placeholder="如：192.168.1.200">
         </div>
         <div class="form-row">
-          <span class="form-label">数据库端口</span>
-          <input type="number" class="form-input" value="3306" placeholder="3306">
+          <span class="form-label db">数据库端口</span>
+          <input type="number" class="form-input fixed" value="3306" placeholder="3306">
         </div>
         <div class="form-row">
-          <span class="form-label">数据库名</span>
-          <input type="text" class="form-input" value="production_db" placeholder="数据库名称">
+          <span class="form-label db">数据库名</span>
+          <input type="text" class="form-input fixed" value="production_db" placeholder="数据库名称">
         </div>
         <div class="form-row">
-          <span class="form-label">用户名</span>
-          <input type="text" class="form-input" value="admin" placeholder="数据库用户名">
+          <span class="form-label db">用户名</span>
+          <input type="text" class="form-input fixed" value="admin" placeholder="数据库用户名">
         </div>
         <div class="form-row">
-          <span class="form-label">密码</span>
-          <input type="password" class="form-input" value="123456" placeholder="数据库密码">
+          <span class="form-label db">密码</span>
+          <input type="password" class="form-input fixed" value="123456" placeholder="数据库密码">
         </div>
         <div style="display:flex; gap:12px; align-items:center;">
           <button class="btn btn-secondary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="testDbConn()">连接测试</button>
@@ -937,21 +949,19 @@
           <span id="dbTestResult" style="font-size:13px;"></span>
         </div>
       </div>
-
-      <!-- 码位数配置 -->
       <div class="sys-tab-content" id="tab-codedigits">
         <div style="font-size:16px; font-weight:600; color:#1F2937; margin-bottom:16px;">码位数配置（采集时校验码位数，-1表示不校验）</div>
         <div class="form-row">
-          <span class="form-label">小标位数（瓶码/盖外码）</span>
-          <input type="number" class="form-input" value="14" placeholder="14" style="width:100px;">
+          <span class="form-label code">小标位数（瓶码）</span>
+          <input type="number" class="form-input fixed-sm" value="14" placeholder="14">
         </div>
         <div class="form-row">
-          <span class="form-label">中标位数（盒码）</span>
-          <input type="number" class="form-input" value="14" placeholder="14" style="width:100px;">
+          <span class="form-label code">中标位数（盒码）</span>
+          <input type="number" class="form-input fixed-sm" value="14" placeholder="14">
         </div>
         <div class="form-row">
-          <span class="form-label">大标位数（箱码）</span>
-          <input type="number" class="form-input" value="-1" placeholder="-1" style="width:100px;">
+          <span class="form-label code">大标位数（箱码）</span>
+          <input type="number" class="form-input fixed-sm" value="-1" placeholder="-1">
         </div>
         <div style="font-size:12px; color:#6B7280; margin-bottom:12px;">说明：-1 表示不校验该层级位数；采集时若实际采码位数与配置值不一致，则异常告警、关联失败。</div>
         <button class="btn btn-primary" style="height:36px; font-size:13px; width:80px;" onclick="alert('码位数配置已保存')">保存</button>
@@ -1100,9 +1110,25 @@ function closeSysIfOutside(e) {
   if(e.target === document.getElementById('sysOverlay')) closeSys();
 }
 
-function switchSysTab(el, tabId) {
-  document.querySelectorAll('.sys-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.sys-tab-content').forEach(c => c.classList.remove('active'));
+function switchSysTab1(el, tabId) {
+  document.querySelectorAll('#sysTabs1 .sys-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.modal-body > .sys-tab-content').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+  const subBar = document.getElementById('sysSubTabs1');
+  if (tabId === 'tab-basic') {
+    subBar.classList.add('visible');
+    document.querySelectorAll('#sysSubTabs1 .sys-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('#tab-basic > .sys-tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-db').classList.add('active');
+    subBar.querySelector('.sys-tab').classList.add('active');
+  } else {
+    subBar.classList.remove('visible');
+  }
+}
+function switchSysTab2(el, tabId) {
+  document.querySelectorAll('#sysSubTabs1 .sys-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#tab-basic > .sys-tab-content').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   document.getElementById(tabId).classList.add('active');
 }
