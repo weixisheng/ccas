@@ -260,6 +260,9 @@ body {
 }
 .data-table tr:hover td { background: #F9FAFB; }
 .data-table .row-even td { background: #FAFAFA; }
+/* 上传统计表格：固定列宽、表头粘顶，确保表头与内容列对齐 */
+.stats-upload-table { table-layout: fixed; }
+.stats-upload-table th { position: sticky; top: 0; z-index: 2; background: #F3F4F6; box-shadow: 0 1px 0 0 #E5E7EB; }
 
 /* 滚动条 */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -373,7 +376,7 @@ body {
   font-family: inherit;
   cursor: pointer;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' fill='none' stroke-width='2'/%3E%3C/svg%3E") right 12px center no-repeat #fff;
-  -webkit-appearance: none;
+  appearance: none;
   outline: none;
 }
 .product-info { font-size: 13px; color: #6B7280; }
@@ -916,29 +919,43 @@ body {
   padding: 12px;
   overflow: hidden;
 }
-.stats-left { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; }
+.stats-left { width: 30%; min-width: 280px; flex-shrink: 0; display: flex; flex-direction: column; min-height: 0; }
+.stats-left-card { display: flex; flex-direction: column; gap: 20px; flex: 1; min-height: 0; overflow-y: auto; }
+.stats-left-card .stats-cards-row { margin-top: 0; }
+.stats-cards-row { display: flex; gap: 12px; height: 100px; }
+.stats-cards-row .stat-card { flex: 1; height: 100px; }
 .stats-right { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
 .stat-card {
-  background: #F0F4FF;
-  border: 1px solid #BFDBFE;
-  border-radius: 10px;
-  padding: 14px 16px;
+  background: #F9FAFB;
+  border: 2px solid #2563EB;
+  border-radius: 8px;
+  padding: 12px;
   text-align: center;
   cursor: pointer;
   transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-.stat-card:hover { background: #DBEAFE; border-color: #93C5FD; }
-.stat-card-plain { background: #F9FAFB; border-color: #E5E7EB; cursor: default; }
-.stat-card-plain:hover { background: #F9FAFB; border-color: #E5E7EB; }
+.stat-card:hover { background: #EFF6FF; border-color: #1D4ED8; }
+.stat-card[title] { cursor: pointer; }
+.stat-card-plain {
+  background: #F9FAFB;
+  border: 1px solid #D1D5DB;
+  cursor: default;
+}
+.stat-card-plain:hover { background: #F9FAFB; border-color: #D1D5DB; }
 .stat-num {
-  font-size: 48px;
+  font-size: 36px;
   font-weight: 700;
-  color: #1D4ED8;
+  color: #2563EB;
   text-decoration: underline;
   line-height: 1;
 }
 .stat-num-plain { color: #1F2937; text-decoration: none; }
-.stat-label { font-size: 14px; color: #6B7280; margin-bottom: 6px; }
+.stat-label { font-size: 18px; color: #6B7280; }
 
 /* ==================== 数据上传 ==================== */
 .upload-layout {
@@ -1442,25 +1459,32 @@ body {
 <div class="tab-content" id="tab-stats">
   <div class="stats-layout">
     <div class="stats-left">
-      <div class="card">
+      <div class="card stats-left-card">
         <div class="card-title">生产统计</div>
-        <div style="margin-bottom:10px; font-size:13px; color:#6B7280;">日期范围:</div>
-        <input type="date" class="form-input" style="width:100%; margin-bottom:8px;" value="2024-12-01">
-        <input type="date" class="form-input" style="width:100%; margin-bottom:10px;" value="2024-12-31">
+        <div style="margin-bottom:10px; font-size:16px; color:#6B7280;">日期范围:</div>
+        <input type="date" class="form-input" style="width:100%; height:48px; margin-bottom:8px;" value="2024-12-01">
+        <input type="date" class="form-input" style="width:100%; height:48px; margin-bottom:12px;" value="2024-12-31">
         <button class="btn btn-primary" style="width:100%; height:48px; font-size:15px;" onclick="doStatsQuery()">查询</button>
-      </div>
-      <div class="stat-card" onclick="openPalletList()">
-        <div class="stat-label">垛数</div>
-        <div class="stat-num" id="statPallet">100</div>
-        <div style="font-size:11px; color:#6B7280; margin-top:4px;">点击查看垛码列表</div>
-      </div>
-      <div class="stat-card stat-card-plain">
-        <div class="stat-label">箱数</div>
-        <div class="stat-num stat-num-plain" id="statCase">7000</div>
-      </div>
-      <div class="stat-card stat-card-plain">
-        <div class="stat-label">盒数</div>
-        <div class="stat-num stat-num-plain" id="statBox">28000</div>
+        <div class="stats-cards-row">
+          <div class="stat-card" onclick="openPalletList()" title="点击查看垛码列表">
+            <div class="stat-label">垛数</div>
+            <div class="stat-num" id="statPallet">100</div>
+          </div>
+          <div class="stat-card stat-card-plain">
+            <div class="stat-label">箱数</div>
+            <div class="stat-num stat-num-plain" id="statCase">7000</div>
+          </div>
+        </div>
+        <div class="stats-cards-row">
+          <div class="stat-card stat-card-plain">
+            <div class="stat-label">盒数</div>
+            <div class="stat-num stat-num-plain" id="statBox">28000</div>
+          </div>
+          <div class="stat-card stat-card-plain">
+            <div class="stat-label">剔除数</div>
+            <div class="stat-num stat-num-plain" id="statReject">15</div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="stats-right">
@@ -1477,19 +1501,24 @@ body {
         </div>
       </div>
       <div class="card" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column;">
-        <table class="data-table" style="flex-shrink:0;">
-          <thead>
-            <tr>
-              <th style="width:150px;">垛码</th>
-              <th style="width:80px;">上传状态</th>
-              <th style="width:180px;">上传时间</th>
-              <th style="width:60px;">箱数</th>
-              <th>异常原因</th>
-            </tr>
-          </thead>
-        </table>
-        <div style="flex:1; overflow-y:auto;">
-          <table class="data-table">
+        <div style="flex:1; overflow-y:auto; min-height:0;">
+          <table class="data-table stats-upload-table">
+            <colgroup>
+              <col style="width:150px">
+              <col style="width:80px">
+              <col style="width:180px">
+              <col style="width:60px">
+              <col>
+            </colgroup>
+            <thead>
+              <tr>
+                <th>垛码</th>
+                <th>上传状态</th>
+                <th>上传时间</th>
+                <th>箱数</th>
+                <th>异常原因</th>
+              </tr>
+            </thead>
             <tbody>
               <tr><td>D001-2410101</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 10:30:15</td><td>70</td><td>-</td></tr>
               <tr class="row-even"><td>D002-2410101</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 10:35:22</td><td>70</td><td>-</td></tr>
@@ -1703,8 +1732,7 @@ body {
     <div class="upload-left">
       <div class="card" style="flex-shrink:0; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
         <button class="btn btn-primary" style="height:48px; font-size:15px; width:120px;" onclick="doManualUpload()">手动上传</button>
-        <button class="btn btn-secondary" style="height:48px; font-size:15px; width:120px;" onclick="doUploadReset()">数据上传复位</button>
-        <span class="help-icon" style="margin-left:4px;" onclick="showHelp('手动上传与复位','手动上传：批量上传所有未上传的垛数据。\n数据上传复位：恢复指示灯不亮、蜂鸣不响（上传异常处理完成后用于归位）。')">?</span>
+        <span class="help-icon" style="margin-left:4px;" onclick="showHelp('手动上传','手动上传：批量上传所有未上传的垛数据。')">?</span>
       </div>
       <div class="card" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column;">
         <div class="log-section-header" style="border-radius:12px 12px 0 0;">
@@ -1987,7 +2015,7 @@ body {
           <table class="help-table">
             <thead><tr><th>操作</th><th>步骤</th></tr></thead>
             <tbody>
-              <tr><td>生产统计查询</td><td>左侧选择日期范围 → 点击「查询」→ 显示垛数/箱数/盒数</td></tr>
+              <tr><td>生产统计查询</td><td>左侧选择日期范围 → 点击「查询」→ 显示垛数/箱数/盒数/剔除数</td></tr>
               <tr><td>查看垛码列表</td><td>点击蓝色下划线的「垛数」数字 → 弹窗显示垛码列表，支持模糊筛选</td></tr>
               <tr><td>上传统计查询</td><td>右侧选择日期范围和状态（全部/成功/异常）→ 点击「查询」</td></tr>
             </tbody>
@@ -2001,7 +2029,6 @@ body {
             <thead><tr><th>功能</th><th>操作</th></tr></thead>
             <tbody>
               <tr><td>手动上传</td><td>点击「手动上传」→ 批量上传所有未上传的垛</td></tr>
-              <tr><td>数据上传复位</td><td>点击「数据上传复位」→ 恢复指示灯不亮、蜂鸣不响（上传异常处理完成后归位）</td></tr>
               <tr><td>查询状态</td><td>输入垛码 → 点击「查询状态」→ 查看上传详情</td></tr>
               <tr><td>设为未上传</td><td>输入垛码 → 点击「设为未上传」→ 确认（用于异常修复后重新补传）</td></tr>
               <tr><td>设为已上传</td><td>输入垛码 → 点击「设为已上传」→ 确认（避免系统重复上传）</td></tr>
@@ -3006,6 +3033,7 @@ function doStatsQuery() {
   document.getElementById('statPallet').textContent = Math.floor(Math.random()*50+80);
   document.getElementById('statCase').textContent = (parseInt(document.getElementById('statPallet').textContent)*70).toLocaleString();
   document.getElementById('statBox').textContent = (parseInt(document.getElementById('statCase').textContent)*4).toLocaleString();
+  document.getElementById('statReject').textContent = Math.floor(Math.random()*30+5);
 }
 
 function openPalletList() { document.getElementById('palletListOverlay').classList.add('active'); }
@@ -3025,13 +3053,6 @@ function doManualUpload() {
       area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts3}</span>手动上传完成，成功1个，失败0个</div>`);
     }, 2000);
   }, 1000);
-}
-
-function doUploadReset() {
-  const ts = getTs();
-  const area = document.getElementById('uploadLogArea');
-  area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-gray"><span class="ts">${ts}</span>数据上传复位：指示灯已归位不亮、蜂鸣已停止</div>`);
-  if (typeof alert === 'function') alert('数据上传复位完成：指示灯与蜂鸣器已归位');
 }
 
 function queryUploadStatus() {
