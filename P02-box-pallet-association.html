@@ -2095,13 +2095,14 @@ body {
       <button class="modal-close-btn" onclick="closeSys()">✕</button>
     </div>
     <div class="sys-tab-bar">
-      <div class="sys-tab active" onclick="switchSysTab2(this,'st-io')">IO设备管理</div>
+      <div class="sys-tab" onclick="switchSysTab2(this,'st-io')">IO设备管理</div>
       <div class="sys-tab" onclick="switchSysTab2(this,'st-printer')">打印机管理</div>
       <div class="sys-tab" onclick="switchSysTab2(this,'st-alarm')">报警设置</div>
-      <div class="sys-tab" onclick="switchSysTab2(this,'st-db')">数据库连接</div>
+      <div class="sys-tab active" onclick="switchSysTab2(this,'st-db')">数据库连接</div>
+      <div class="sys-tab" onclick="switchSysTab2(this,'st-codedigits')">码位数配置</div>
     </div>
     <div style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
-      <div class="sys-tab-panel active" id="st-io" style="flex:1;">
+      <div class="sys-tab-panel" id="st-io" style="flex:1;">
         <div style="margin-bottom:10px;"><button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('添加设备')">+ 添加设备</button></div>
         <table class="device-table">
           <thead><tr><th>设备名称</th><th>设备类型</th><th>连接地址</th><th>端口</th><th>状态</th><th>操作</th></tr></thead>
@@ -2129,7 +2130,7 @@ body {
           <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('报警设置已保存')">保存</button>
         </div>
       </div>
-      <div class="sys-tab-panel" id="st-db">
+      <div class="sys-tab-panel active" id="st-db">
         <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; margin-bottom:14px; font-size:13px; color:#92400E;">
           ⚠ 2号机部署数据库，1号机通过局域网访问此库，请正确配置数据库信息
         </div>
@@ -2143,6 +2144,14 @@ body {
           <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('数据库配置已保存')">保存</button>
           <span id="dbTestResult2" style="font-size:13px;"></span>
         </div>
+      </div>
+      <div class="sys-tab-panel" id="st-codedigits">
+        <div style="font-size:16px; font-weight:600; color:#1F2937; margin-bottom:16px;">码位数配置（采集时校验码位数，-1表示不校验）</div>
+        <div class="form-row"><span class="form-label" style="width:120px;">小标位数（瓶码/盖外码）</span><input type="number" class="form-input" value="14" placeholder="14" style="width:100px;"></div>
+        <div class="form-row"><span class="form-label" style="width:120px;">中标位数（盒码）</span><input type="number" class="form-input" value="14" placeholder="14" style="width:100px;"></div>
+        <div class="form-row"><span class="form-label" style="width:120px;">大标位数（箱码）</span><input type="number" class="form-input" value="-1" placeholder="-1" style="width:100px;"></div>
+        <div style="font-size:12px; color:#6B7280; margin-bottom:12px;">说明：-1 表示不校验该层级位数；采集时若实际采码位数与配置值不一致，则异常告警、关联失败。</div>
+        <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('码位数配置已保存')">保存</button>
       </div>
     </div>
     <div class="modal-footer">

@@ -784,14 +784,15 @@
       <button class="modal-close" onclick="closeSys()">✕</button>
     </div>
     <div class="sys-tabs">
-      <div class="sys-tab active" onclick="switchSysTab(this,'tab-io')">IO设备管理</div>
+      <div class="sys-tab" onclick="switchSysTab(this,'tab-io')">IO设备管理</div>
       <div class="sys-tab" onclick="switchSysTab(this,'tab-printer')">打印机管理</div>
       <div class="sys-tab" onclick="switchSysTab(this,'tab-alarm')">报警设置</div>
-      <div class="sys-tab" onclick="switchSysTab(this,'tab-db')">数据库连接</div>
+      <div class="sys-tab active" onclick="switchSysTab(this,'tab-db')">数据库连接</div>
+      <div class="sys-tab" onclick="switchSysTab(this,'tab-codedigits')">码位数配置</div>
     </div>
     <div class="modal-body">
       <!-- IO设备管理 -->
-      <div class="sys-tab-content active" id="tab-io">
+      <div class="sys-tab-content" id="tab-io">
         <div style="margin-bottom:12px; display:flex; gap:8px;">
           <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('添加设备')">+ 添加设备</button>
         </div>
@@ -906,7 +907,7 @@
       </div>
 
       <!-- 数据库连接 -->
-      <div class="sys-tab-content" id="tab-db">
+      <div class="sys-tab-content active" id="tab-db">
         <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#92400E;">
           ⚠ 1号机数据存入2号机数据库（局域网访问），请正确配置2号机IP和数据库信息
         </div>
@@ -935,6 +936,25 @@
           <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('数据库配置已保存')">保存</button>
           <span id="dbTestResult" style="font-size:13px;"></span>
         </div>
+      </div>
+
+      <!-- 码位数配置 -->
+      <div class="sys-tab-content" id="tab-codedigits">
+        <div style="font-size:16px; font-weight:600; color:#1F2937; margin-bottom:16px;">码位数配置（采集时校验码位数，-1表示不校验）</div>
+        <div class="form-row">
+          <span class="form-label">小标位数（瓶码/盖外码）</span>
+          <input type="number" class="form-input" value="14" placeholder="14" style="width:100px;">
+        </div>
+        <div class="form-row">
+          <span class="form-label">中标位数（盒码）</span>
+          <input type="number" class="form-input" value="14" placeholder="14" style="width:100px;">
+        </div>
+        <div class="form-row">
+          <span class="form-label">大标位数（箱码）</span>
+          <input type="number" class="form-input" value="-1" placeholder="-1" style="width:100px;">
+        </div>
+        <div style="font-size:12px; color:#6B7280; margin-bottom:12px;">说明：-1 表示不校验该层级位数；采集时若实际采码位数与配置值不一致，则异常告警、关联失败。</div>
+        <button class="btn btn-primary" style="height:36px; font-size:13px; width:80px;" onclick="alert('码位数配置已保存')">保存</button>
       </div>
     </div>
     <div class="modal-footer">
