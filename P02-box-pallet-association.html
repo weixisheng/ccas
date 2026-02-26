@@ -370,8 +370,12 @@ body {
   -webkit-appearance: none;
   outline: none;
 }
-.product-info { font-size: 13px; color: #6B7280; margin-top: 6px; }
+.product-info { font-size: 13px; color: #6B7280; }
 .product-num { font-size: 18px; color: #374151; font-weight: 600; }
+.product-code-row { display: flex; align-items: center; gap: 8px; }
+.product-code-row .product-info { margin-top: 0; }
+.order-row { display: flex; align-items: center; gap: 8px; }
+.order-row > span { flex-shrink: 0; }
 
 .order-input {
   width: 100%; height: 48px;
@@ -428,8 +432,71 @@ body {
 .qty-input::-webkit-inner-spin-button,
 .qty-input::-webkit-outer-spin-button { opacity: 0; width: 0; }
 
-/* 中间栏 */
-.dc-mid { flex: 1; display: flex; flex-direction: column; gap: 0; min-width: 0; overflow: hidden; }
+/* 实时上传数据区 - 参考 pen */
+.upload-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #EFF6FF;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.upload-tag {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid;
+}
+.upload-tag-pending { color: #2563EB; background: #EEF5FF; border-color: #2563EB; }
+.upload-tag-done { color: #059669; background: #ECFDF5; border-color: #059669; }
+
+/* 单位实时统计 - 参考 pen 设计 */
+.qty-stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
+}
+.qty-stats-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex: 1;
+  min-height: 80px;
+}
+.qty-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 100px;
+  min-height: 80px;
+  flex: 1;
+}
+.qty-card-label { font-size: 14px; font-weight: 600; color: #374151; }
+.qty-card-num { font-size: 32px; font-weight: 700; line-height: 1; color: #1F2937; }
+.qty-stats-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  flex-shrink: 0;
+  min-height: 28px;
+}
+.qty-stats-line .label { font-size: 15px; font-weight: 600; color: #4B5563; }
+.qty-stats-line .val { font-size: 18px; font-weight: 600; color: #1F2937; line-height: 1.2; }
+.qty-stats-line .val.red { color: #DC2626; }
+
+/* 中间栏 - 三个独立卡片，间距参考1号机 */
+.dc-mid { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; overflow: hidden; }
+.dc-mid .log-card { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 12px; border: 1px solid #D9E1EC; background: #fff; }
 .log-section { display: flex; flex-direction: column; overflow: hidden; }
 .log-section-header {
   padding: 8px 14px;
@@ -498,16 +565,50 @@ body {
   50%       { opacity: 0.7; transform: scale(1.3); box-shadow: 0 0 0 4px rgba(34,197,94,0); }
 }
 
-/* 右侧 */
-.dc-right { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+/* 右侧 - 参考 pen 设计 */
+.dc-right { width: 336px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; overflow: hidden; }
 .dc-right .card { flex: 1; display: flex; flex-direction: column; }
-.ctrl-group { padding: 12px 14px; }
-.ctrl-btn {
-  width: 100%; height: 44px;
-  margin-bottom: 6px; border-radius: 6px;
-  font-size: 14px;
+.ctrl-group { padding: 14px; }
+.ctrl-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
 }
-.ctrl-btn:last-child { margin-bottom: 0; }
+.ctrl-help-icon {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  background: #F3F4F6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px; font-weight: 600; color: #6B7280;
+  cursor: pointer;
+}
+.ctrl-btn-row { display: flex; gap: 12px; margin-bottom: 12px; }
+.ctrl-btn-row:last-child { margin-bottom: 0; }
+.ctrl-btn {
+  flex: 1; height: 40px;
+  border-radius: 8px;
+  font-size: 16px; font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.ctrl-btn:active { transform: scale(0.97); }
+.ctrl-btn-solid { color: #fff; }
+.ctrl-btn-outline { background: #fff; border: 2px solid; }
+.ctrl-btn-primary { background: #2563EB; color: #fff; }
+.ctrl-btn-primary:hover { background: #1d4ed8; }
+.ctrl-btn-outline-blue { border-color: #2563EB; color: #2563EB; }
+.ctrl-btn-outline-blue:hover { background: #EFF6FF; }
+.ctrl-btn-red { background: #DC2626; color: #fff; }
+.ctrl-btn-red:hover { background: #b91c1c; }
+.ctrl-btn-green { background: #059669; color: #fff; }
+.ctrl-btn-green:hover { background: #047857; }
+.ctrl-btn-outline-red { border-color: #DC2626; color: #DC2626; }
+.ctrl-btn-outline-red:hover { background: #FEF2F2; }
 
 .sync-indicator {
   display: inline-flex;
@@ -538,12 +639,18 @@ body {
 .manual-layout {
   display: flex;
   flex: 1;
-  gap: 12px;
+  gap: 16px;
+  min-height: 0;
   padding: 12px;
   overflow: hidden;
 }
-.manual-left { width: 40%; display: flex; flex-direction: column; gap: 12px; }
-.manual-right { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.manual-left { width: 380px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+.manual-left .manual-spec-card { flex-shrink: 0; }
+.manual-left .manual-prompt-card { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.manual-mid { flex: 1; min-width: 400px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.manual-right { width: 380px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+.manual-right .manual-stats-card { flex-shrink: 0; }
+.manual-right .manual-ctrl-card { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 
 .radio-group { display: flex; gap: 24px; align-items: center; }
 .radio-item {
@@ -571,29 +678,48 @@ body {
 .light-active { background: #D1FAE5; color: #065F46; }
 .light-next { background: #FEF3C7; color: #92400E; }
 
+/* 手工采集 - 开始采集提示 参考 pen，平铺剩余空间 */
 .prompt-area {
-  background: #F0F4FF;
-  border-radius: 12px;
-  border: 2px solid #BFDBFE;
-  padding: 20px;
-  text-align: center;
+  background: #fff;
+  border-radius: 0;
+  border: none;
+  padding: 18px 22px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 .prompt-main {
   font-size: 18px;
+  font-weight: 600;
   color: #374151;
-  margin-bottom: 12px;
 }
 .prompt-codes {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  font-size: 28px;
+  gap: 12px;
+  font-size: 44px;
   font-weight: 700;
 }
 .code-scan { color: #2563EB; }
 .code-wait { color: #D1D5DB; }
-.code-divider { color: #9CA3AF; font-size: 24px; }
+.code-divider { color: #9CA3AF; font-size: 32px; }
+
+/* 手工采集 - 右侧单位实时统计、任务控制 参考 pen */
+.manual-stats-card { padding: 14px 16px; }
+.manual-stats-row { display: flex; gap: 12px; }
+.manual-qty-card { flex: 1; min-width: 0; }
+.manual-qty-num { font-size: 44px !important; font-weight: 700; line-height: 1; }
+.manual-total-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB; }
+.manual-total-num { font-size: 48px; font-weight: 700; color: #1F2937; line-height: 1.2; }
+.manual-ctrl-card { padding: 14px 16px; }
+.manual-ctrl-card .card-title { flex-shrink: 0; }
+.manual-ctrl-btns { display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; }
+.manual-ctrl-btns .btn { flex: 1; min-width: 0; height: 48px; font-size: 16px; }
 
 /* ==================== Tab3: 码包管理 ==================== */
 .package-layout {
@@ -625,7 +751,7 @@ body {
   padding: 12px;
   gap: 10px;
 }
-.query-bar {
+.query-top-bar {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -635,33 +761,35 @@ body {
   border: 1px solid #D9E1EC;
   padding: 12px 16px;
 }
-.query-status { font-size: 13px; color: #6B7280; }
-
-.chain-path {
+.query-status { font-size: 13px; color: #6B7280; margin-left: auto; }
+.query-split {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 16px;
-  background: #F8FBFF;
-  border-radius: 8px;
-  border: 1px solid #DBEAFE;
-  font-size: 15px;
-  flex-wrap: wrap;
+  flex: 1;
+  gap: 16px;
+  overflow: hidden;
+  min-height: 0;
 }
-.chain-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
+.query-left {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #D9E1EC;
 }
-.chain-arrow { color: #9CA3AF; font-size: 18px; }
+.query-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #D9E1EC;
+}
+.query-table-wrap { flex: 1; overflow: auto; }
 
-.level-bottle { background: #EFF6FF; color: #1D4ED8; }
-.level-box { background: #F0FDF4; color: #15803D; }
-.level-case { background: #FFF7ED; color: #C2410C; }
-.level-pallet { background: #FAF5FF; color: #7C3AED; }
+.query-input-cell { color: #DC2626 !important; font-weight: 600; }
 
 /* ==================== 数据替换 ==================== */
 .replace-layout {
@@ -998,9 +1126,9 @@ body {
 
     <!-- 左侧栏 -->
     <div class="dc-left">
-      <!-- 生产产品选择 -->
+      <!-- 当前生产信息（含采集规格设置） -->
       <div class="card product-select-area">
-        <div class="card-title">生产产品选择</div>
+        <div class="card-title">当前生产信息</div>
         <div style="font-size:13px; color:#6B7280; margin-bottom:4px;">选择产品</div>
         <select class="product-dropdown" id="productSelect" onchange="updateProductInfo()" style="width:100%">
           <option value="">-- 点击选择产品 --</option>
@@ -1009,41 +1137,52 @@ body {
           <option value="P003">石湾酒 42度 250ml</option>
           <option value="P004">石湾酒 52度 250ml</option>
         </select>
-        <div id="productCodeArea" style="display:none; margin-top:8px;">
-          <div class="product-info">产品编号</div>
-          <div class="product-num" id="productCodeDisplay">—</div>
+        <div id="productCodeArea" style="display:none; margin-top:8px;" class="product-code-row">
+          <span class="product-info">产品编号</span>
+          <span class="product-num" id="productCodeDisplay">—</span>
         </div>
-        <div style="margin-top:12px; font-size:13px; color:#6B7280; margin-bottom:4px;">生产单号</div>
-        <input type="text" class="order-input" id="orderNum" value="20241201001">
-      </div>
-
-      <!-- 数量实时统计 -->
-      <div class="card qty-stats" style="flex:1;">
-        <div class="card-title">数量实时统计</div>
-        <div class="qty-item">
-          <div class="qty-label">每箱盒数</div>
-          <div class="qty-fraction">
-            <span class="qty-num" id="curBoxes">0</span>
-            <span class="qty-sep">/</span>
-            <input type="number" id="boxPerCase" value="4" min="1" class="qty-input" title="每箱盒数">
+        <div class="order-row" style="margin-top:12px;">
+          <span style="font-size:13px; color:#6B7280;">生产单号</span>
+          <input type="text" class="order-input" id="orderNum" value="20241201001" style="flex:1; min-width:0;">
+        </div>
+        <div style="margin-top:16px; padding-top:12px; border-top:1px solid #E5E7EB;">
+          <div style="font-size:14px; font-weight:600; color:#1F2937; margin-bottom:10px;">采集规格设置</div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:16px;">1垛</span>
+              <input type="number" id="casePerPallet" value="70" min="1" class="qty-input" title="每垛箱数" style="width:70px; height:44px; font-size:26px;" oninput="document.getElementById('dispCasePerPallet').textContent=this.value||'70'">
+              <span style="font-size:16px;">箱</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:16px;">1箱</span>
+              <input type="number" id="boxPerCase" value="4" min="1" class="qty-input" title="每箱盒数" style="width:70px; height:44px; font-size:26px;" oninput="document.getElementById('dispBoxPerCase').textContent=this.value||'4'">
+              <span style="font-size:16px;">盒</span>
+            </div>
           </div>
         </div>
-        <div class="qty-item" style="padding-top:12px;">
-          <div class="qty-label">每垛箱数</div>
-          <div class="qty-fraction">
-            <span class="qty-num" id="curCases">0</span>
-            <span class="qty-sep">/</span>
-            <input type="number" id="casePerPallet" value="70" min="1" class="qty-input" title="每垛箱数">
+      </div>
+
+      <!-- 实时上传数据区 - 参考 pen 设计，列表行+状态标签 -->
+      <div class="card" style="flex:1; padding:14px 16px; min-height:0; display:flex; flex-direction:column;">
+        <div class="card-title">实时上传数据区</div>
+        <div id="uploadDataList" style="flex:1; display:flex; flex-direction:column; gap:8px; overflow-y:auto;">
+          <div class="upload-row">
+            <span style="font-size:18px; color:#4B5563;">1箱</span>
+            <span class="upload-tag upload-tag-pending">待上传</span>
+          </div>
+          <div class="upload-row">
+            <span style="font-size:18px; color:#4B5563;">2箱</span>
+            <span class="upload-tag upload-tag-done">已上传</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 中间栏 -->
+    <!-- 中间栏 - 三个独立卡片，间距参考1号机 -->
     <div class="dc-mid">
-      <div class="card" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding:0; gap:0;">
-        <!-- 数据接收区 60% -->
-        <div class="log-section" style="flex:3; border-bottom:1px solid #E5E7EB;">
+      <!-- 数据接收区 60% -->
+      <div class="log-card" style="flex:3;">
+        <div class="log-section" style="flex:1;">
           <div class="log-section-header" id="dataAreaHeader">
             <span>📡 数据接收区 <span style="font-size:11px; color:#9CA3AF; font-weight:400;">（最新在上）</span></span>
             <span id="receivingDot" style="display:none; align-items:center; gap:5px; font-size:12px; color:#16A34A; font-weight:500;">
@@ -1061,8 +1200,10 @@ body {
             <div class="log-entry le-data"><span class="ts">10:29:45</span>满垛 - 垛码：P20241201002 已生成</div>
           </div>
         </div>
-        <!-- 操作日志 20% -->
-        <div class="log-section" style="flex:1; border-bottom:1px solid #E5E7EB;">
+      </div>
+      <!-- 操作日志 20% -->
+      <div class="log-card" style="flex:1;">
+        <div class="log-section" style="flex:1;">
           <div class="log-section-header">
             <span>📋 操作日志 <span style="font-size:11px; color:#9CA3AF; font-weight:400;">（最新在上）</span></span>
           </div>
@@ -1072,7 +1213,9 @@ body {
             <div class="log-entry le-info"><span class="ts">10:29:55</span>系统启动完成</div>
           </div>
         </div>
-        <!-- 报警信息 20% -->
+      </div>
+      <!-- 报警信息 20% -->
+      <div class="log-card" style="flex:1;">
         <div class="log-section" style="flex:1;">
           <div class="log-section-header">
             <span>⚠ 报警信息 <span style="font-size:11px; color:#9CA3AF; font-weight:400;">（最新在上）</span></span>
@@ -1086,36 +1229,50 @@ body {
 
     <!-- 右侧栏 -->
     <div class="dc-right">
-      <!-- 采集控制 -->
-      <div class="card ctrl-group" style="justify-content:space-between;">
-        <div class="card-title">采集控制 <span class="help-icon" onclick="showHelp('采集控制', '开始/停止采集：系统检测硬件后开始采集；再次点击停止，未满垛数据保留。\n无需采集码：不生产五码合一产品时开启，所有读码设备不工作。\n关闭报警：重置报警状态，停止声光报警器。')">?</span></div>
-        <button class="btn btn-primary ctrl-btn" id="collectBtn" onclick="toggleCollect()" style="font-size:16px; flex:1; max-height:52px;">开始采集</button>
-        <div style="display:flex; gap:8px; flex-shrink:0;">
-          <button class="btn btn-secondary ctrl-btn" onclick="alert('无需采集码功能已开启')" style="flex:1; font-size:13px; margin-bottom:0;">无需采集码</button>
-          <button class="btn btn-secondary ctrl-btn" onclick="closeAlarmDC()" style="flex:1; font-size:13px; margin-bottom:0;">关闭报警</button>
-        </div>
-      </div>
-
-      <!-- 垛相关 -->
-      <div class="card ctrl-group" style="justify-content:space-between;">
-        <div class="card-title">垛相关 <span class="help-icon" onclick="showHelp('垛相关', '强制满垛：未达到设定箱数也强制结束当前垛，生成虚拟垛标并重置计数。\n清空垛：清除当前垛计数，重置统计数据。\n提取工单未成垛：提取之前未完成垛的数据，可继续生产。')">?</span></div>
-        <button class="btn btn-warning ctrl-btn" onclick="forcePallet()" style="font-size:14px; flex:1; max-height:52px;">强制满垛</button>
-        <div style="display:flex; gap:8px; flex-shrink:0;">
-          <button class="btn btn-secondary ctrl-btn" onclick="clearPallet()" style="flex:1; font-size:13px; margin-bottom:0;">清空垛</button>
-          <button class="btn btn-primary ctrl-btn" onclick="extractUnfinished()" style="flex:1; font-size:12px; margin-bottom:0;">提取工单未成垛</button>
-        </div>
-      </div>
-
-      <!-- 剔除等 -->
-      <div class="card ctrl-group" style="justify-content:space-between;">
-        <div class="card-title">剔除等 <span class="help-icon" onclick="showHelp('剔除等', '收回剔除：剔除设备未自动收回时，点击此按钮收回剔除动作（PLC控制）。\n总剔除数：累计剔除数量，自动累计。\n清零：将总剔除数重置为0。')">?</span></div>
-        <button class="btn btn-orange ctrl-btn" onclick="alert('已发送收回指令到PLC')" style="font-size:14px; flex:1; max-height:52px;">收回剔除</button>
-        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-          <div style="flex:1; display:flex; align-items:center; gap:8px;">
-            <span style="font-size:13px; color:#6B7280; white-space:nowrap;">总剔除数</span>
-            <span class="reject-count" id="rejectCount">0</span>
+      <!-- 单位实时统计 - 参考 pen 设计 -->
+      <div class="card" style="flex:1; padding:14px; min-height:0;">
+        <div class="card-title">单位实时统计</div>
+        <div class="qty-stats-grid">
+          <div class="qty-stats-row">
+            <div class="qty-card"><div class="qty-card-label">当前箱数</div><div class="qty-card-num" style="color:#DC2626;" id="curCases">0</div></div>
+            <div class="qty-card"><div class="qty-card-label">每垛箱数</div><div class="qty-card-num" style="color:#2563EB;" id="dispCasePerPallet">70</div></div>
           </div>
-          <button class="btn btn-secondary ctrl-btn" onclick="resetReject()" style="flex:1; font-size:14px; margin-bottom:0;">清零</button>
+          <div class="qty-stats-row">
+            <div class="qty-card"><div class="qty-card-label">当前盒数</div><div class="qty-card-num" id="curBoxes">0</div></div>
+            <div class="qty-card"><div class="qty-card-label">每箱盒数</div><div class="qty-card-num" id="dispBoxPerCase">4</div></div>
+          </div>
+          <div class="qty-stats-line">
+            <span class="label">已生产垛数</span>
+            <span class="val" id="palletCount">0</span>
+          </div>
+          <div class="qty-stats-line">
+            <span class="label">总剔除数</span>
+            <span class="val red" id="rejectCount">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 任务控制 - 参考 pen 设计 -->
+      <div class="card ctrl-group">
+        <div class="ctrl-title-row">
+          <span class="card-title" style="margin-bottom:0;">任务控制</span>
+          <span class="ctrl-help-icon" onclick="showHelp('任务控制', '开始/停止采集：系统检测硬件后开始采集；再次点击停止，未满垛数据保留。\n无需采集码：不生产五码合一产品时开启，所有读码设备不工作。\n关闭报警：重置报警状态，停止声光报警器。\n强制满垛：未达到设定箱数也强制结束当前垛。\n清空垛：清除当前垛计数。\n提取工单未成垛：提取之前未完成垛的数据。\n收回剔除：剔除设备未自动收回时收回动作。\n清零：将总剔除数重置为0。')">?</span>
+        </div>
+        <div class="ctrl-btn-row">
+          <button class="ctrl-btn ctrl-btn-solid ctrl-btn-primary" id="collectBtn" onclick="toggleCollect()">开始采集</button>
+          <button class="ctrl-btn ctrl-btn-outline ctrl-btn-outline-blue" onclick="alert('无需采集码功能已开启')">无需采集码</button>
+        </div>
+        <div class="ctrl-btn-row">
+          <button class="ctrl-btn ctrl-btn-solid ctrl-btn-red" onclick="closeAlarmDC()">关闭报警</button>
+          <button class="ctrl-btn ctrl-btn-solid ctrl-btn-green" onclick="forcePallet()">强制满垛</button>
+        </div>
+        <div class="ctrl-btn-row">
+          <button class="ctrl-btn ctrl-btn-solid ctrl-btn-red" onclick="clearPallet()">清空垛</button>
+          <button class="ctrl-btn ctrl-btn-solid ctrl-btn-primary" onclick="extractUnfinished()">提取工单未成垛</button>
+        </div>
+        <div class="ctrl-btn-row">
+          <button class="ctrl-btn ctrl-btn-outline ctrl-btn-outline-blue" onclick="alert('已发送收回指令到PLC')">收回剔除</button>
+          <button class="ctrl-btn ctrl-btn-outline ctrl-btn-outline-red" onclick="resetReject()">清零</button>
         </div>
       </div>
     </div>
@@ -1126,56 +1283,71 @@ body {
 <!-- ===================== Tab2: 手工采集 ===================== -->
 <div class="tab-content" id="tab-manual">
   <div class="manual-layout">
+    <!-- 左侧：采集规格 + 开始采集提示（平铺剩余空间） -->
     <div class="manual-left">
-      <!-- 包装比例设置 -->
-      <div class="card">
-        <div class="card-title" id="manualRatioTitle">产品包装比例设置</div>
-        <div style="display:flex; gap:12px;">
-          <div style="flex:1; background:#F0FDF4; border:1px solid #BBF7D0; border-radius:10px; padding:14px; text-align:center;">
-            <div class="status-light light-active" id="scanLight" style="justify-content:center; margin-bottom:8px;">● 瓶码扫描中</div>
-            <div style="font-size:13px; color:#374151; margin-bottom:4px;" id="currentCountLabel">当前已读瓶码数</div>
-            <div class="count-big" id="currentCount">0</div>
-          </div>
-          <div style="flex:1; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:10px; padding:14px; text-align:center;">
-            <div style="font-size:13px; color:#6B7280; margin-bottom:4px;" id="perCountLabel">每瓶码数（每盒）</div>
-            <input type="number" id="manualN" value="6" min="1" max="24" style="width:80px; height:50px; border:1px solid #D1D5DB; border-radius:6px; font-size:32px; font-weight:700; text-align:center; font-family:inherit; outline:none; border-color:#2563EB;">
-          </div>
+      <div class="card manual-spec-card">
+        <div class="card-title">采集规格设置</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:16px;">1盒</span>
+          <input type="number" id="manualN" value="6" min="1" max="24" class="qty-input" style="width:70px; height:44px; font-size:26px;" oninput="var e=document.getElementById('manualPerCount');if(e)e.textContent=this.value||'6'">
+          <span style="font-size:16px;">瓶</span>
         </div>
       </div>
-      <!-- 生产统计 -->
-      <div class="card">
-        <div class="card-title">生产统计</div>
-        <div style="text-align:center;">
-          <div style="font-size:14px; color:#6B7280; margin-bottom:6px;">生产总数</div>
-          <div style="font-size:64px; font-weight:700; color:#1F2937; line-height:1;" id="manualTotal">0</div>
-        </div>
-        <button class="btn btn-secondary" style="width:100%; height:40px; margin-top:12px; font-size:14px;" onclick="if(confirm('确认清零生产统计？')){document.getElementById('manualTotal').textContent='0';document.getElementById('currentCount').textContent='0';}">清零</button>
-      </div>
-    </div>
-    <div class="manual-right">
-      <!-- 采集提示 -->
-      <div class="prompt-area">
-        <div class="prompt-main">当前应扫</div>
+      <div class="card manual-prompt-card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; background:#fff;">
+        <div class="card-title" style="padding:14px 16px 0;">开始采集提示</div>
+        <div class="prompt-area">
+          <div class="prompt-main">当前应扫</div>
         <div class="prompt-codes">
           <span class="code-scan" id="promptCode1">瓶码</span>
           <span class="code-divider">/</span>
           <span class="code-wait" id="promptCode2">盒码</span>
         </div>
-        <div style="font-size:13px; color:#6B7280; margin-top:12px;">瓶码灯亮 - 请继续扫描瓶码</div>
-      </div>
-      <!-- 手工读码信息栏 -->
-      <div class="card" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column;">
-        <div class="log-section-header" style="border-radius:12px 12px 0 0;">
-          手工读码信息栏（倒序显示，最新在上）
+          <div style="font-size:13px; color:#6B7280;" id="manualPromptHint">请扫瓶码</div>
         </div>
-        <div class="log-section-body" id="manualLogArea">
-          <div class="log-entry le-info"><span class="ts">10:30:40</span>进入手工采集模式 - 关联类型：瓶盒关联</div>
-          <div class="log-entry le-info"><span class="ts">10:30:40</span>设备状态：扫码枪已就绪，等待扫码</div>
-          <div class="log-entry le-success"><span class="ts">10:30:38</span>盒码关联成功：20241201002001（6瓶→1盒）</div>
-          <div class="log-entry le-data"><span class="ts">10:30:36</span>扫码完成，请扫盒码</div>
-          <div class="log-entry le-data"><span class="ts">10:30:35</span>瓶码采集：20241201010006</div>
-          <div class="log-entry le-data"><span class="ts">10:30:34</span>瓶码采集：20241201010005</div>
-          <div class="log-entry le-data"><span class="ts">10:30:33</span>瓶码采集：20241201010004</div>
+      </div>
+    </div>
+    <!-- 中间：数据接收区、操作日志 独立卡片，间距12 -->
+    <div class="manual-mid">
+      <div class="card" style="flex:2; padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;">
+        <div class="log-section" style="flex:1; min-height:0;">
+          <div class="log-section-header">📡 数据接收区 <span style="font-size:11px; color:#9CA3AF; font-weight:400;">（最新在上）</span></div>
+          <div class="log-section-body" id="manualDataArea">
+            <div class="log-entry le-success"><span class="ts">10:30:38</span>盒码关联成功：20241201002001（6瓶→1盒）</div>
+            <div class="log-entry le-data"><span class="ts">10:30:36</span>扫码完成，请扫盒码</div>
+            <div class="log-entry le-data"><span class="ts">10:30:35</span>瓶码采集：20241201010006</div>
+            <div class="log-entry le-data"><span class="ts">10:30:34</span>瓶码采集：20241201010005</div>
+            <div class="log-entry le-data"><span class="ts">10:30:33</span>瓶码采集：20241201010004</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;">
+        <div class="log-section" style="flex:1; min-height:0;">
+          <div class="log-section-header">📋 操作日志 <span style="font-size:11px; color:#9CA3AF; font-weight:400;">（最新在上）</span></div>
+          <div class="log-section-body" id="manualOpLogArea">
+            <div class="log-entry le-info"><span class="ts">10:30:40</span>进入手工采集模式 - 关联类型：瓶盒关联</div>
+            <div class="log-entry le-info"><span class="ts">10:30:40</span>设备状态：扫码枪已就绪，等待扫码</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 右侧：单位实时统计 + 任务控制 参考 pen -->
+    <div class="manual-right">
+      <div class="card manual-stats-card">
+        <div class="card-title">单位实时统计</div>
+        <div class="manual-stats-row">
+          <div class="qty-card manual-qty-card"><div class="qty-card-label">当前已读</div><div class="qty-card-num manual-qty-num" style="color:#DC2626;" id="manualCurrentCount">0</div></div>
+          <div class="qty-card manual-qty-card"><div class="qty-card-label">每盒瓶数</div><div class="qty-card-num manual-qty-num" style="color:#2563EB;" id="manualPerCount">6</div></div>
+        </div>
+        <div class="manual-total-row">
+          <div class="qty-card-label">生产总数</div>
+          <div class="manual-total-num" id="manualTotal">0</div>
+        </div>
+      </div>
+      <div class="card ctrl-group manual-ctrl-card">
+        <div class="card-title">任务控制</div>
+        <div class="manual-ctrl-btns">
+          <button class="btn btn-primary" id="manualCollectBtn" onclick="toggleManualCollect()">开始采集</button>
+          <button class="btn btn-secondary" onclick="if(confirm('确认清零？')){document.getElementById('manualTotal').textContent='0';document.getElementById('manualCurrentCount').textContent='0';}">清零</button>
         </div>
       </div>
     </div>
@@ -1185,51 +1357,33 @@ body {
 <!-- ===================== Tab3: 数据查询 ===================== -->
 <div class="tab-content" id="tab-query">
   <div class="query-layout">
-    <div class="card" style="flex-shrink:0; padding:12px 16px;">
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <span style="font-size:14px; color:#374151; font-weight:600; white-space:nowrap;">码输入：</span>
-        <input type="text" class="form-input" id="queryInput" placeholder="请输入码信息或使用扫码枪扫描..." style="flex:1; min-width:300px;" onkeydown="if(event.key==='Enter')doForwardQuery()">
-        <button class="btn btn-primary" style="height:40px; padding:0 20px; font-size:14px;" onclick="doForwardQuery()">正向查询</button>
-        <button class="btn" style="background:#16A34A; color:#fff; height:40px; padding:0 20px; font-size:14px;" onclick="doReverseQuery()">反向查询</button>
-        <button class="btn btn-outline" style="height:40px; padding:0 16px; font-size:14px;" onclick="clearQuery()">清空</button>
-        <span class="help-icon" onclick="showQueryHelp()" style="width:24px;height:24px;font-size:14px;">?</span>
-      </div>
-      <div style="margin-top:8px; font-size:13px;" id="queryStatus"><span style="color:#9CA3AF;">请输入码进行查询</span></div>
+    <div class="query-top-bar">
+      <input type="text" class="form-input" id="queryInput" placeholder="请输入码信息或使用扫码枪扫描..." style="flex:1; min-width:200px;" onkeydown="if(event.key==='Enter')doQuery()">
+      <button class="btn btn-primary" style="height:40px; padding:0 20px; font-size:14px;" onclick="doQuery()">查询</button>
+      <button class="btn btn-outline" style="height:40px; padding:0 16px; font-size:14px;" onclick="clearQuery()">清空</button>
+      <span class="help-icon" onclick="showQueryHelp()" style="width:24px;height:24px;font-size:14px;">?</span>
+      <span class="query-status" id="queryStatus">未查询</span>
     </div>
 
-    <!-- 查询结果 -->
-    <div id="queryResult" style="flex:1; overflow-y:auto; display:none;">
-      <div class="card" style="margin-bottom:10px; padding:14px 16px;">
-        <div style="font-size:14px; font-weight:600; color:#374151; margin-bottom:8px;">查询码信息：</div>
-        <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap; font-size:16px;">
-          <div>码值：<span style="color:#2563EB; font-weight:600;" id="qCodeVal">—</span></div>
-          <div>层级：<span id="qCodeLevel" class="chain-tag level-box">盒码</span></div>
-          <div>采集时间：<span style="color:#374151;" id="qCodeTime">—</span></div>
+    <div class="query-split" id="querySplit" style="display:none;">
+      <div class="query-left">
+        <div style="padding:12px 16px; border-bottom:1px solid #E5E7EB; font-weight:600; font-size:15px;">码关联信息</div>
+        <div style="padding:8px 16px; font-size:13px; color:#6B7280;" id="queryCount">已查询到 0 条码信息</div>
+        <div class="query-table-wrap">
+          <table class="data-table" id="queryTable">
+            <thead><tr><th style="width:50px;">序号</th><th>第一层(瓶码)</th><th>第二层(盒码)</th><th>第三层(箱码)</th><th>第四层(垛码)</th></tr></thead>
+            <tbody id="queryTableBody"></tbody>
+          </table>
         </div>
       </div>
-
-      <!-- 正向查询结果 -->
-      <div id="forwardResult" style="display:none;">
-        <div class="card">
-          <div class="card-title" id="forwardResultTitle">正向查询结果（直接下级 - 瓶码）：</div>
-          <div id="forwardTableWrap"></div>
-        </div>
-      </div>
-
-      <!-- 反向查询结果 -->
-      <div id="reverseResult" style="display:none;">
-        <div class="card" style="margin-bottom:10px;">
-          <div class="card-title">上级关联路径：</div>
-          <div class="chain-path" id="chainPath"></div>
-        </div>
-        <div class="card">
-          <div class="card-title" id="sameLevel">同级数据（当前盒码内的其他瓶码）：</div>
-          <div id="reverseTableWrap"></div>
+      <div class="query-right">
+        <div style="padding:12px 16px; border-bottom:1px solid #E5E7EB; font-weight:600; font-size:15px;">具体信息</div>
+        <div style="flex:1; padding:16px; overflow-y:auto; color:#9CA3AF; font-size:14px;" id="queryDetail">
+          请点击左侧记录查看详细信息
         </div>
       </div>
     </div>
 
-    <!-- 空状态 -->
     <div id="queryEmpty" style="flex:1; display:flex; align-items:center; justify-content:center; color:#9CA3AF; font-size:15px;">
       <div style="text-align:center;"><div style="font-size:48px; margin-bottom:12px;">🔍</div>请输入码进行查询</div>
     </div>
@@ -1638,9 +1792,9 @@ body {
         <div class="help-section" id="h-m1">
           <div class="help-h1">二、1号机操作指南（瓶盒关联软件）</div>
           <div class="help-h2">2.1 日常操作流程</div>
-          <div class="help-step-title">步骤1：确认包装比例</div>
+          <div class="help-step-title">步骤1：确认采集规格</div>
           <ul class="help-ul">
-            <li>在左侧「包装比例设置」区域，确认「每盒瓶数」设置正确（默认6瓶）</li>
+            <li>在左侧「采集规格设置」区域，确认「1盒 6瓶」设置正确（6可修改，默认6瓶）</li>
             <li class="help-warn">⚠ 开始采集后不可修改</li>
           </ul>
           <div class="help-step-title">步骤2：开始采集</div>
@@ -1651,21 +1805,20 @@ body {
           </ol>
           <div class="help-step-title">步骤3：监控采集过程</div>
           <ul class="help-ul">
-            <li><strong>右侧上方 - 盒码读码区</strong>：绿色=关联成功，红色=关联失败或异常</li>
-            <li><strong>右侧下方 - 瓶码读码区</strong>：黑色=正常，红色=重码/错码（系统自动标记，产线正常移动，下游按箱剔除）</li>
-            <li><strong>左侧 - 计数</strong>：「合计瓶数」「当前盒数」实时更新</li>
+            <li><strong>右侧 - 数据接收区</strong>：盒码、瓶码及关联结果统一展示，时间+具体信息每行一条；绿色=关联成功，红色=关联失败或异常；黑色=正常码，红色=重码/错码（系统会标记剔除，产线正常移动，下游按箱剔除）</li>
+            <li><strong>左侧 - 单位实时统计</strong>：「合计瓶数」「当前盒数」实时更新（文字在上、数字在下）</li>
           </ul>
           <div class="help-step-title">步骤4：停止采集</div>
           <ul class="help-ul"><li>点击「停止采集」按钮，未满盒的数据会保留</li></ul>
           <div class="help-h2">2.2 设备连接状态</div>
           <ul class="help-ul">
-            <li>左侧下方显示读码器连接状态</li>
+            <li>右侧操作日志区域显示读码器连接状态</li>
             <li>绿色文字：设备已连接 ✓</li>
             <li>红色文字：设备未连接，请检查设备连接后重启</li>
           </ul>
           <div class="help-h2">2.3 清屏</div>
           <ul class="help-ul">
-            <li>点击「清屏」按钮：清空读码区显示记录</li>
+            <li>点击「清屏」按钮：清空数据接收区显示记录</li>
             <li class="help-warn">⚠ 清屏不影响计数和数据库数据</li>
           </ul>
         </div>
@@ -1677,7 +1830,7 @@ body {
             <thead><tr><th>Tab 名称</th><th>功能说明</th></tr></thead>
             <tbody>
               <tr><td><strong>数据采集</strong></td><td>主界面，默认选中</td></tr>
-              <tr><td>手工采集</td><td>相机损坏时备用</td></tr>
+              <tr><td>手工采集</td><td>1号机相机损坏时备用</td></tr>
               <tr><td>码包管理</td><td>导入码包数据</td></tr>
               <tr><td>数据查询</td><td>查询码关联关系</td></tr>
               <tr><td>数据替换</td><td>码替换操作</td></tr>
@@ -1690,9 +1843,9 @@ body {
           <div class="help-h2">3.2 数据采集主界面操作流程</div>
           <div class="help-step-title">生产前准备：</div>
           <ol class="help-ol">
-            <li>点击「产品选择」下拉框，在弹窗中搜索并选择生产产品</li>
+            <li>在左侧「当前生产信息」区域，点击「产品选择」下拉框，搜索并选择生产产品</li>
             <li>确认生产单号（系统自动生成，可手动修改）</li>
-            <li>确认包装比例（每箱盒数、每垛箱数）</li>
+            <li>确认采集规格（1垛 [70]箱、1箱 [4]盒，70、4可修改）；<strong>采集开始后不可修改</strong></li>
           </ol>
           <div class="help-step-title">开始采集：</div>
           <ol class="help-ol">
@@ -1705,7 +1858,7 @@ body {
             <li><strong>中间上方 - 数据接收区</strong>（约60%高）：扫码数据和关联结果，最新在上</li>
             <li><strong>中间中部 - 操作日志</strong>（约20%）：用户操作记录，最新在上</li>
             <li><strong>中间下方 - 报警信息</strong>（约20%）：重码、关联失败等异常，最新在上</li>
-            <li><strong>左侧 - 数量统计</strong>：以「实时数/预设数」形式显示（如 4/4、6/70）</li>
+            <li><strong>右侧 - 单位实时统计</strong>：当前箱数、每垛箱数、当前盒数、每箱盒数、已生产垛数、总剔除数，文字在上数字在下，每项独立卡片</li>
           </ul>
           <div class="help-step-title">成垛与自动上传：</div>
           <ul class="help-ul">
@@ -1713,31 +1866,18 @@ body {
             <li>上传成功：绿灯常亮 + 声音提醒</li>
             <li class="help-warn">上传失败：红灯常亮 + 声音提醒（需处理后手动重传）</li>
           </ul>
-          <div class="help-h2">3.3 右侧按钮功能说明</div>
-          <div class="help-step-title">采集控制组：</div>
+          <div class="help-h2">3.3 右侧任务控制</div>
+          <p style="margin-bottom:8px;">总剔除数显示在单位实时统计区域。按钮一行两个排列：</p>
           <table class="help-table">
             <thead><tr><th>按钮</th><th>功能说明</th></tr></thead>
             <tbody>
               <tr><td>开始/停止采集</td><td>启动或停止数据采集；停止后未满垛数据保留</td></tr>
               <tr><td>无需采集码</td><td>当天不生产五码合一产品时开启，所有读码设备不工作</td></tr>
               <tr><td>关闭报警</td><td>上传失败触发报警后，点击可重置报警状态（停止声光报警器、蜂鸣器）</td></tr>
-            </tbody>
-          </table>
-          <div class="help-step-title">垛相关操作组：</div>
-          <table class="help-table">
-            <thead><tr><th>按钮</th><th>功能说明</th></tr></thead>
-            <tbody>
               <tr><td>强制满垛</td><td>未达到预设箱数时，强制结束当前垛，生成垛码</td></tr>
               <tr><td>清空垛</td><td>清除当前垛计数，重置统计数据</td></tr>
-              <tr><td>提取工单未成垛</td><td>提取之前未完成垛的数据（如隔天继续生产时使用），弹窗选择后恢复继续</td></tr>
-            </tbody>
-          </table>
-          <div class="help-step-title">剔除相关操作组：</div>
-          <table class="help-table">
-            <thead><tr><th>按钮</th><th>功能说明</th></tr></thead>
-            <tbody>
+              <tr><td>提取工单未成垛</td><td>弹窗输入/扫描垛内任一箱码，查出对应生产订单并显示，确认后回显主页面继续生产</td></tr>
               <tr><td>收回剔除</td><td>剔除设备动作后未自动收回时，点击手动收回</td></tr>
-              <tr><td>总剔除数</td><td>显示累计剔除数量</td></tr>
               <tr><td>清零</td><td>将总剔除数重置为 0</td></tr>
             </tbody>
           </table>
@@ -1751,10 +1891,10 @@ body {
           <div class="help-h2">4.1 手工采集（1号机相机损坏时使用，仅支持瓶盒关联）</div>
           <ol class="help-ol">
             <li>点击「手工采集」Tab</li>
-            <li>设置包装比例（每瓶码数，如每盒6瓶则填6）；<strong>采集开始后不可修改</strong></li>
+            <li>设置采集规格（1盒 [6]瓶，6可修改）；<strong>采集开始后不可修改</strong></li>
             <li>点击「开始采集」按钮，按钮变为「停止采集」</li>
-            <li>按提示顺序用扫码枪扫码：先扫瓶码（足够数量后）→ 扫盒码</li>
-            <li>状态灯提示当前应扫的层级（如「瓶码灯亮」→「够了扫盒码」）</li>
+            <li>按左侧「开始采集提示」顺序用扫码枪扫码：先扫瓶码（足够数量后）→ 扫盒码</li>
+            <li>左侧开始采集提示区文字随进度变化，告知当前应扫瓶码或盒码（无指示灯，文字提示即可）</li>
             <li>扫码完成后自动完成瓶盒关联，当前已读数量归零，继续下一组</li>
           </ol>
         </div>
@@ -1777,13 +1917,7 @@ body {
         <div class="help-section" id="h-query">
           <div class="help-h2">4.3 数据查询</div>
           <p><strong>用途</strong>：查询码的关联关系，用于产品追溯。</p>
-          <table class="help-table">
-            <thead><tr><th>查询类型</th><th>操作</th><th>结果说明</th></tr></thead>
-            <tbody>
-              <tr><td>正向查询（查下级）</td><td>输入码 → 点击「正向查询」或回车</td><td>显示该码的直接下级码：垛→箱，箱→盒，盒→瓶</td></tr>
-              <tr><td>反向查询（查上级）</td><td>输入码 → 点击「反向查询」或 Ctrl+Enter</td><td>显示该码的所有上级码 + 同级其他码</td></tr>
-            </tbody>
-          </table>
+          <p>输入码后点击「查询」或回车，查出该码所属垛的全部数据。例如输入箱码，显示该垛下所有箱（箱1、箱2…）及各自的盒、瓶。左侧表格按层级分列展示，与输入的码对应的单元格红色字体显示；点击某行，右侧展示该行的具体信息（码、采集时间、产品编号、产品名称、生产单号）。</p>
         </div>
 
         <div class="help-section" id="h-replace">
@@ -1908,7 +2042,7 @@ body {
           </div>
           <div class="help-faq-item">
             <div class="help-faq-q">Q7：如何知道码属于哪一层级（瓶/盒/箱/垛）？</div>
-            <div class="help-faq-a">在「数据查询」Tab 中输入码值，点击「正向查询」或「反向查询」，查询结果会显示该码的层级和关联关系。</div>
+            <div class="help-faq-a">在「数据查询」Tab 中输入码值，点击「查询」或回车，左侧表格按层级分列展示，点击某行右侧可查看该行的详细信息。</div>
           </div>
           <div class="help-faq-item">
             <div class="help-faq-q">Q8：取消关联时提示「请先解除上级」，怎么操作？</div>
@@ -2126,7 +2260,7 @@ function switchTab(tabId) {
 
 // 数据采集模拟
 let isCollecting = false;
-let curBoxes = 0, curCases = 0, rejectCnt = 0;
+let curBoxes = 0, curCases = 0, rejectCnt = 0, palletCnt = 0;
 let simInterval2 = null;
 
 function toggleCollect() {
@@ -2194,7 +2328,10 @@ function startSimulation2() {
 
     if(curCases >= maxCase) {
       curCases = 0;
+      palletCnt++;
       document.getElementById('curCases').textContent = 0;
+      const pcEl = document.getElementById('palletCount');
+      if(pcEl) pcEl.textContent = palletCnt;
       const palletCode = `P20241201${String(100 + cycle).padStart(3,'0')}`;
       prependLog2('dataArea', `<div class="log-entry le-success"><span class="ts">${ts}</span>⚡ 满垛提示 - 垛码：${palletCode} 已生成，共${maxCase}箱，正在上传...</div>`);
       appendOpLog(`满垛 - 垛码${palletCode}，上传中`);
@@ -2322,20 +2459,26 @@ function updateProductInfo() {
   }
 }
 
-// 手工采集
-function updateManualUI() {
-  const type = document.querySelector('input[name="assocType"]:checked').value;
-  const isBottleBox = type === 'bottle-box';
-  document.getElementById('currentCountLabel').textContent = isBottleBox ? '当前已读瓶码数' : '当前已读盒码数';
-  document.getElementById('perCountLabel').textContent = isBottleBox ? '每瓶码数（每盒）' : '每盒码数（每箱）';
-  document.getElementById('scanLight').textContent = isBottleBox ? '● 瓶码扫描中' : '● 盒码扫描中';
-  document.getElementById('promptCode1').textContent = isBottleBox ? '瓶码' : '盒码';
-  document.getElementById('promptCode2').textContent = isBottleBox ? '盒码' : '箱码';
-  // 切换时自动更新默认数量：瓶盒关联默认6，盒箱关联默认4
-  document.getElementById('manualN').value = isBottleBox ? 6 : 4;
+// 手工采集（仅支持瓶盒关联）
+let isManualCollecting = false;
+function toggleManualCollect() {
+  const btn = document.getElementById('manualCollectBtn');
+  const manualN = document.getElementById('manualN');
+  if(!isManualCollecting) {
+    manualN.disabled = true;
+    isManualCollecting = true;
+    btn.textContent = '停止采集';
+    btn.style.background = '#DC2626';
+    document.getElementById('manualPromptHint').textContent = '请扫瓶码';
+  } else {
+    manualN.disabled = false;
+    isManualCollecting = false;
+    btn.textContent = '开始采集';
+    btn.style.background = '';
+  }
 }
 
-// 数据查询
+// 数据查询 - 单一查询，分层表格，左右分栏
 // ── 模拟数据结构：垛 P20241201001 ──
 // 垛 → 3箱 → 每箱4盒 → 每盒6瓶
 const mockData = {
@@ -2421,160 +2564,116 @@ const mockData = {
   '20241201V010105':{ level:'瓶码', time:'2024-12-01 10:54:09', parent:'20241201B0101' },
   '20241201V010106':{ level:'瓶码', time:'2024-12-01 10:54:11', parent:'20241201B0101' },
 };
-const levelColors = { '瓶码':'level-bottle', '盒码':'level-box', '箱码':'level-case', '垛码':'level-pallet' };
 
-// 从 mockData 动态向上追溯完整关联链路
-function buildChain(code) {
-  const chain = [];
-  let cur = code;
-  while(cur && mockData[cur]) {
-    chain.unshift({ code: cur, level: mockData[cur].level });
-    cur = mockData[cur].parent;
-  }
-  if(cur && !mockData[cur]) chain.unshift({ code: cur, level: '垛码' }); // 垛码可能没有parent
-  return chain;
-}
-
-// 找某个码的所有同级兄弟（父节点的 children）
-function getSiblings(code) {
-  const d = mockData[code];
-  if(!d || !d.parent) return [code];
-  const parent = mockData[d.parent];
-  if(parent && parent.children) return parent.children;
-  return [code];
-}
-
-const levelColorMap = { '瓶码':'#1D4ED8', '盒码':'#15803D', '箱码':'#C2410C', '垛码':'#7C3AED' };
-
-function renderCodeInfo(code) {
-  const d = mockData[code];
-  document.getElementById('qCodeVal').textContent = code;
-  if(d) {
-    document.getElementById('qCodeLevel').textContent = d.level;
-    document.getElementById('qCodeLevel').className = 'chain-tag ' + levelColors[d.level];
-    document.getElementById('qCodeTime').textContent = d.time;
-  } else {
-    document.getElementById('qCodeLevel').textContent = '未知';
-    document.getElementById('qCodeLevel').className = 'chain-tag';
-    document.getElementById('qCodeTime').textContent = '—';
-  }
-}
-
-function doForwardQuery() {
-  const code = document.getElementById('queryInput').value.trim();
-  if(!code) return;
-  document.getElementById('queryEmpty').style.display = 'none';
-  document.getElementById('queryResult').style.display = 'block';
-  document.getElementById('forwardResult').style.display = 'none';
-  document.getElementById('reverseResult').style.display = 'none';
-
-  const d = mockData[code];
-  const status = document.getElementById('queryStatus');
-  renderCodeInfo(code);
-
-  if(d) {
-    status.innerHTML = '<span style="color:#16A34A; font-weight:600;">✓ 正向查询成功</span>';
-    const levelMap = { '垛码':'箱码', '箱码':'盒码', '盒码':'瓶码' };
-    const childLevel = levelMap[d.level] || '下级';
-    document.getElementById('forwardResultTitle').textContent = `正向查询结果（直接下级 - ${childLevel}）：`;
-
-    if(d.children && d.children.length > 0) {
-      const color = levelColorMap[childLevel] || '#374151';
-      let rows = d.children.map((c, i) => {
-        const ct = mockData[c] ? mockData[c].time : '—';
-        return `<tr ${i%2?'class="row-even"':''}><td>${i+1}</td><td style="color:${color}; font-weight:600;">${c}</td><td style="color:#6B7280;">${ct}</td></tr>`;
-      }).join('');
-      document.getElementById('forwardTableWrap').innerHTML =
-        `<div style="font-size:14px;color:#374151;margin-bottom:8px;">${childLevel}列表（共 <b>${d.children.length}</b> 个）</div>
-         <table class="data-table"><thead><tr><th style="width:50px;">序号</th><th>${childLevel}</th><th>采集时间</th></tr></thead><tbody>${rows}</tbody></table>`;
-    } else {
-      document.getElementById('forwardTableWrap').innerHTML =
-        `<div style="color:#9CA3AF;padding:24px;text-align:center;">该 <b>${d.level}</b> 已是最底层，暂无下级关联码</div>`;
+// 构建所有完整关联链（每行：瓶码→盒码→箱码→垛码）
+function buildAllChains() {
+  const rows = [];
+  for (const code of Object.keys(mockData)) {
+    const d = mockData[code];
+    if (d.level !== '瓶码') continue;
+    const chain = { 瓶码: code, 盒码: '', 箱码: '', 垛码: '', time: d.time };
+    let cur = d.parent;
+    while (cur && mockData[cur]) {
+      const m = mockData[cur];
+      if (m.level === '盒码') chain.盒码 = cur;
+      else if (m.level === '箱码') chain.箱码 = cur;
+      else if (m.level === '垛码') chain.垛码 = cur;
+      cur = m.parent;
     }
-    document.getElementById('forwardResult').style.display = 'block';
-  } else {
-    status.innerHTML = '<span style="color:#DC2626;font-weight:600;">✗ 未找到该码，请检查码值是否正确</span>';
-    document.getElementById('forwardTableWrap').innerHTML =
-      '<div style="color:#9CA3AF;padding:24px;text-align:center;">未找到该码信息</div>';
-    document.getElementById('forwardResult').style.display = 'block';
+    if (cur && !mockData[cur]) chain.垛码 = cur;
+    rows.push(chain);
   }
+  return rows;
 }
 
-function doReverseQuery() {
-  const code = document.getElementById('queryInput').value.trim();
-  if(!code) return;
-  document.getElementById('queryEmpty').style.display = 'none';
-  document.getElementById('queryResult').style.display = 'block';
-  document.getElementById('forwardResult').style.display = 'none';
-  document.getElementById('reverseResult').style.display = 'none';
+let queryRows = [];
+let queryInputCode = '';
 
-  const d = mockData[code];
-  const status = document.getElementById('queryStatus');
-  renderCodeInfo(code);
-
-  if(d && d.level !== '垛码') {
-    status.innerHTML = '<span style="color:#16A34A;font-weight:600;">✓ 反向查询成功</span>';
-
-    // 动态构建完整关联链路（从垛到当前码，排除当前码本身）
-    const chain = buildChain(code).filter(n => n.code !== code);
-    let chainHtml = chain.map(n =>
-      `<span class="chain-tag ${levelColors[n.level]}">${n.level}</span>
-       <span style="color:${levelColorMap[n.level]};font-weight:600;">${n.code}</span>
-       <span class="chain-arrow">→</span>`
-    ).join('');
-    chainHtml += `<span class="chain-tag ${levelColors[d.level]}">${d.level}</span>
-                  <span style="color:${levelColorMap[d.level]};font-weight:700;">${code} <span style="font-size:12px;color:#DC2626;">（当前）</span></span>`;
-    document.getElementById('chainPath').innerHTML = chainHtml;
-
-    // 同级列表
-    const siblings = getSiblings(code);
-    const levelMap = { '箱码':'垛码', '盒码':'箱码', '瓶码':'盒码' };
-    const parentLevel = levelMap[d.level] || '';
-    document.getElementById('sameLevel').textContent = `同级数据（${parentLevel}内共 ${siblings.length} 个${d.level}）：`;
-    let rows = siblings.map((c, i) => {
-      const isCur = c === code;
-      const ct = mockData[c] ? mockData[c].time : '—';
-      return `<tr ${i%2?'class="row-even"':''} ${isCur?'style="background:#FEF2F2;"':''}>
-        <td>${i+1}</td>
-        <td style="color:${isCur?'#DC2626':levelColorMap[d.level]};font-weight:${isCur?700:500};">
-          ${c}${isCur?' <span style="font-size:11px;color:#DC2626;font-weight:600;">← 当前查询</span>':''}
-        </td>
-        <td style="color:#6B7280;">${ct}</td>
-      </tr>`;
-    }).join('');
-    document.getElementById('reverseTableWrap').innerHTML =
-      `<table class="data-table"><thead><tr><th style="width:50px;">序号</th><th>${d.level}</th><th>采集时间</th></tr></thead><tbody>${rows}</tbody></table>
-       <div style="font-size:12px;color:#9CA3AF;margin-top:6px;">当前查询码以红色高亮显示</div>`;
-    document.getElementById('reverseResult').style.display = 'block';
-  } else if(d && d.level === '垛码') {
-    status.innerHTML = '<span style="color:#F59E0B;font-weight:600;">⚠ 垛码为最顶层，无上级关联</span>';
-    document.getElementById('chainPath').innerHTML = `<span class="chain-tag level-pallet">垛码</span><span style="color:#7C3AED;font-weight:700;">${code} <span style="font-size:12px;color:#DC2626;">（顶层）</span></span>`;
-    document.getElementById('reverseTableWrap').innerHTML = '<div style="color:#9CA3AF;padding:24px;text-align:center;">垛码为最顶层，无上级关联码</div>';
-    document.getElementById('reverseResult').style.display = 'block';
-  } else {
-    status.innerHTML = '<span style="color:#DC2626;font-weight:600;">✗ 未找到该码，请检查码值是否正确</span>';
-    document.getElementById('chainPath').innerHTML = '<span style="color:#9CA3AF;">未找到该码信息</span>';
-    document.getElementById('reverseTableWrap').innerHTML = '';
-    document.getElementById('reverseResult').style.display = 'block';
+// 根据输入码找到所属垛码，返回该垛下的所有数据
+function getPalletForCode(code) {
+  if (mockData[code] && mockData[code].level === '垛码') return code;
+  let cur = code;
+  while (cur && mockData[cur]) {
+    const m = mockData[cur];
+    if (m.level === '垛码') return cur;
+    cur = m.parent;
   }
+  if (cur && !mockData[cur]) return cur;
+  return null;
+}
+
+function doQuery() {
+  const code = document.getElementById('queryInput').value.trim();
+  if (!code) return;
+  document.getElementById('queryEmpty').style.display = 'none';
+  document.getElementById('querySplit').style.display = 'flex';
+
+  const allChains = buildAllChains();
+  queryInputCode = code;
+  const pallet = getPalletForCode(code);
+  queryRows = pallet ? allChains.filter(r => r.垛码 === pallet) : [];
+
+  const status = document.getElementById('queryStatus');
+  if (queryRows.length > 0) {
+    status.innerHTML = '<span style="color:#16A34A; font-weight:600;">查询成功</span>';
+  } else {
+    status.innerHTML = '<span style="color:#DC2626; font-weight:600;">未找到该码信息</span>';
+  }
+
+  document.getElementById('queryCount').textContent = queryRows.length > 0 ? `已查询到 ${queryRows.length} 条码信息` : '未找到该码信息';
+
+  const tbody = document.getElementById('queryTableBody');
+  const cellClass = (val) => (val === queryInputCode ? 'query-input-cell' : '');
+  tbody.innerHTML = queryRows.map((r, i) => {
+    return `<tr class="${i % 2 ? 'row-even' : ''}" data-row="${i}" onclick="selectQueryRow(${i})">
+      <td>${i + 1}</td>
+      <td class="${cellClass(r.瓶码)}">${r.瓶码 || '—'}</td>
+      <td class="${cellClass(r.盒码)}">${r.盒码 || '—'}</td>
+      <td class="${cellClass(r.箱码)}">${r.箱码 || '—'}</td>
+      <td class="${cellClass(r.垛码)}">${r.垛码 || '—'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('queryDetail').innerHTML = '请点击左侧记录查看详细信息';
+  document.getElementById('queryDetail').style.color = '#9CA3AF';
+}
+
+function selectQueryRow(idx) {
+  const r = queryRows[idx];
+  if (!r) return;
+  document.querySelectorAll('#queryTableBody tr').forEach((tr, i) => {
+    tr.style.background = i === idx ? '#EFF6FF' : '';
+  });
+  document.getElementById('queryDetail').innerHTML = `
+    <div style="color:#1F2937; font-size:14px;" class="detail-section">
+      <div style="font-weight:600; margin-bottom:12px;">码详细信息</div>
+      <div style="margin-bottom:6px;">瓶码：${r.瓶码 || '—'}</div>
+      <div style="margin-bottom:6px;">盒码：${r.盒码 || '—'}</div>
+      <div style="margin-bottom:6px;">箱码：${r.箱码 || '—'}</div>
+      <div style="margin-bottom:6px;">垛码：${r.垛码 || '—'}</div>
+      <div style="margin-bottom:6px;">采集时间：${r.time || '—'}</div>
+      <div style="margin-bottom:6px;">是否关联：已关联</div>
+    </div>
+    <div style="font-weight:600; margin:16px 0 8px;">产品信息</div>
+    <div style="margin-bottom:6px;">产品编号：SP001</div>
+    <div style="margin-bottom:6px;">产品名称：商品001</div>
+    <div style="margin-bottom:6px;">生产单号：PO202602248710</div>
+  `;
+  document.getElementById('queryDetail').style.color = '#1F2937';
 }
 
 function clearQuery() {
   document.getElementById('queryInput').value = '';
-  document.getElementById('queryStatus').innerHTML = '<span style="color:#9CA3AF;">请输入码进行查询</span>';
-  document.getElementById('queryResult').style.display = 'none';
+  document.getElementById('queryStatus').textContent = '未查询';
+  document.getElementById('querySplit').style.display = 'none';
   document.getElementById('queryEmpty').style.display = 'flex';
 }
 
 function showQueryHelp() {
   showHelp('查询说明',
-    '【正向查询】查询下级码\n  • 查询该码的直接下级码\n  • 只显示一层下级，避免数据量过大\n\n【反向查询】查询上级码\n  • 查询该码的所有上级码\n  • 同时显示同级其他码\n\n四级包装结构：瓶 → 盒 → 箱 → 垛\n\n快捷键：Enter=正向查询，Ctrl+Enter=反向查询'
+    '输入码后点击「查询」或回车，查出该码所属垛的全部数据。例如输入箱码，显示该垛下所有箱（箱1、箱2…）及各自的盒、瓶。左侧表格按层级分列展示，与输入的码对应的单元格红色字体显示；点击某行，右侧展示该行的具体信息（码、采集时间、产品编号、产品名称、生产单号）。'
   );
 }
-
-document.addEventListener('keydown', e => {
-  if(e.key==='Enter' && e.ctrlKey && document.getElementById('tab-query').classList.contains('active')) doReverseQuery();
-});
 
 // 数据替换
 function clearReplace() {

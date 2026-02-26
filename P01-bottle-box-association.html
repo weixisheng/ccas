@@ -74,11 +74,12 @@
 
   /* 左侧栏 */
   .left-panel {
-    width: 420px;
+    width: 500px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-height: 0;
   }
 
   /* 卡片 */
@@ -105,11 +106,11 @@
     padding: 12px 14px;
   }
 
-  /* 包装比例设置 */
+  /* 包装比例设置 - 参考 pen 设计，gap:8 紧凑排列 */
   .ratio-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
   }
   .ratio-label {
     font-size: 14px;
@@ -130,15 +131,16 @@
   }
   .ratio-input:focus { border-color: #2563EB; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
 
-  /* 操作按钮 */
+  /* 操作按钮 - 两个一行横向排列 */
   .op-row {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: row;
+    gap: 12px;
   }
+  .op-row .btn { flex: 1; }
   .btn {
     height: 44px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
     font-size: 16px;
@@ -174,30 +176,30 @@
   }
   .btn-danger:hover { background: #b91c1c; }
 
-  /* 计数区域 */
-  .count-grid {
+  /* 单位实时统计 - 参考 pen 设计，文字在上数字在下 */
+  .stats-grid {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+  }
+  .stats-card {
+    flex: 1;
+    min-width: 100px;
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-  }
-  .count-item {
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 4px 0;
+    justify-content: center;
+    gap: 8px;
   }
-  .count-label {
-    font-size: 16px;
-    font-weight: 600;
-    color: #374151;
-  }
-  .count-value {
-    font-size: 44px;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .count-value.red { color: #DC2626; }
-  .count-value.blue { color: #2563EB; }
+  .stats-label { font-size: 16px; font-weight: 600; color: #374151; }
+  .stats-value { font-size: 44px; font-weight: 700; line-height: 1; }
+  .stats-value.red { color: #DC2626; }
+  .stats-value.blue { color: #2563EB; }
 
   /* 设备状态 */
   .device-list {
@@ -663,76 +665,40 @@
 <!-- 主内容区 -->
 <div class="main-content">
 
-  <!-- 左侧栏 -->
+  <!-- 左侧栏 500px -->
   <div class="left-panel">
 
-    <!-- 包装比例设置 + 操作 卡片合并 -->
-    <div class="card" style="padding:14px 16px;">
-      <!-- 包装比例 -->
-      <div class="inner-card" style="margin-bottom:10px;">
-        <div style="font-size:13px; font-weight:600; color:#374151; margin-bottom:8px;">包装比例设置</div>
-        <div class="ratio-row">
-          <span class="ratio-label">每盒瓶数</span>
-          <input type="number" class="ratio-input" id="bottlesPerBox" value="6" min="1" max="24">
-        </div>
-      </div>
-      <!-- 操作 -->
-      <div class="inner-card" style="padding:10px 14px;">
-        <div class="op-row">
-          <button class="btn btn-primary" id="startBtn" onclick="toggleCapture()">开始采集</button>
-          <button class="btn btn-secondary" onclick="clearScreen()">清屏</button>
-        </div>
-      </div>
-      <!-- 报警提示 -->
-      <div id="alarmBar" class="alarm-bar" style="margin-top:10px;">
-        <span>⚠</span>
-        <span id="alarmMsg">关联失败，请检查码读取情况</span>
-        <button onclick="closeAlarm()" style="margin-left:auto; background:#DC2626; color:#fff; border:none; border-radius:4px; padding:2px 10px; cursor:pointer; font-size:12px;">关闭报警</button>
+    <!-- 采集规格设置 -->
+    <div class="card" style="flex-shrink:0; min-height:120px; padding:18px 16px;">
+      <div class="card-title">采集规格设置</div>
+      <div class="ratio-row" style="margin-top:8px;">
+        <span class="ratio-label" style="font-size:22px; font-weight:600; color:#4B5563;">1盒</span>
+        <input type="number" class="ratio-input" id="bottlesPerBox" value="6" min="1" max="24" style="width:72px; height:52px; font-size:34px;">
+        <span class="ratio-label" style="font-size:22px; font-weight:600; color:#4B5563;">瓶</span>
       </div>
     </div>
 
-    <!-- 计数 -->
-    <div class="card">
-      <div class="card-title">计数</div>
-      <div class="inner-card">
-        <div class="count-grid">
-          <div class="count-item">
-            <span class="count-label">合计瓶数</span>
-            <span class="count-value red" id="totalBottles">0</span>
-          </div>
-          <div class="section-divider"></div>
-          <div class="count-item">
-            <span class="count-label">当前盒数</span>
-            <span class="count-value blue" id="totalBoxes">0</span>
-          </div>
+    <!-- 单位实时统计 - 文字在上数字在下，flex:1 铺满剩余空间 -->
+    <div class="card" style="flex:1; min-height:0; display:flex; flex-direction:column; padding:14px 16px;">
+      <div class="card-title" style="margin-bottom:12px; flex-shrink:0;">单位实时统计</div>
+      <div class="stats-grid" style="flex:1; min-height:120px;">
+        <div class="stats-card">
+          <div class="stats-label">合计瓶数</div>
+          <div class="stats-value red" id="totalBottles">0</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-label">当前盒数</div>
+          <div class="stats-value blue" id="totalBoxes">0</div>
         </div>
       </div>
     </div>
 
-    <!-- 设备连接状态 -->
-    <div class="card">
-      <div class="card-title">设备连接状态</div>
-      <div class="inner-card">
-        <div class="device-list">
-          <div class="device-item">
-            <span class="device-name">瓶1读码器</span>
-            <span class="device-status connected" id="dev1Status">
-              <span class="status-dot dot-green"></span>已连接
-            </span>
-          </div>
-          <div class="device-item">
-            <span class="device-name">瓶2读码器</span>
-            <span class="device-status connected" id="dev2Status">
-              <span class="status-dot dot-green"></span>已连接
-            </span>
-          </div>
-          <div class="device-item">
-            <span class="device-name">盒读码器</span>
-            <span class="device-status connected" id="dev3Status">
-              <span class="status-dot dot-green"></span>已连接
-            </span>
-          </div>
-        </div>
+    <!-- 任务控制 -->
+    <div class="card" style="flex-shrink:0; min-height:140px; padding:18px 16px;">
+      <div class="card-title">任务控制</div>
+      <div class="op-row" style="margin-top:8px;">
+        <button class="btn btn-primary" id="startBtn" onclick="toggleCapture()" style="height:48px; font-size:16px; font-weight:600;">开始采集</button>
+        <button class="btn btn-secondary" onclick="clearScreen()" style="height:48px; font-size:16px; font-weight:600;">清屏</button>
       </div>
     </div>
 
@@ -741,58 +707,48 @@
   <!-- 右侧栏 -->
   <div class="right-panel">
 
-    <!-- 盒码读码区（约30%）-->
-    <div class="read-area box-area" style="flex: 0 0 200px;">
+    <!-- 数据接收区（统一展示，时间+具体信息每行一条）-->
+    <div class="read-area" style="flex: 0 0 60%;">
       <div class="read-area-header">
-        盒码读码区 <span style="font-size:12px; color:#9CA3AF; font-weight:400;">（最新在上，最多1000条）</span>
+        数据接收区 <span style="font-size:12px; color:#9CA3AF; font-weight:400;">（最新在上，每行一条）</span>
       </div>
-      <div class="read-area-content" id="boxLogArea">
+      <div class="read-area-content" id="dataLogArea">
         <div class="log-entry log-success">
+          <span class="log-time">10:30:18</span>
+          盒读码：20241201001002
+        </div>
+        <div class="log-entry log-success">
+          <span class="log-time">10:30:17</span>
+          1盒码关联成功
+        </div>
+        <div class="log-entry log-normal">
           <span class="log-time">10:30:16</span>
-          盒读码：20241201001002 &nbsp;|&nbsp; <strong>1盒码关联成功</strong>
+          瓶1读码：20241201010001、20241201010002、20241201010003
         </div>
         <div class="log-entry log-normal">
-          <span class="log-time">10:30:08</span>
-          盒读码：20241201001001 &nbsp;|&nbsp; 1盒码关联成功
+          <span class="log-time">10:30:15</span>
+          瓶2读码：20241201010004、20241201010005、20241201010006
         </div>
-        <div class="log-entry log-normal">
-          <span class="log-time">10:29:55</span>
-          盒读码：20241201001000 &nbsp;|&nbsp; 1盒码关联成功
+        <div class="log-entry log-error">
+          <span class="log-time">10:30:14</span>
+          重码: 20241201009990（已标记剔除）
         </div>
       </div>
     </div>
 
-    <!-- 瓶码读码区（约70%）-->
-    <div class="read-area bottle-area" style="flex: 1;">
+    <!-- 操作日志（含设备连接状态）-->
+    <div class="read-area" style="flex: 1;">
       <div class="read-area-header">
-        瓶码读码区 <span style="font-size:12px; color:#9CA3AF; font-weight:400;">（最新在上，最多1000条）</span>
+        操作日志 <span style="font-size:12px; color:#9CA3AF; font-weight:400;">（最新在上）</span>
       </div>
-      <div class="read-area-content" id="bottleLogArea">
-        <div class="log-entry log-success">
+      <div class="read-area-content" id="opLogArea">
+        <div class="log-entry log-normal">
           <span class="log-time">10:30:14</span>
-          瓶1读码：<span style="color:#2563EB;">20241201010001</span>、<span style="color:#2563EB;">20241201010002</span>、<span style="color:#2563EB;">20241201010003</span>、<span style="color:#2563EB;">20241201010004</span>
-          &nbsp;&nbsp;
-          瓶2读码：<span style="color:#2563EB;">20241201010005</span>、<span style="color:#2563EB;">20241201010006</span>
+          设备初始化完成 瓶1✓ 瓶2✓ 盒✓
         </div>
         <div class="log-entry log-normal">
-          <span class="log-time">10:30:06</span>
-          瓶1读码：20241201009995、20241201009996、20241201009997、20241201009998 &nbsp;&nbsp; 瓶2读码：20241201009999、20241201010000
-        </div>
-        <div class="log-entry log-error">
-          <span class="log-time">10:29:52</span>
-          瓶1读码：20241201009989 &nbsp;&nbsp; 瓶2读码：<span style="background:#FEE2E2; padding:1px 4px; border-radius:3px;">20241201009990（重码）</span>、20241201009991 &nbsp;|&nbsp; ⚠ 检测到重码，已标记剔除
-        </div>
-        <div class="log-entry log-normal">
-          <span class="log-time">10:29:44</span>
-          瓶1读码：20241201009983、20241201009984、20241201009985 &nbsp;&nbsp; 瓶2读码：20241201009986、20241201009987、20241201009988
-        </div>
-        <div class="log-entry log-normal">
-          <span class="log-time">10:29:36</span>
-          瓶1读码：20241201009977、20241201009978、20241201009979 &nbsp;&nbsp; 瓶2读码：20241201009980、20241201009981、20241201009982
-        </div>
-        <div class="log-entry log-normal">
-          <span class="log-time">10:29:28</span>
-          瓶1读码：20241201009971、20241201009972、20241201009973 &nbsp;&nbsp; 瓶2读码：20241201009974、20241201009975、20241201009976
+          <span class="log-time">10:30:10</span>
+          开始采集
         </div>
       </div>
     </div>
@@ -1039,31 +995,37 @@ function startSimulation() {
     for(let i=halfN; i<n; i++) codes2.push(`2024${batchNum}${String(cycle*10+i+1).padStart(4,'0')}`);
 
     const hasError = cycle % 7 === 0; // 每7次模拟一次重码
-
-    let bottleHtml = `<div class="log-entry ${hasError ? 'log-error' : 'log-success'}">`;
-    bottleHtml += `<span class="log-time">${ts}</span>`;
-    bottleHtml += `瓶1读码：${codes1.map(c=>`<span style="color:#2563EB;">${c}</span>`).join('、')}`;
-    if(codes2.length > 0) bottleHtml += ` &nbsp;&nbsp; 瓶2读码：${codes2.map(c=>`<span style="color:#2563EB;">${c}</span>`).join('、')}`;
-    if(hasError) {
-      bottleHtml += ` &nbsp;|&nbsp; <span style="background:#FEE2E2;padding:1px 4px;border-radius:3px;">⚠ 检测到重码，已标记剔除</span>`;
-      showAlarm('检测到重码：20241201'+batchNum+'，已标记剔除');
-    }
-    bottleHtml += '</div>';
-
-    prependLog('bottleLogArea', bottleHtml);
-
-    // 关联盒码
     const boxCode = `2024${batchNum}${String(9000+cycle).padStart(4,'0')}`;
     totalBottles += parseInt(n);
     totalBoxes++;
     document.getElementById('totalBottles').textContent = totalBottles;
     document.getElementById('totalBoxes').textContent = totalBoxes;
 
+    // 数据接收区：时间+具体信息，每行一条
+    const bottleHtml = `<div class="log-entry log-normal">
+      <span class="log-time">${ts}</span>
+      瓶1读码：${codes1.map(c=>`<span style="color:#2563EB;">${c}</span>`).join('、')}
+    </div><div class="log-entry log-normal">
+      <span class="log-time">${ts}</span>
+      瓶2读码：${codes2.map(c=>`<span style="color:#2563EB;">${c}</span>`).join('、')}
+    </div>`;
+    prependLog('dataLogArea', bottleHtml);
+
     const boxHtml = `<div class="log-entry log-success">
       <span class="log-time">${ts}</span>
-      盒读码：${boxCode} &nbsp;|&nbsp; <strong>${totalBoxes}盒码关联成功</strong>
+      盒读码：${boxCode}
+    </div><div class="log-entry log-success">
+      <span class="log-time">${ts}</span>
+      1盒码关联成功
     </div>`;
-    prependLog('boxLogArea', boxHtml);
+    prependLog('dataLogArea', boxHtml);
+
+    if(hasError) {
+      prependLog('dataLogArea', `<div class="log-entry log-error">
+        <span class="log-time">${ts}</span>
+        重码: 20241201${batchNum}（已标记剔除）
+      </div>`);
+    }
 
   }, 2500);
 }
@@ -1077,19 +1039,9 @@ function prependLog(areaId, html) {
 }
 
 function clearScreen() {
-  if(confirm('确认清屏？将清除所有读码记录')) {
-    document.getElementById('bottleLogArea').innerHTML = '';
-    document.getElementById('boxLogArea').innerHTML = '';
+  if(confirm('确认清屏？将清除数据接收区显示记录')) {
+    document.getElementById('dataLogArea').innerHTML = '';
   }
-}
-
-function showAlarm(msg) {
-  document.getElementById('alarmMsg').textContent = msg || '关联异常，请检查';
-  document.getElementById('alarmBar').classList.add('show');
-}
-
-function closeAlarm() {
-  document.getElementById('alarmBar').classList.remove('show');
 }
 
 // 系统设置 - 密码验证
@@ -1244,9 +1196,9 @@ document.addEventListener('keydown', e => {
         <div class="help-section" id="h-m1">
           <div class="help-h1">二、1号机操作指南（瓶盒关联软件）</div>
           <div class="help-h2">2.1 日常操作流程</div>
-          <div class="help-step-title">步骤1：确认包装比例</div>
+          <div class="help-step-title">步骤1：确认采集规格</div>
           <ul class="help-ul">
-            <li>在左侧「包装比例设置」区域，确认「每盒瓶数」设置正确（默认6瓶）</li>
+            <li>在左侧「采集规格设置」区域，确认「1盒 6瓶」设置正确（6可修改，默认6瓶）</li>
             <li class="help-warn">⚠ 开始采集后不可修改</li>
           </ul>
           <div class="help-step-title">步骤2：开始采集</div>
@@ -1257,21 +1209,20 @@ document.addEventListener('keydown', e => {
           </ol>
           <div class="help-step-title">步骤3：监控采集过程</div>
           <ul class="help-ul">
-            <li><strong>右侧上方 - 盒码读码区</strong>：绿色=关联成功，红色=关联失败或异常</li>
-            <li><strong>右侧下方 - 瓶码读码区</strong>：黑色=正常，红色=重码/错码（系统自动标记，产线正常移动，下游按箱剔除）</li>
-            <li><strong>左侧 - 计数</strong>：「合计瓶数」「当前盒数」实时更新</li>
+            <li><strong>右侧 - 数据接收区</strong>：盒码、瓶码及关联结果统一展示，时间+具体信息每行一条；绿色=关联成功，红色=关联失败或异常；黑色=正常码，红色=重码/错码（系统会标记剔除，产线正常移动，下游按箱剔除）</li>
+            <li><strong>左侧 - 单位实时统计</strong>：「合计瓶数」「当前盒数」实时更新（文字在上、数字在下）</li>
           </ul>
           <div class="help-step-title">步骤4：停止采集</div>
           <ul class="help-ul"><li>点击「停止采集」按钮，未满盒的数据会保留</li></ul>
           <div class="help-h2">2.2 设备连接状态</div>
           <ul class="help-ul">
-            <li>左侧下方显示读码器连接状态</li>
+            <li>右侧操作日志区域显示读码器连接状态</li>
             <li>绿色文字：设备已连接 ✓</li>
             <li>红色文字：设备未连接，请检查设备连接后重启</li>
           </ul>
           <div class="help-h2">2.3 清屏</div>
           <ul class="help-ul">
-            <li>点击「清屏」按钮：清空读码区显示记录</li>
+            <li>点击「清屏」按钮：清空数据接收区显示记录</li>
             <li class="help-warn">⚠ 清屏不影响计数和数据库数据</li>
           </ul>
         </div>
@@ -1283,7 +1234,7 @@ document.addEventListener('keydown', e => {
             <thead><tr><th>Tab 名称</th><th>功能说明</th></tr></thead>
             <tbody>
               <tr><td><strong>数据采集</strong></td><td>主界面，默认选中</td></tr>
-              <tr><td>手工采集</td><td>相机损坏时备用</td></tr>
+              <tr><td>手工采集</td><td>1号机相机损坏时备用</td></tr>
               <tr><td>码包管理</td><td>导入码包数据</td></tr>
               <tr><td>数据查询</td><td>查询码关联关系</td></tr>
               <tr><td>数据替换</td><td>码替换操作</td></tr>
@@ -1296,9 +1247,9 @@ document.addEventListener('keydown', e => {
           <div class="help-h2">3.2 数据采集主界面操作流程</div>
           <div class="help-step-title">生产前准备：</div>
           <ol class="help-ol">
-            <li>点击「产品选择」下拉框，在弹窗中搜索并选择生产产品</li>
+            <li>在左侧「当前生产信息」区域，点击「产品选择」下拉框，搜索并选择生产产品</li>
             <li>确认生产单号（系统自动生成，可手动修改）</li>
-            <li>确认包装比例（每箱盒数、每垛箱数）</li>
+            <li>确认采集规格（1垛 [70]箱、1箱 [4]盒，70、4可修改）；<strong>采集开始后不可修改</strong></li>
           </ol>
           <div class="help-step-title">开始采集：</div>
           <ol class="help-ol">
@@ -1311,7 +1262,7 @@ document.addEventListener('keydown', e => {
             <li><strong>中间上方 - 数据接收区</strong>（约60%高）：扫码数据和关联结果，最新在上</li>
             <li><strong>中间中部 - 操作日志</strong>（约20%）：用户操作记录，最新在上</li>
             <li><strong>中间下方 - 报警信息</strong>（约20%）：重码、关联失败等异常，最新在上</li>
-            <li><strong>左侧 - 数量统计</strong>：以「实时数/预设数」形式显示（如 4/4、6/70）</li>
+            <li><strong>右侧 - 单位实时统计</strong>：当前箱数、每垛箱数、当前盒数、每箱盒数、已生产垛数、总剔除数，文字在上数字在下，每项独立卡片</li>
           </ul>
           <div class="help-step-title">成垛与自动上传：</div>
           <ul class="help-ul">
@@ -1319,31 +1270,18 @@ document.addEventListener('keydown', e => {
             <li>上传成功：绿灯常亮 + 声音提醒</li>
             <li class="help-warn">上传失败：红灯常亮 + 声音提醒（需处理后手动重传）</li>
           </ul>
-          <div class="help-h2">3.3 右侧按钮功能说明</div>
-          <div class="help-step-title">采集控制组：</div>
+          <div class="help-h2">3.3 右侧任务控制</div>
+          <p style="margin-bottom:8px;">总剔除数显示在单位实时统计区域。按钮一行两个排列：</p>
           <table class="help-table">
             <thead><tr><th>按钮</th><th>功能说明</th></tr></thead>
             <tbody>
               <tr><td>开始/停止采集</td><td>启动或停止数据采集；停止后未满垛数据保留</td></tr>
               <tr><td>无需采集码</td><td>当天不生产五码合一产品时开启，所有读码设备不工作</td></tr>
-              <tr><td>关闭报警</td><td>上传失败触发报警后，点击可重置报警状态</td></tr>
-            </tbody>
-          </table>
-          <div class="help-step-title">垛相关操作组：</div>
-          <table class="help-table">
-            <thead><tr><th>按钮</th><th>功能说明</th></tr></thead>
-            <tbody>
+              <tr><td>关闭报警</td><td>上传失败触发报警后，点击可重置报警状态（停止声光报警器、蜂鸣器）</td></tr>
               <tr><td>强制满垛</td><td>未达到预设箱数时，强制结束当前垛，生成垛码</td></tr>
               <tr><td>清空垛</td><td>清除当前垛计数，重置统计数据</td></tr>
-              <tr><td>提取工单未成垛</td><td>提取之前未完成垛的数据，弹窗选择后恢复继续</td></tr>
-            </tbody>
-          </table>
-          <div class="help-step-title">剔除相关操作组：</div>
-          <table class="help-table">
-            <thead><tr><th>按钮</th><th>功能说明</th></tr></thead>
-            <tbody>
+              <tr><td>提取工单未成垛</td><td>弹窗输入/扫描垛内任一箱码，查出对应生产订单并显示，确认后回显主页面继续生产</td></tr>
               <tr><td>收回剔除</td><td>剔除设备动作后未自动收回时，点击手动收回</td></tr>
-              <tr><td>总剔除数</td><td>显示累计剔除数量</td></tr>
               <tr><td>清零</td><td>将总剔除数重置为 0</td></tr>
             </tbody>
           </table>
@@ -1357,10 +1295,10 @@ document.addEventListener('keydown', e => {
           <div class="help-h2">4.1 手工采集（1号机相机损坏时使用，仅支持瓶盒关联）</div>
           <ol class="help-ol">
             <li>点击「手工采集」Tab</li>
-            <li>设置包装比例（每瓶码数，如每盒6瓶则填6）；<strong>采集开始后不可修改</strong></li>
+            <li>设置采集规格（1盒 [6]瓶，6可修改）；<strong>采集开始后不可修改</strong></li>
             <li>点击「开始采集」按钮，按钮变为「停止采集」</li>
-            <li>按提示顺序用扫码枪扫码：先扫瓶码（足够数量后）→ 扫盒码</li>
-            <li>状态灯提示当前应扫的层级（如「瓶码灯亮」→「够了扫盒码」）</li>
+            <li>按左侧「开始采集提示」顺序用扫码枪扫码：先扫瓶码（足够数量后）→ 扫盒码</li>
+            <li>左侧开始采集提示区文字随进度变化，告知当前应扫瓶码或盒码（无指示灯，文字提示即可）</li>
             <li>扫码完成后自动完成瓶盒关联，当前已读数量归零，继续下一组</li>
           </ol>
         </div>
@@ -1383,13 +1321,7 @@ document.addEventListener('keydown', e => {
         <div class="help-section" id="h-query">
           <div class="help-h2">4.3 数据查询</div>
           <p><strong>用途</strong>：查询码的关联关系，用于产品追溯。</p>
-          <table class="help-table">
-            <thead><tr><th>查询类型</th><th>操作</th><th>结果说明</th></tr></thead>
-            <tbody>
-              <tr><td>正向查询（查下级）</td><td>输入码 → 点击「正向查询」或回车</td><td>显示该码的直接下级码</td></tr>
-              <tr><td>反向查询（查上级）</td><td>输入码 → 点击「反向查询」或 Ctrl+Enter</td><td>显示该码的所有上级码 + 同级其他码</td></tr>
-            </tbody>
-          </table>
+          <p>输入码后点击「查询」或回车，查出该码所属垛的全部数据。例如输入箱码，显示该垛下所有箱（箱1、箱2…）及各自的盒、瓶。左侧表格按层级分列展示，与输入的码对应的单元格红色字体显示；点击某行，右侧展示该行的具体信息（码、采集时间、产品编号、产品名称、生产单号）。</p>
         </div>
 
         <div class="help-section" id="h-replace">
@@ -1478,7 +1410,7 @@ document.addEventListener('keydown', e => {
           </div>
           <div class="help-faq-item">
             <div class="help-faq-q">Q6：如何知道码属于哪一层级（瓶/盒/箱/垛）？</div>
-            <div class="help-faq-a">在「数据查询」Tab 中输入码值，点击「正向查询」或「反向查询」，查询结果会显示该码的层级和关联关系。</div>
+            <div class="help-faq-a">在「数据查询」Tab 中输入码值，点击「查询」或回车，左侧表格按层级分列展示，点击某行右侧可查看该行的详细信息。</div>
           </div>
         </div>
 
