@@ -1283,7 +1283,7 @@ body {
       <div class="card ctrl-group">
         <div class="ctrl-title-row">
           <span class="card-title" style="margin-bottom:0;">任务控制</span>
-          <span class="ctrl-help-icon" onclick="showHelp('任务控制', '开始/停止采集：系统检测硬件后开始采集；再次点击停止，未满垛数据保留。\n无需采集码：不生产五码合一产品时开启，所有读码设备不工作。\n关闭报警：重置报警状态，停止声光报警器。\n强制满垛：未达到设定箱数也强制结束当前垛。\n清空垛：清除当前垛计数。\n提取工单未成垛：提取之前未完成垛的数据。\n收回剔除：剔除设备未自动收回时收回动作。\n清零：将总剔除数重置为0。')">?</span>
+          <span class="ctrl-help-icon" onclick="showHelp('任务控制', '开始/停止采集：系统检测硬件后开始采集；再次点击停止，未满垛数据保留。\n无需采集码：不生产五码合一产品时开启，所有读码设备不工作。\n关闭报警：重置报警状态，停止声光报警器。\n强制满垛：未达到设定箱数也强制结束当前垛。\n提取工单未成垛：提取之前未完成垛的数据。\n收回剔除：剔除设备未自动收回时收回动作。\n剔除数清零：将总剔除数重置为0。')">?</span>
         </div>
         <div class="ctrl-btn-row">
           <button class="ctrl-btn ctrl-btn-solid ctrl-btn-primary" id="collectBtn" onclick="toggleCollect()">开始采集</button>
@@ -1294,7 +1294,6 @@ body {
           <button class="ctrl-btn ctrl-btn-solid ctrl-btn-green" onclick="forcePallet()">强制满垛</button>
         </div>
         <div class="ctrl-btn-row">
-          <button class="ctrl-btn ctrl-btn-solid ctrl-btn-red" onclick="clearPallet()">清空垛</button>
           <button class="ctrl-btn ctrl-btn-solid ctrl-btn-primary" onclick="extractUnfinished()">提取工单未成垛</button>
         </div>
         <div class="ctrl-btn-row">
@@ -1329,7 +1328,6 @@ body {
           <span class="code-divider">/</span>
           <span class="code-wait" id="promptCode2">盒码</span>
         </div>
-          <div style="font-size:13px; color:#6B7280;" id="manualPromptHint">请扫瓶码</div>
         </div>
       </div>
     </div>
@@ -1916,7 +1914,6 @@ body {
               <tr><td>无需采集码</td><td>当天不生产五码合一产品时开启，所有读码设备不工作</td></tr>
               <tr><td>关闭报警</td><td>上传失败触发报警后，点击可重置报警状态（停止声光报警器、蜂鸣器）</td></tr>
               <tr><td>强制满垛</td><td>未达到预设箱数时，强制结束当前垛，生成垛码</td></tr>
-              <tr><td>清空垛</td><td>清除当前垛计数，重置统计数据</td></tr>
               <tr><td>提取工单未成垛</td><td>弹窗输入/扫描垛内任一箱码，查出对应生产订单并显示，确认后回显主页面继续生产</td></tr>
               <tr><td>收回剔除</td><td>剔除设备动作后未自动收回时，点击手动收回</td></tr>
               <tr><td>清零</td><td>将总剔除数重置为 0</td></tr>
@@ -2523,15 +2520,6 @@ function forcePallet() {
   }
 }
 
-function clearPallet() {
-  if(confirm('确认清空垛？将清除当前垛计数。')) {
-    curCases = 0; curBoxes = 0;
-    document.getElementById('curCases').textContent = 0;
-    document.getElementById('curBoxes').textContent = 0;
-    appendOpLog('执行清空垛操作');
-  }
-}
-
 function extractUnfinished() {
   alert('查询未成垛数据...\n\n未成垛记录：\n1. 生产单20241130001 - 进度 45/70箱\n\n请选择后继续生产');
 }
@@ -2567,7 +2555,6 @@ function toggleManualCollect() {
     isManualCollecting = true;
     btn.textContent = '停止采集';
     btn.style.background = '#DC2626';
-    document.getElementById('manualPromptHint').textContent = '请扫瓶码';
   } else {
     manualN.disabled = false;
     isManualCollecting = false;
