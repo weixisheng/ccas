@@ -1194,11 +1194,15 @@ body {
         <div class="card-title">实时上传数据区</div>
         <div id="uploadDataList" style="flex:1; display:flex; flex-direction:column; gap:8px; overflow-y:auto;">
           <div class="upload-row">
-            <span style="font-size:18px; color:#4B5563;">1箱</span>
+            <span style="font-size:18px; color:#4B5563;">垛 P20241201001</span>
             <span class="upload-tag upload-tag-pending">待上传</span>
           </div>
           <div class="upload-row">
-            <span style="font-size:18px; color:#4B5563;">2箱</span>
+            <span style="font-size:18px; color:#4B5563;">垛 P20241201002</span>
+            <span class="upload-tag upload-tag-done">已上传</span>
+          </div>
+          <div class="upload-row">
+            <span style="font-size:18px; color:#4B5563;">垛 P20241201003</span>
             <span class="upload-tag upload-tag-done">已上传</span>
           </div>
         </div>
@@ -1217,14 +1221,14 @@ body {
             </span>
           </div>
           <div class="log-section-body" id="dataArea">
-            <div class="log-entry le-success"><span class="ts">10:30:18</span>⚡ 满垛提示 - 垛码：P20241201003 已生成，共70箱，正在上传...</div>
-            <div class="log-entry le-data"><span class="ts">10:30:16</span>装箱完成 - 箱码：20241201001003 已关联4盒，共24瓶</div>
-            <div class="log-entry le-data"><span class="ts">10:30:16</span>盒箱关联 - 盒码：20241201001002 → 箱码：20241201001003</div>
-            <div class="log-entry le-data"><span class="ts">10:30:14</span>盒箱关联 - 盒码：20241201001001 → 箱码：20241201001003</div>
-            <div class="log-entry le-data"><span class="ts">10:30:12</span>接收1号机数据 - 瓶盒关联：盒码20241201001002（6瓶）</div>
-            <div class="log-entry le-data"><span class="ts">10:30:10</span>接收1号机数据 - 瓶盒关联：盒码20241201001001（6瓶）</div>
-            <div class="log-entry le-success"><span class="ts">10:29:58</span>✓ 垛码：P20241201002 上传成功</div>
-            <div class="log-entry le-data"><span class="ts">10:29:45</span>满垛 - 垛码：P20241201002 已生成</div>
+            <div class="log-entry le-success"><span class="ts">10:30:18</span>⚡ 满垛提示 - 垛码：P20241201001 已生成，共3箱，正在上传...</div>
+            <div class="log-entry le-data"><span class="ts">10:30:16</span>装箱完成 - 箱码：20241201C003 已关联4盒，共24瓶</div>
+            <div class="log-entry le-data"><span class="ts">10:30:16</span>盒箱关联 - 盒码：20241201B0304 → 箱码：20241201C003</div>
+            <div class="log-entry le-data"><span class="ts">10:30:14</span>盒箱关联 - 盒码：20241201B0303 → 箱码：20241201C003</div>
+            <div class="log-entry le-data"><span class="ts">10:30:12</span>接收1号机数据 - 瓶盒关联：盒码20241201B0302（6瓶）</div>
+            <div class="log-entry le-data"><span class="ts">10:30:10</span>接收1号机数据 - 瓶盒关联：盒码20241201B0301（6瓶）</div>
+            <div class="log-entry le-success"><span class="ts">10:29:58</span>✓ 垛码：P20241201001 上传成功</div>
+            <div class="log-entry le-data"><span class="ts">10:29:45</span>满垛 - 垛码：P20241201001 已生成（3箱12盒72瓶）</div>
           </div>
         </div>
       </div>
@@ -1248,7 +1252,7 @@ body {
             <span>⚠ 报警信息 <span style="font-size:11px; color:#9CA3AF; font-weight:400;">（最新在上）</span></span>
           </div>
           <div class="log-section-body" id="alarmArea">
-            <div class="log-entry le-error"><span class="ts">10:30:15</span>重码: 20241201001001 - 已在码包中出现过</div>
+            <div class="log-entry le-error"><span class="ts">10:30:15</span>重码: 20241201V010101 - 已在码包中出现过</div>
           </div>
         </div>
       </div>
@@ -1383,7 +1387,7 @@ body {
 <div class="tab-content" id="tab-query">
   <div class="query-layout">
     <div class="query-top-bar">
-      <input type="text" class="form-input" id="queryInput" placeholder="请输入码信息或使用扫码枪扫描..." style="flex:1; min-width:200px;" onkeydown="if(event.key==='Enter')doQuery()">
+      <input type="text" class="form-input" id="queryInput" value="20241201C001" placeholder="如：20241201C001、20241201V010101、P20241201001" style="flex:1; min-width:200px;" onkeydown="if(event.key==='Enter')doQuery()">
       <button class="btn btn-primary" style="height:40px; padding:0 20px; font-size:14px;" onclick="doQuery()">查询</button>
       <button class="btn btn-outline" style="height:40px; padding:0 16px; font-size:14px;" onclick="clearQuery()">清空</button>
       <span class="help-icon" onclick="showQueryHelp()" style="width:24px;height:24px;font-size:14px;">?</span>
@@ -1423,11 +1427,11 @@ body {
         <div class="card-title">码替换</div>
         <div style="margin-bottom:16px;">
           <div style="font-size:14px; font-weight:600; color:#374151; margin-bottom:6px;">* 原码 <span class="help-icon" onclick="showHelp('原码说明','请输入需要替换的原码，该码必须已在系统中存在关联关系')">?</span></div>
-          <input type="text" class="form-input" id="origCode" placeholder="请输入或扫描原码（待替换的码）" style="width:100%;">
+          <input type="text" class="form-input" id="origCode" placeholder="如：20241201V010101（待替换的码，需已在系统中）" value="20241201V010101" style="width:100%;">
         </div>
         <div style="margin-bottom:16px;">
           <div style="font-size:14px; font-weight:600; color:#374151; margin-bottom:6px;">* 新码 <span class="help-icon" onclick="showHelp('新码说明','新码必须在已导入的码包范围内，且未被使用过（系统中不存在该码的关联关系）')">?</span></div>
-          <input type="text" class="form-input" id="newCode" placeholder="请输入或扫描新码（替换后的码）" style="width:100%;">
+          <input type="text" class="form-input" id="newCode" placeholder="如：20241201V010101N（替换后的码，需在码包内且未使用）" value="20241201V010101N" style="width:100%;">
         </div>
         <div style="margin-bottom:16px;">
           <div style="font-size:14px; font-weight:600; color:#374151; margin-bottom:6px;">替换原因</div>
@@ -1466,21 +1470,21 @@ body {
         <div class="stats-cards-row">
           <div class="stat-card" onclick="openPalletList()" title="点击查看垛码列表">
             <div class="stat-label">垛数</div>
-            <div class="stat-num" id="statPallet">100</div>
+            <div class="stat-num" id="statPallet">10</div>
           </div>
           <div class="stat-card stat-card-plain">
             <div class="stat-label">箱数</div>
-            <div class="stat-num stat-num-plain" id="statCase">7000</div>
+            <div class="stat-num stat-num-plain" id="statCase">30</div>
           </div>
         </div>
         <div class="stats-cards-row">
           <div class="stat-card stat-card-plain">
             <div class="stat-label">盒数</div>
-            <div class="stat-num stat-num-plain" id="statBox">28000</div>
+            <div class="stat-num stat-num-plain" id="statBox">120</div>
           </div>
           <div class="stat-card stat-card-plain">
             <div class="stat-label">剔除数</div>
-            <div class="stat-num stat-num-plain" id="statReject">15</div>
+            <div class="stat-num stat-num-plain" id="statReject">3</div>
           </div>
         </div>
       </div>
@@ -1518,14 +1522,14 @@ body {
               </tr>
             </thead>
             <tbody>
-              <tr><td>D001-2410101</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 10:30:15</td><td>70</td><td>-</td></tr>
-              <tr class="row-even"><td>D002-2410101</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 10:35:22</td><td>70</td><td>-</td></tr>
-              <tr><td>D003-2410101</td><td><span class="badge badge-red">异常</span></td><td>2024-12-01 10:40:18</td><td>70</td><td>网络超时</td></tr>
-              <tr class="row-even"><td>D004-2410101</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 10:45:33</td><td>70</td><td>-</td></tr>
-              <tr><td>D005-2410101</td><td><span class="badge badge-red">异常</span></td><td>2024-12-01 10:50:47</td><td>70</td><td>服务器错误(500)</td></tr>
-              <tr class="row-even"><td>D006-2410101</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 10:55:12</td><td>70</td><td>-</td></tr>
-              <tr><td>D007-2410101</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 11:00:28</td><td>70</td><td>-</td></tr>
-              <tr class="row-even"><td>D008-2410101</td><td><span class="badge badge-red">异常</span></td><td>2024-12-01 11:05:56</td><td>70</td><td>网络超时</td></tr>
+              <tr><td>P20241201001</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 11:00:15</td><td>3</td><td>-</td></tr>
+              <tr class="row-even"><td>P20241201002</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 11:05:22</td><td>3</td><td>-</td></tr>
+              <tr><td>P20241201003</td><td><span class="badge badge-red">异常</span></td><td>2024-12-01 11:10:18</td><td>3</td><td>网络超时</td></tr>
+              <tr class="row-even"><td>P20241201004</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 11:15:33</td><td>3</td><td>-</td></tr>
+              <tr><td>P20241201005</td><td><span class="badge badge-red">异常</span></td><td>2024-12-01 11:20:47</td><td>3</td><td>服务器错误(500)</td></tr>
+              <tr class="row-even"><td>P20241201006</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 11:25:12</td><td>3</td><td>-</td></tr>
+              <tr><td>P20241201007</td><td><span class="badge badge-green">成功</span></td><td>2024-12-01 11:30:28</td><td>3</td><td>-</td></tr>
+              <tr class="row-even"><td>P20241201008</td><td><span class="badge badge-red">异常</span></td><td>2024-12-01 11:35:56</td><td>3</td><td>网络超时</td></tr>
             </tbody>
           </table>
         </div>
@@ -1640,12 +1644,12 @@ body {
 
           <div>
             <div class="cancel-field-label"><span class="req">*</span> 第一个码 <span class="help-icon" onclick="showHelp('第一个码','请输入同一包装内的任意一个码（瓶码/盒码/箱码/垛码均可）')">?</span></div>
-            <input type="text" class="cancel-input" id="code1" placeholder="请输入或扫描第一个码">
+            <input type="text" class="cancel-input" id="code1" placeholder="如：20241201V010101、20241201B0101" value="20241201V010101">
           </div>
 
           <div>
             <div class="cancel-field-label"><span class="req">*</span> 第二个码 <span class="help-icon" onclick="showHelp('第二个码','请输入与第一个码同一包装内的另一个码')">?</span></div>
-            <input type="text" class="cancel-input" id="code2" placeholder="请输入或扫描第二个码（同一包装内的任意两个码）">
+            <input type="text" class="cancel-input" id="code2" placeholder="如：20241201V010102、20241201C001（同一包装内）" value="20241201V010102">
           </div>
 
           <div>
@@ -1668,7 +1672,7 @@ body {
           <div>
             <div class="cancel-field-label"><span class="req">*</span> 大码 <span class="help-icon" onclick="showHelp('大码','请输入需要取消关联的盒码、箱码或垛码')">?</span></div>
             <div style="display:flex; gap:8px;">
-              <input type="text" class="cancel-input" id="batchCode" placeholder="请输入或扫描大码（盒码/箱码/垛码）" style="flex:1;">
+              <input type="text" class="cancel-input" id="batchCode" value="20241201C001" placeholder="如：20241201C001、20241201B0101、P20241201001" style="flex:1;">
               <button class="btn btn-primary" style="height:48px; width:80px; font-size:16px; font-weight:700;" onclick="addBatchCode()">添加</button>
             </div>
           </div>
@@ -1737,22 +1741,22 @@ body {
           上传信息（最新在上）
         </div>
         <div class="upload-log" id="uploadLogArea">
-          <div class="ul-entry ul-green"><span class="ts">14:35:20</span>垛码 D005-2410101 上传成功</div>
-          <div class="ul-entry ul-blue"><span class="ts">14:35:18</span>垛码 D005-2410101 上传中...</div>
-          <div class="ul-entry ul-gray"><span class="ts">14:35:15</span>垛码 D005-2410101 开始上传</div>
-          <div class="ul-entry ul-red"><span class="ts">14:30:22</span>垛码 D004-2410101 上传失败，网络超时</div>
-          <div class="ul-entry ul-blue"><span class="ts">14:30:21</span>垛码 D004-2410101 上传中...</div>
-          <div class="ul-entry ul-gray"><span class="ts">14:30:20</span>垛码 D004-2410101 开始上传</div>
-          <div class="ul-entry ul-green"><span class="ts">14:25:10</span>垛码 D003-2410101 上传成功</div>
-          <div class="ul-entry ul-blue"><span class="ts">14:25:08</span>垛码 D003-2410101 上传中...</div>
-          <div class="ul-entry ul-gray"><span class="ts">14:25:05</span>垛码 D003-2410101 开始上传</div>
+          <div class="ul-entry ul-green"><span class="ts">14:35:20</span>垛码 P20241201005 上传成功</div>
+          <div class="ul-entry ul-blue"><span class="ts">14:35:18</span>垛码 P20241201005 上传中...</div>
+          <div class="ul-entry ul-gray"><span class="ts">14:35:15</span>垛码 P20241201005 开始上传</div>
+          <div class="ul-entry ul-red"><span class="ts">14:30:22</span>垛码 P20241201004 上传失败，网络超时</div>
+          <div class="ul-entry ul-blue"><span class="ts">14:30:21</span>垛码 P20241201004 上传中...</div>
+          <div class="ul-entry ul-gray"><span class="ts">14:30:20</span>垛码 P20241201004 开始上传</div>
+          <div class="ul-entry ul-green"><span class="ts">14:25:10</span>垛码 P20241201003 上传成功</div>
+          <div class="ul-entry ul-blue"><span class="ts">14:25:08</span>垛码 P20241201003 上传中...</div>
+          <div class="ul-entry ul-gray"><span class="ts">14:25:05</span>垛码 P20241201003 开始上传</div>
         </div>
       </div>
     </div>
     <div class="upload-right">
       <div class="card" style="flex-shrink:0;">
         <div class="card-title">垛码查询与状态管理</div>
-        <input type="text" class="form-input" id="uploadQueryCode" placeholder="请输入垛码" style="width:100%; margin-bottom:10px;">
+        <input type="text" class="form-input" id="uploadQueryCode" placeholder="如：P20241201001" style="width:100%; margin-bottom:10px;">
         <div style="display:flex; gap:8px; align-items:center;">
           <button class="btn btn-primary" style="height:48px; padding:0 16px; font-size:14px;" onclick="queryUploadStatus()">查询状态</button>
           <button class="btn btn-outline" style="height:48px; padding:0 14px; font-size:14px;" onclick="setNotUploaded()">设为未上传</button>
@@ -2563,9 +2567,10 @@ function toggleManualCollect() {
   }
 }
 
-// 数据查询 - 单一查询，分层表格，左右分栏
+// 数据查询 / 取消关联 / 数据替换 / 码包查看 - 共用模拟数据
 // ── 模拟数据结构：垛 P20241201001 ──
-// 垛 → 3箱 → 每箱4盒 → 每盒6瓶
+// 1垛 → 3箱(C001/C002/C003) → 每箱4盒 → 每盒6瓶，共72条瓶码
+// 演示流程：数据查询输入 P20241201001/20241201C001/20241201V010101；取消关联输入 20241201V010101+20241201V010102；数据替换原码 20241201V010101 新码 20241201V010101N
 const mockData = {
   // ====== 垛码 ======
   'P20241201001': {
@@ -2641,13 +2646,79 @@ const mockData = {
     children:['20241201V030401','20241201V030402','20241201V030403','20241201V030404','20241201V030405','20241201V030406']
   },
 
-  // ====== 瓶码（盒B0101的6瓶）======
+  // ====== 瓶码（12盒×6瓶=72个）======
   '20241201V010101':{ level:'瓶码', time:'2024-12-01 10:54:01', parent:'20241201B0101' },
   '20241201V010102':{ level:'瓶码', time:'2024-12-01 10:54:03', parent:'20241201B0101' },
   '20241201V010103':{ level:'瓶码', time:'2024-12-01 10:54:05', parent:'20241201B0101' },
   '20241201V010104':{ level:'瓶码', time:'2024-12-01 10:54:07', parent:'20241201B0101' },
   '20241201V010105':{ level:'瓶码', time:'2024-12-01 10:54:09', parent:'20241201B0101' },
   '20241201V010106':{ level:'瓶码', time:'2024-12-01 10:54:11', parent:'20241201B0101' },
+  '20241201V010201':{ level:'瓶码', time:'2024-12-01 10:54:22', parent:'20241201B0102' },
+  '20241201V010202':{ level:'瓶码', time:'2024-12-01 10:54:24', parent:'20241201B0102' },
+  '20241201V010203':{ level:'瓶码', time:'2024-12-01 10:54:26', parent:'20241201B0102' },
+  '20241201V010204':{ level:'瓶码', time:'2024-12-01 10:54:28', parent:'20241201B0102' },
+  '20241201V010205':{ level:'瓶码', time:'2024-12-01 10:54:30', parent:'20241201B0102' },
+  '20241201V010206':{ level:'瓶码', time:'2024-12-01 10:54:32', parent:'20241201B0102' },
+  '20241201V010301':{ level:'瓶码', time:'2024-12-01 10:54:43', parent:'20241201B0103' },
+  '20241201V010302':{ level:'瓶码', time:'2024-12-01 10:54:45', parent:'20241201B0103' },
+  '20241201V010303':{ level:'瓶码', time:'2024-12-01 10:54:47', parent:'20241201B0103' },
+  '20241201V010304':{ level:'瓶码', time:'2024-12-01 10:54:49', parent:'20241201B0103' },
+  '20241201V010305':{ level:'瓶码', time:'2024-12-01 10:54:51', parent:'20241201B0103' },
+  '20241201V010306':{ level:'瓶码', time:'2024-12-01 10:54:53', parent:'20241201B0103' },
+  '20241201V010401':{ level:'瓶码', time:'2024-12-01 10:55:04', parent:'20241201B0104' },
+  '20241201V010402':{ level:'瓶码', time:'2024-12-01 10:55:06', parent:'20241201B0104' },
+  '20241201V010403':{ level:'瓶码', time:'2024-12-01 10:55:08', parent:'20241201B0104' },
+  '20241201V010404':{ level:'瓶码', time:'2024-12-01 10:55:10', parent:'20241201B0104' },
+  '20241201V010405':{ level:'瓶码', time:'2024-12-01 10:55:12', parent:'20241201B0104' },
+  '20241201V010406':{ level:'瓶码', time:'2024-12-01 10:55:14', parent:'20241201B0104' },
+  '20241201V020101':{ level:'瓶码', time:'2024-12-01 10:56:30', parent:'20241201B0201' },
+  '20241201V020102':{ level:'瓶码', time:'2024-12-01 10:56:32', parent:'20241201B0201' },
+  '20241201V020103':{ level:'瓶码', time:'2024-12-01 10:56:34', parent:'20241201B0201' },
+  '20241201V020104':{ level:'瓶码', time:'2024-12-01 10:56:36', parent:'20241201B0201' },
+  '20241201V020105':{ level:'瓶码', time:'2024-12-01 10:56:38', parent:'20241201B0201' },
+  '20241201V020106':{ level:'瓶码', time:'2024-12-01 10:56:40', parent:'20241201B0201' },
+  '20241201V020201':{ level:'瓶码', time:'2024-12-01 10:56:51', parent:'20241201B0202' },
+  '20241201V020202':{ level:'瓶码', time:'2024-12-01 10:56:53', parent:'20241201B0202' },
+  '20241201V020203':{ level:'瓶码', time:'2024-12-01 10:56:55', parent:'20241201B0202' },
+  '20241201V020204':{ level:'瓶码', time:'2024-12-01 10:56:57', parent:'20241201B0202' },
+  '20241201V020205':{ level:'瓶码', time:'2024-12-01 10:56:59', parent:'20241201B0202' },
+  '20241201V020206':{ level:'瓶码', time:'2024-12-01 10:57:01', parent:'20241201B0202' },
+  '20241201V020301':{ level:'瓶码', time:'2024-12-01 10:57:12', parent:'20241201B0203' },
+  '20241201V020302':{ level:'瓶码', time:'2024-12-01 10:57:14', parent:'20241201B0203' },
+  '20241201V020303':{ level:'瓶码', time:'2024-12-01 10:57:16', parent:'20241201B0203' },
+  '20241201V020304':{ level:'瓶码', time:'2024-12-01 10:57:18', parent:'20241201B0203' },
+  '20241201V020305':{ level:'瓶码', time:'2024-12-01 10:57:20', parent:'20241201B0203' },
+  '20241201V020306':{ level:'瓶码', time:'2024-12-01 10:57:22', parent:'20241201B0203' },
+  '20241201V020401':{ level:'瓶码', time:'2024-12-01 10:57:33', parent:'20241201B0204' },
+  '20241201V020402':{ level:'瓶码', time:'2024-12-01 10:57:35', parent:'20241201B0204' },
+  '20241201V020403':{ level:'瓶码', time:'2024-12-01 10:57:37', parent:'20241201B0204' },
+  '20241201V020404':{ level:'瓶码', time:'2024-12-01 10:57:39', parent:'20241201B0204' },
+  '20241201V020405':{ level:'瓶码', time:'2024-12-01 10:57:41', parent:'20241201B0204' },
+  '20241201V020406':{ level:'瓶码', time:'2024-12-01 10:57:43', parent:'20241201B0204' },
+  '20241201V030101':{ level:'瓶码', time:'2024-12-01 10:57:55', parent:'20241201B0301' },
+  '20241201V030102':{ level:'瓶码', time:'2024-12-01 10:57:57', parent:'20241201B0301' },
+  '20241201V030103':{ level:'瓶码', time:'2024-12-01 10:57:59', parent:'20241201B0301' },
+  '20241201V030104':{ level:'瓶码', time:'2024-12-01 10:58:01', parent:'20241201B0301' },
+  '20241201V030105':{ level:'瓶码', time:'2024-12-01 10:58:03', parent:'20241201B0301' },
+  '20241201V030106':{ level:'瓶码', time:'2024-12-01 10:58:05', parent:'20241201B0301' },
+  '20241201V030201':{ level:'瓶码', time:'2024-12-01 10:58:10', parent:'20241201B0302' },
+  '20241201V030202':{ level:'瓶码', time:'2024-12-01 10:58:12', parent:'20241201B0302' },
+  '20241201V030203':{ level:'瓶码', time:'2024-12-01 10:58:14', parent:'20241201B0302' },
+  '20241201V030204':{ level:'瓶码', time:'2024-12-01 10:58:16', parent:'20241201B0302' },
+  '20241201V030205':{ level:'瓶码', time:'2024-12-01 10:58:18', parent:'20241201B0302' },
+  '20241201V030206':{ level:'瓶码', time:'2024-12-01 10:58:20', parent:'20241201B0302' },
+  '20241201V030301':{ level:'瓶码', time:'2024-12-01 10:58:22', parent:'20241201B0303' },
+  '20241201V030302':{ level:'瓶码', time:'2024-12-01 10:58:24', parent:'20241201B0303' },
+  '20241201V030303':{ level:'瓶码', time:'2024-12-01 10:58:26', parent:'20241201B0303' },
+  '20241201V030304':{ level:'瓶码', time:'2024-12-01 10:58:28', parent:'20241201B0303' },
+  '20241201V030305':{ level:'瓶码', time:'2024-12-01 10:58:30', parent:'20241201B0303' },
+  '20241201V030306':{ level:'瓶码', time:'2024-12-01 10:58:32', parent:'20241201B0303' },
+  '20241201V030401':{ level:'瓶码', time:'2024-12-01 10:58:35', parent:'20241201B0304' },
+  '20241201V030402':{ level:'瓶码', time:'2024-12-01 10:58:37', parent:'20241201B0304' },
+  '20241201V030403':{ level:'瓶码', time:'2024-12-01 10:58:39', parent:'20241201B0304' },
+  '20241201V030404':{ level:'瓶码', time:'2024-12-01 10:58:41', parent:'20241201B0304' },
+  '20241201V030405':{ level:'瓶码', time:'2024-12-01 10:58:43', parent:'20241201B0304' },
+  '20241201V030406':{ level:'瓶码', time:'2024-12-01 10:58:45', parent:'20241201B0304' },
 };
 
 // 构建所有完整关联链（每行：瓶码→盒码→箱码→垛码）
@@ -2748,7 +2819,7 @@ function selectQueryRow(idx) {
 }
 
 function clearQuery() {
-  document.getElementById('queryInput').value = '';
+  document.getElementById('queryInput').value = '20241201C001';
   document.getElementById('queryStatus').textContent = '未查询';
   document.getElementById('querySplit').style.display = 'none';
   document.getElementById('queryEmpty').style.display = 'flex';
@@ -2894,8 +2965,8 @@ function doRecognize() {
 }
 
 function clearCancel() {
-  document.getElementById('code1').value = '';
-  document.getElementById('code2').value = '';
+  document.getElementById('code1').value = '20241201V010101';
+  document.getElementById('code2').value = '20241201V010102';
   document.getElementById('confirmCancelBtn').disabled = true;
   document.getElementById('cancelBtnHint').style.display = 'none';
   resetRecognizeResult('请在左侧输入码值并点击识别');
@@ -2934,6 +3005,7 @@ function removeBatchCode(idx) { batchCodes.splice(idx, 1); renderBatchList(); }
 function clearBatch() {
   batchCodes.length = 0;
   renderBatchList();
+  document.getElementById('batchCode').value = '20241201C001';
   resetRecognizeResult('请在左侧添加大码并点击识别');
   cancelRecognizeInfo = null;
 }
@@ -3032,12 +3104,13 @@ function execCancelConfirm(mode) {
   }
 }
 
-// 生产统计
+// 生产统计（基于 mockData 演示：1垛=3箱=12盒=72瓶）
 function doStatsQuery() {
-  document.getElementById('statPallet').textContent = Math.floor(Math.random()*50+80);
-  document.getElementById('statCase').textContent = (parseInt(document.getElementById('statPallet').textContent)*70).toLocaleString();
-  document.getElementById('statBox').textContent = (parseInt(document.getElementById('statCase').textContent)*4).toLocaleString();
-  document.getElementById('statReject').textContent = Math.floor(Math.random()*30+5);
+  const p = 10 + Math.floor(Math.random()*5); // 10~14垛
+  document.getElementById('statPallet').textContent = p;
+  document.getElementById('statCase').textContent = (p * 3).toLocaleString();
+  document.getElementById('statBox').textContent = (p * 12).toLocaleString();
+  document.getElementById('statReject').textContent = Math.floor(Math.random()*5+1);
 }
 
 function openPalletList() { document.getElementById('palletListOverlay').classList.add('active'); }
@@ -3050,10 +3123,10 @@ function doManualUpload() {
   area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-gray"><span class="ts">${ts}</span>手动上传：正在查找所有未上传的垛数据...</div>`);
   setTimeout(() => {
     const ts2 = getTs();
-    area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-blue"><span class="ts">${ts2}</span>垛码 P20241201-NEW 上传中...</div>`);
+    area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-blue"><span class="ts">${ts2}</span>垛码 P20241201011 上传中...</div>`);
     setTimeout(() => {
       const ts3 = getTs();
-      area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts3}</span>垛码 P20241201-NEW 上传成功</div>`);
+      area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts3}</span>垛码 P20241201011 上传成功</div>`);
       area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts3}</span>手动上传完成，成功1个，失败0个</div>`);
     }, 2000);
   }, 1000);
@@ -3062,7 +3135,7 @@ function doManualUpload() {
 function queryUploadStatus() {
   const code = document.getElementById('uploadQueryCode').value.trim();
   if(!code) { alert('请输入垛码'); return; }
-  const isKnown = ['D001-2410101','D002-2410101','D003-2410101','D004-2410101','D005-2410101'].includes(code);
+  const isKnown = ['P20241201001','P20241201002','P20241201003','P20241201004','P20241201005','P20241201006','P20241201007','P20241201008','P20241201009','P20241201010'].includes(code);
   const statuses = ['成功','失败','未上传'];
   const st = isKnown ? statuses[Math.floor(Math.random()*2)] : '未上传';
   const stClass = st==='成功'?'badge-green':st==='失败'?'badge-red':'badge-gray';
@@ -3189,8 +3262,22 @@ function tryDeletePackage(name) {
 function viewPackage(name) {
   document.getElementById('packageModalTitle').textContent = `查看码包：${name}`;
   const tbody = document.getElementById('packageTableBody');
-  const codes = Array.from({length:10}, (_,i) => `20241201${String(1000+i).padStart(6,'0')}`);
-  tbody.innerHTML = codes.map((c,i) => `<tr ${i%2?'class="row-even"':''}><td>${i+1}</td><td>${c}</td><td>2024-12-01 10:00:0${i}</td></tr>`).join('');
+  let codes = [];
+  if (name.includes('瓶') || name.includes('小标')) {
+    codes = Object.keys(mockData).filter(c => mockData[c].level === '瓶码').slice(0, 15);
+    codes = codes.concat(['20241201V010101N', '20241201V010102N', '20241201V010103N']); // 未使用备用码
+  } else if (name.includes('盒') || name.includes('中标')) {
+    codes = Object.keys(mockData).filter(c => mockData[c].level === '盒码');
+    codes = codes.concat(['20241201B9999', '20241201B9998']);
+  } else if (name.includes('箱') || name.includes('大标')) {
+    codes = Object.keys(mockData).filter(c => mockData[c].level === '箱码');
+    codes = codes.concat(['20241201C999', '20241201C998']);
+  } else {
+    codes = ['20241201V010101', '20241201B0101', '20241201C001', 'P20241201001'].concat(
+      Array.from({length:8}, (_,i) => `20241201${String(1000+i).padStart(6,'0')}`));
+  }
+  const getTime = c => (mockData[c] && mockData[c].time) ? mockData[c].time + '' : '2024-12-01 10:00:00';
+  tbody.innerHTML = codes.slice(0, 20).map((c,i) => `<tr ${i%2?'class="row-even"':''}><td>${i+1}</td><td>${c}</td><td>${getTime(c)}</td></tr>`).join('');
   document.getElementById('packageOverlay').classList.add('active');
 }
 function closePackage() { document.getElementById('packageOverlay').classList.remove('active'); }
