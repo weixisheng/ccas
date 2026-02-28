@@ -2809,6 +2809,23 @@ function resetRecognizeResult(msg) {
   cancelRecognizeInfo = null;
 }
 
+// 构建单个码的完整关联链（从根到当前码）
+function buildChain(code) {
+  const chain = [];
+  const d = mockData[code];
+  if(!d) return chain;
+  let cur = code;
+  const nodes = [{ code: cur, level: d.level }];
+  let parent = d.parent;
+  while(parent && mockData[parent]) {
+    const m = mockData[parent];
+    nodes.push({ code: parent, level: m.level });
+    parent = m.parent;
+  }
+  if(parent && !mockData[parent]) nodes.push({ code: parent, level: '垛码' });
+  return nodes.reverse(); // 根 -> ... -> 当前码
+}
+
 // 根据 mockData 分析一个码的可解除状态
 function analyzeCancelCode(code) {
   const d = mockData[code];
