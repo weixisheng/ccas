@@ -120,6 +120,25 @@ body {
   color: #374151;
   justify-content: space-between;
 }
+.activation-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
+  font-size: 13px;
+  color: #16A34A;
+  font-weight: 500;
+}
+.activation-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16A34A;
+  flex-shrink: 0;
+}
 
 /* ==================== 通用组件 ==================== */
 .card {
@@ -1126,7 +1145,7 @@ body {
 <!-- 菜单栏 -->
 <div class="menu-bar">
   <div class="menu-item">文件(F)<div class="menu-dropdown"><div class="menu-dropdown-item" onclick="confirmExit()">退出软件</div></div></div>
-  <div class="menu-item">配置<div class="menu-dropdown"><div class="menu-dropdown-item" onclick="openSysSettings()">系统设置</div></div></div>
+  <div class="menu-item">配置<div class="menu-dropdown"><div class="menu-dropdown-item" onclick="openSysSettings()">系统设置</div><div class="menu-dropdown-item" onclick="openLicenseInfo2()">许可证信息</div></div></div>
   <div class="menu-item">数据<div class="menu-dropdown">
     <div class="menu-dropdown-item" onclick="switchTab('tab-package')">码包管理</div>
     <div class="menu-dropdown-item" onclick="switchTab('tab-query')">数据查询</div>
@@ -1791,7 +1810,7 @@ body {
     <span class="sync-indicator sync-ok" id="syncStatus"><span>●</span> 已同步</span>
   </div>
   <div style="display:flex; align-items:center; gap:12px;">
-    <span id="activationStatus2" style="font-size:13px; color:#6B7280; display:none;">授权剩余: <span id="activationDays2">0</span>天</span>
+    <span id="activationStatus2" class="activation-tag" style="display:none;"><span class="activation-tag-dot"></span>授权剩余: <span id="activationDays2">0</span>天</span>
     <span id="currentTime2">2024-12-01 10:30:00</span>
   </div>
 </div>
@@ -1812,7 +1831,7 @@ body {
         请联系米多专员获取许可证：<br>
         · 正式许可：用于正式生产<br>
         · 试用许可：用于产线调试（每次15天）<br>
-        <span style="color:#6B7280;">请联系米多专员或拨打 400-XXX-XXXX</span>
+        <span style="color:#6B7280;">请联系米多专员或拨打 <a href="tel:15917372153" style="color:#2563EB;">15917372153</a></span>
       </div>
       <div style="display:flex; gap:12px; justify-content:flex-end;">
         <button class="btn btn-secondary" style="height:44px; padding:0 24px; min-width:90px;" onclick="closeUnactivated2()">退出</button>
@@ -2216,6 +2235,40 @@ body {
     <div style="display:flex; gap:12px;">
       <button class="btn btn-secondary" style="flex:1; height:44px; font-size:15px;" onclick="closePwd()">取消</button>
       <button class="btn btn-primary" style="flex:1; height:44px; font-size:15px;" onclick="verifyPwd()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 许可证信息弹窗 -->
+<div class="modal-overlay" id="licenseInfoOverlay2" onclick="if(event.target===this)closeLicenseInfo2()">
+  <div class="modal-box" style="width:480px;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">许可证信息</span>
+      <button class="modal-close-btn" onclick="closeLicenseInfo2()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:24px;">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div id="licenseStatusIcon2" style="width:64px; height:64px; margin:0 auto 12px; background:#16A34A; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; color:#fff;">✓</div>
+        <div id="licenseStatusText2" style="font-size:18px; font-weight:700; color:#16A34A;">已激活, 剩余359天</div>
+      </div>
+      <div style="font-size:14px; font-weight:600; color:#1F2937; margin-bottom:8px;">激活信息</div>
+      <div style="font-size:14px; color:#374151; line-height:2; margin-bottom:16px;">
+        激活时间：2026-02-24 18:21<br>
+        到期时间：2027-02-24<br>
+        有效期：365天
+      </div>
+      <div style="font-size:14px; font-weight:600; color:#1F2937; margin-bottom:8px;">设备信息</div>
+      <div style="font-size:14px; color:#374151; line-height:2; margin-bottom:16px;">
+        设备ID：45f704c0****4a22<br>
+        设备型号：ASUS System Product Name<br>
+        制造商：ASUS<br>
+        操作系统：Windows 10 10.0
+      </div>
+      <div style="font-size:14px; color:#6B7280; margin-bottom:20px;">请联系米多专员或拨打 <a href="tel:15917372153" style="color:#2563EB;">15917372153</a></div>
+      <div style="display:flex; gap:12px; justify-content:flex-end;">
+        <button class="btn btn-secondary" style="height:44px; padding:0 24px; min-width:90px;" onclick="closeLicenseInfo2()">关闭</button>
+        <button class="btn btn-primary" style="height:44px; padding:0 24px; min-width:90px;" onclick="closeLicenseInfo2(); openActivationWizard2();">激活</button>
+      </div>
     </div>
   </div>
 </div>
@@ -3477,6 +3530,27 @@ function verifyPwd() {
     document.getElementById('pwdInput').value = '';
     document.getElementById('pwdInput').focus();
   }
+}
+
+function openLicenseInfo2() {
+  const cache = getActivationCache2();
+  const statusEl = document.getElementById('licenseStatusText2');
+  const iconEl = document.getElementById('licenseStatusIcon2');
+  if (cache && cache.activated && cache.remainingDays != null) {
+    statusEl.textContent = '已激活, 剩余' + cache.remainingDays + '天';
+    statusEl.style.color = '#16A34A';
+    iconEl.style.background = '#16A34A';
+    iconEl.textContent = '✓';
+  } else {
+    statusEl.textContent = '未激活';
+    statusEl.style.color = '#DC2626';
+    iconEl.style.background = '#DC2626';
+    iconEl.textContent = '✕';
+  }
+  document.getElementById('licenseInfoOverlay2').classList.add('active');
+}
+function closeLicenseInfo2() {
+  document.getElementById('licenseInfoOverlay2').classList.remove('active');
 }
 
 function closeSys() { document.getElementById('sysOverlay').classList.remove('active'); }
