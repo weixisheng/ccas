@@ -799,6 +799,10 @@ body {
 .query-table-wrap { flex: 1; overflow: auto; }
 
 .query-input-cell { color: #DC2626 !important; font-weight: 600; }
+.reject-problem { color: #DC2626 !important; font-weight: 600; }
+.reject-row { cursor: pointer; }
+.reject-row:hover { background: #FEF2F2; }
+.reject-row.selected { background: #EFF6FF; }
 
 /* ==================== 数据替换 ==================== */
 .replace-layout {
@@ -941,6 +945,13 @@ body {
 }
 .stat-card:hover { background: #EFF6FF; border-color: #1D4ED8; }
 .stat-card[title] { cursor: pointer; }
+.stat-card-reject {
+  background: #F9FAFB;
+  border: 2px solid #EF4444;
+  cursor: pointer;
+}
+.stat-card-reject:hover { background: #FEF2F2; border-color: #DC2626; }
+.stat-num-reject { color: #EF4444 !important; text-decoration: underline; text-decoration-color: #EF4444; text-underline-offset: 4px; }
 .stat-card-plain {
   background: #F9FAFB;
   border: 1px solid #D1D5DB;
@@ -1482,9 +1493,9 @@ body {
             <div class="stat-label">盒数</div>
             <div class="stat-num stat-num-plain" id="statBox">120</div>
           </div>
-          <div class="stat-card stat-card-plain">
+          <div class="stat-card stat-card-reject" onclick="openRejectList()" title="点击查看剔除记录">
             <div class="stat-label">剔除数</div>
-            <div class="stat-num stat-num-plain" id="statReject">3</div>
+            <div class="stat-num stat-num-reject" id="statReject">3</div>
           </div>
         </div>
       </div>
@@ -2017,7 +2028,8 @@ body {
             <thead><tr><th>操作</th><th>步骤</th></tr></thead>
             <tbody>
               <tr><td>生产统计查询</td><td>左侧选择日期范围 → 点击「查询」→ 显示垛数/箱数/盒数/剔除数</td></tr>
-              <tr><td>查看垛码列表</td><td>点击蓝色下划线的「垛数」数字 → 弹窗显示垛码列表，支持模糊筛选</td></tr>
+              <tr><td>查看垛码列表</td><td>点击「垛数」数字 → 弹窗显示垛码列表（垛码、箱数、关联时间），支持按垛码筛选</td></tr>
+              <tr><td>查看剔除记录</td><td>点击「剔除数」数字 → 弹窗显示剔除记录，左右分栏（分层表格+详情），支持按箱码筛选</td></tr>
               <tr><td>上传统计查询</td><td>右侧选择日期范围和状态（全部/成功/异常）→ 点击「查询」</td></tr>
             </tbody>
           </table>
@@ -2291,6 +2303,43 @@ body {
   </div>
 </div>
 
+<!-- 剔除记录弹窗 -->
+<div class="modal-overlay" id="rejectListOverlay" onclick="if(event.target===this)closeRejectList()">
+  <div class="modal-box" style="width:1000px; min-height:500px; max-height:700px; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">剔除记录</span>
+      <button class="modal-close-btn" onclick="closeRejectList()">✕</button>
+    </div>
+    <div style="padding:16px 24px; border-bottom:1px solid #E5E7EB; display:flex; gap:8px; align-items:center;">
+      <input type="text" class="form-input" id="rejectFilterCode" placeholder="请输入箱码" style="width:300px;">
+      <button class="btn btn-primary" style="height:40px; padding:0 16px; font-size:14px;" onclick="filterRejectList()">筛选</button>
+      <button class="btn btn-outline" style="height:40px; padding:0 16px; font-size:14px;" onclick="document.getElementById('rejectFilterCode').value=''; filterRejectList()">重置</button>
+    </div>
+    <div style="flex:1; display:flex; min-height:0; overflow:hidden;">
+      <div style="flex:2; display:flex; flex-direction:column; min-width:0; border-right:1px solid #E5E7EB;">
+        <div style="padding:12px 16px; border-bottom:1px solid #E5E7EB; font-weight:600; font-size:15px;">码关联信息（剔除记录）</div>
+        <div style="padding:8px 16px; font-size:13px; color:#6B7280;" id="rejectListCount">已查询到 3 条剔除记录</div>
+        <div style="flex:1; overflow-y:auto; min-height:0;">
+          <table class="data-table" id="rejectTable">
+            <thead><tr><th style="width:50px;">序号</th><th>第一层(瓶码)</th><th>第二层(盒码)</th><th>第三层(箱码)</th><th style="width:100px;">剔除原因</th></tr></thead>
+            <tbody id="rejectTableBody">
+              <tr class="reject-row" data-idx="0" onclick="selectRejectRow(0)"><td>1</td><td class="reject-problem">20241201V010101</td><td>20241201B0101</td><td>20241201C001</td><td>重码</td></tr>
+              <tr class="row-even reject-row" data-idx="1" onclick="selectRejectRow(1)"><td>2</td><td>20241201V010102</td><td class="reject-problem">20241201B0102</td><td>20241201C001</td><td>错码</td></tr>
+              <tr class="reject-row" data-idx="2" onclick="selectRejectRow(2)"><td>3</td><td class="reject-problem">20241201V020103</td><td>20241201B0203</td><td>20241201C002</td><td>重码</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; min-width:0;">
+        <div style="padding:12px 16px; border-bottom:1px solid #E5E7EB; font-weight:600; font-size:15px;">具体信息</div>
+        <div style="flex:1; padding:16px; overflow-y:auto; font-size:14px;" id="rejectDetail">
+          <div style="color:#9CA3AF;">请点击左侧记录查看详细信息</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 垛码列表弹窗 -->
 <div class="modal-overlay" id="palletListOverlay" onclick="if(event.target===this)closePalletList()">
   <div class="modal-box" style="width:800px; max-height:650px;" onclick="event.stopPropagation()">
@@ -2299,29 +2348,26 @@ body {
       <button class="modal-close-btn" onclick="closePalletList()">✕</button>
     </div>
     <div class="modal-body" style="padding:16px;">
-      <div style="display:flex; gap:8px; margin-bottom:12px;">
-        <input type="text" class="form-input" placeholder="请输入垛码" style="width:250px;">
-        <button class="btn btn-primary" style="height:40px; padding:0 16px; font-size:14px;">筛选</button>
-        <button class="btn btn-outline" style="height:40px; padding:0 16px; font-size:14px;">重置</button>
+      <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+        <input type="text" class="form-input" id="palletFilterCode" placeholder="请输入垛码" style="width:300px;">
+        <button class="btn btn-primary" style="height:40px; padding:0 16px; font-size:14px;" onclick="filterPalletList()">筛选</button>
+        <button class="btn btn-outline" style="height:40px; padding:0 16px; font-size:14px;" onclick="document.getElementById('palletFilterCode').value=''; filterPalletList()">重置</button>
       </div>
-      <table class="data-table">
-        <thead><tr><th>垛码</th><th>关联时间</th></tr></thead>
-        <tbody>
-          <tr><td>P20241201010</td><td>2024-12-01 16:30:22</td></tr>
-          <tr class="row-even"><td>P20241201009</td><td>2024-12-01 15:55:10</td></tr>
-          <tr><td>P20241201008</td><td>2024-12-01 15:20:45</td></tr>
-          <tr class="row-even"><td>P20241201007</td><td>2024-12-01 14:45:33</td></tr>
-          <tr><td>P20241201006</td><td>2024-12-01 14:10:18</td></tr>
-          <tr class="row-even"><td>P20241201005</td><td>2024-12-01 13:35:02</td></tr>
-          <tr><td>P20241201004</td><td>2024-12-01 13:00:55</td></tr>
-          <tr class="row-even"><td>P20241201003</td><td>2024-12-01 12:25:40</td></tr>
-          <tr><td>P20241201002</td><td>2024-12-01 11:50:28</td></tr>
-          <tr class="row-even"><td>P20241201001</td><td>2024-12-01 11:15:16</td></tr>
+      <table class="data-table" id="palletListTable">
+        <thead><tr><th style="width:150px;">垛码</th><th style="width:80px;">箱数</th><th style="width:180px;">关联时间</th></tr></thead>
+        <tbody id="palletListBody">
+          <tr><td>P20241201010</td><td>3</td><td>2024-12-01 16:30:22</td></tr>
+          <tr class="row-even"><td>P20241201009</td><td>3</td><td>2024-12-01 15:55:10</td></tr>
+          <tr><td>P20241201008</td><td>3</td><td>2024-12-01 15:20:45</td></tr>
+          <tr class="row-even"><td>P20241201007</td><td>3</td><td>2024-12-01 14:45:33</td></tr>
+          <tr><td>P20241201006</td><td>3</td><td>2024-12-01 14:10:18</td></tr>
+          <tr class="row-even"><td>P20241201005</td><td>3</td><td>2024-12-01 13:35:02</td></tr>
+          <tr><td>P20241201004</td><td>3</td><td>2024-12-01 13:00:55</td></tr>
+          <tr class="row-even"><td>P20241201003</td><td>3</td><td>2024-12-01 12:25:40</td></tr>
+          <tr><td>P20241201002</td><td>3</td><td>2024-12-01 11:50:28</td></tr>
+          <tr class="row-even"><td>P20241201001</td><td>3</td><td>2024-12-01 11:15:16</td></tr>
         </tbody>
       </table>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" style="height:36px; padding:0 16px; font-size:13px;" onclick="closePalletList()">关闭</button>
     </div>
   </div>
 </div>
@@ -3113,8 +3159,75 @@ function doStatsQuery() {
   document.getElementById('statReject').textContent = Math.floor(Math.random()*5+1);
 }
 
-function openPalletList() { document.getElementById('palletListOverlay').classList.add('active'); }
+// 垛码列表模拟数据（垛码、箱数、关联时间）
+const mockPalletList = [
+  { 垛码:'P20241201010', 箱数:3, 关联时间:'2024-12-01 16:30:22' },
+  { 垛码:'P20241201009', 箱数:3, 关联时间:'2024-12-01 15:55:10' },
+  { 垛码:'P20241201008', 箱数:3, 关联时间:'2024-12-01 15:20:45' },
+  { 垛码:'P20241201007', 箱数:3, 关联时间:'2024-12-01 14:45:33' },
+  { 垛码:'P20241201006', 箱数:3, 关联时间:'2024-12-01 14:10:18' },
+  { 垛码:'P20241201005', 箱数:3, 关联时间:'2024-12-01 13:35:02' },
+  { 垛码:'P20241201004', 箱数:3, 关联时间:'2024-12-01 13:00:55' },
+  { 垛码:'P20241201003', 箱数:3, 关联时间:'2024-12-01 12:25:40' },
+  { 垛码:'P20241201002', 箱数:3, 关联时间:'2024-12-01 11:50:28' },
+  { 垛码:'P20241201001', 箱数:3, 关联时间:'2024-12-01 11:15:16' }
+];
+
+function openPalletList() {
+  document.getElementById('palletListOverlay').classList.add('active');
+  filterPalletList();
+}
 function closePalletList() { document.getElementById('palletListOverlay').classList.remove('active'); }
+
+function filterPalletList() {
+  const kw = document.getElementById('palletFilterCode').value.trim().toLowerCase();
+  const filtered = kw ? mockPalletList.filter(p => (p.垛码||'').toLowerCase().includes(kw)) : mockPalletList;
+  const tbody = document.getElementById('palletListBody');
+  tbody.innerHTML = filtered.length ? filtered.map((p,i) =>
+    `<tr ${i%2?'class="row-even"':''}><td>${p.垛码}</td><td>${p.箱数}</td><td>${p.关联时间}</td></tr>`
+  ).join('') : '<tr><td colspan="3" style="text-align:center;color:#9CA3AF;padding:40px;">无匹配数据</td></tr>';
+}
+
+// 剔除记录弹窗（模拟数据）
+const mockRejectRecords = [
+  { 瓶码:'20241201V010101', 盒码:'20241201B0101', 箱码:'20241201C001', 问题码:'20241201V010101', 原因:'重码', 时间:'2024-12-01 10:30:15', 生产单号:'PO202412018710' },
+  { 瓶码:'20241201V010102', 盒码:'20241201B0102', 箱码:'20241201C001', 问题码:'20241201B0102', 原因:'错码', 时间:'2024-12-01 10:31:22', 生产单号:'PO202412018710' },
+  { 瓶码:'20241201V020103', 盒码:'20241201B0203', 箱码:'20241201C002', 问题码:'20241201V020103', 原因:'重码', 时间:'2024-12-01 10:35:08', 生产单号:'PO202412018710' }
+];
+let filteredRejectRecords = [...mockRejectRecords];
+
+function openRejectList() { document.getElementById('rejectListOverlay').classList.add('active'); filterRejectList(); }
+function closeRejectList() { document.getElementById('rejectListOverlay').classList.remove('active'); }
+
+function filterRejectList() {
+  const kw = document.getElementById('rejectFilterCode').value.trim().toLowerCase();
+  filteredRejectRecords = kw ? mockRejectRecords.filter(r => (r.箱码||'').toLowerCase().includes(kw)) : [...mockRejectRecords];
+  const tbody = document.getElementById('rejectTableBody');
+  const getProblemClass = (r, field) => (r.问题码 === r[field] ? 'reject-problem' : '');
+  tbody.innerHTML = filteredRejectRecords.map((r,i) => {
+    const rc = i % 2 ? 'row-even' : '';
+    return `<tr class="reject-row ${rc}" data-idx="${i}" onclick="selectRejectRow(${i})">
+      <td>${i+1}</td><td class="${getProblemClass(r,'瓶码')}">${r.瓶码}</td><td class="${getProblemClass(r,'盒码')}">${r.盒码}</td><td class="${getProblemClass(r,'箱码')}">${r.箱码}</td><td>${r.原因}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('rejectListCount').textContent = `已查询到 ${filteredRejectRecords.length} 条剔除记录`;
+  document.getElementById('rejectDetail').innerHTML = '<div style="color:#9CA3AF;">请点击左侧记录查看详细信息</div>';
+}
+
+function selectRejectRow(idx) {
+  document.querySelectorAll('.reject-row').forEach((tr,i) => tr.classList.toggle('selected', i===idx));
+  const r = filteredRejectRecords[idx];
+  if(!r) return;
+  document.getElementById('rejectDetail').innerHTML = `
+    <div style="color:#1F2937; font-size:14px;">
+      <div style="font-weight:600; margin-bottom:12px;">剔除记录详情</div>
+      <div style="margin-bottom:8px;">问题码：<span style="color:#DC2626; font-weight:700;">${r.问题码}</span></div>
+      <div style="margin-bottom:8px;">箱码：${r.箱码}</div>
+      <div style="margin-bottom:8px;">剔除原因：${r.原因}</div>
+      <div style="margin-bottom:8px;">剔除时间：${r.时间}</div>
+      <div style="margin-bottom:8px;">生产单号：${r.生产单号}</div>
+    </div>`;
+}
 
 // 数据上传
 function doManualUpload() {
