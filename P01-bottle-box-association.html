@@ -806,7 +806,84 @@
 
 <!-- 状态栏 -->
 <div class="status-bar">
+  <span id="activationStatus" style="font-size:13px; color:#6B7280; display:none; margin-right:8px;">授权剩余: <span id="activationDays">0</span>天</span>
   <span id="currentTime">2024-12-01 10:30:00</span>
+</div>
+
+<!-- 未激活弹窗 -->
+<div class="modal-overlay" id="unactivatedOverlay">
+  <div class="modal" style="width:480px;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">软件未激活</span>
+      <button class="modal-close" onclick="closeUnactivated()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:24px;">
+      <div style="text-align:center; margin-bottom:20px;">
+        <span style="font-size:48px;">🏭</span>
+        <div style="font-size:18px; font-weight:700; color:#1F2937; margin-top:12px;">软件未激活</div>
+      </div>
+      <div style="font-size:14px; color:#374151; line-height:1.8; margin-bottom:20px;">
+        请联系米多专员获取许可证：<br>
+        · 正式许可：用于正式生产<br>
+        · 试用许可：用于产线调试（每次15天）<br>
+        <span style="color:#6B7280;">请联系米多专员或拨打 400-XXX-XXXX</span>
+      </div>
+      <div style="display:flex; gap:12px; justify-content:flex-end;">
+        <button class="btn btn-secondary" style="height:44px; padding:0 24px; min-width:90px;" onclick="closeUnactivated()">退出</button>
+        <button class="btn btn-primary" style="height:44px; padding:0 24px; min-width:90px;" onclick="openActivationWizard()">激活</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 离线激活向导 -->
+<div class="modal-overlay" id="activationWizardOverlay">
+  <div class="modal" style="width:520px;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">离线激活 - 步骤 <span id="activationStepNum">1</span>/2</span>
+      <button class="modal-close" onclick="closeActivationWizard()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:24px;">
+      <div style="display:flex; gap:8px; margin-bottom:24px;">
+        <span id="actStep1" style="flex:1; padding:8px; border-radius:8px; background:#E0E7FF; color:#3730A3; font-weight:600; text-align:center;">1. 导出设备文件</span>
+        <span id="actStep2" style="flex:1; padding:8px; border-radius:8px; background:#E5E7EB; color:#6B7280; text-align:center;">2. 导入许可证</span>
+      </div>
+      <div id="activationStep1Content">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px;">导出设备请求文件</div>
+        <p style="font-size:14px; color:#6B7280; margin-bottom:16px;">将生成的文件发送给米多客服</p>
+        <div style="font-size:14px; margin-bottom:8px;">设备ID <code style="background:#F3F4F6; padding:2px 8px; border-radius:4px;">a3b2****o5p6</code></div>
+        <button class="btn btn-primary" style="margin-bottom:20px; white-space:nowrap; min-width:220px;" onclick="doExportDevice()">📥 导出设备请求文件</button>
+      </div>
+      <div id="activationStep2Content" style="display:none;">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px;">导入许可证文件</div>
+        <p style="font-size:14px; color:#6B7280; margin-bottom:16px;">导入从客服处获取的许可证文件</p>
+        <div id="licenseDropZone" style="border:2px dashed #D1D5DB; border-radius:12px; padding:32px; text-align:center; cursor:pointer; background:#F9FAFB; margin-bottom:16px;" onclick="document.getElementById('licenseFileInput').click()">
+          <span id="licenseFileHint">📂 点击选择或拖拽文件到此处</span><br>
+          <span style="font-size:12px; color:#9CA3AF;">支持 .lic 格式文件</span>
+        </div>
+        <input type="file" id="licenseFileInput" accept=".lic" style="display:none;" onchange="onLicenseFileSelect(this)">
+      </div>
+      <div style="display:flex; gap:12px; justify-content:flex-end;">
+        <button class="btn btn-secondary" id="actPrevBtn" style="display:none;" onclick="activationPrevStep()">← 上一步</button>
+        <button class="btn btn-primary" id="actNextBtn" onclick="activationNextStep()">下一步 →</button>
+        <button class="btn btn-primary" id="actConfirmBtn" style="display:none;" onclick="doActivate()">确认激活</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 激活成功 -->
+<div class="modal-overlay" id="activationSuccessOverlay">
+  <div class="modal" style="width:420px;" onclick="event.stopPropagation()">
+    <div class="modal-body" style="padding:32px; text-align:center;">
+      <span style="font-size:64px;">✓</span>
+      <div style="font-size:20px; font-weight:700; color:#16A34A; margin:16px 0;">激活成功！</div>
+      <div style="font-size:14px; color:#6B7280; margin-bottom:24px;">
+        激活时间 2025-12-05<br>到期时间 2026-12-05<br>有效期 365天
+      </div>
+      <button class="btn btn-primary" style="width:100%; height:44px;" onclick="closeActivationSuccess()">开始使用</button>
+    </div>
+  </div>
 </div>
 
 <!-- 密码验证弹窗 -->
@@ -1022,6 +1099,91 @@ function updateTime() {
 }
 updateTime(); setInterval(updateTime, 1000);
 
+// ── 激活码流程（复用T1.1）──
+const ACTIVATION_CACHE_KEY = 'v12_shivan_activation_p01';
+function getActivationCache() {
+  try {
+    const s = localStorage.getItem(ACTIVATION_CACHE_KEY);
+    return s ? JSON.parse(s) : null;
+  } catch (_) { return null; }
+}
+function setActivationCache(data) {
+  try { localStorage.setItem(ACTIVATION_CACHE_KEY, JSON.stringify(data)); } catch (_) {}
+}
+function initActivation() {
+  const cache = getActivationCache();
+  const unactivatedEl = document.getElementById('unactivatedOverlay');
+  const statusEl = document.getElementById('activationStatus');
+  if (cache && cache.activated && cache.remainingDays != null) {
+    unactivatedEl.classList.remove('active');
+    statusEl.style.display = '';
+    document.getElementById('activationDays').textContent = cache.remainingDays;
+  } else {
+    unactivatedEl.classList.add('active');
+  }
+}
+function closeUnactivated() {
+  document.getElementById('unactivatedOverlay').classList.remove('active');
+}
+function openActivationWizard() {
+  document.getElementById('unactivatedOverlay').classList.remove('active');
+  document.getElementById('activationWizardOverlay').classList.add('active');
+  document.getElementById('activationStepNum').textContent = '1';
+  document.getElementById('activationStep1Content').style.display = '';
+  document.getElementById('activationStep2Content').style.display = 'none';
+  document.getElementById('actPrevBtn').style.display = 'none';
+  document.getElementById('actNextBtn').style.display = '';
+  document.getElementById('actConfirmBtn').style.display = 'none';
+  document.getElementById('actStep1').style.background = '#E0E7FF';
+  document.getElementById('actStep1').style.color = '#3730A3';
+  document.getElementById('actStep2').style.background = '#E5E7EB';
+  document.getElementById('actStep2').style.color = '#6B7280';
+}
+function closeActivationWizard() {
+  document.getElementById('activationWizardOverlay').classList.remove('active');
+  document.getElementById('unactivatedOverlay').classList.add('active');
+}
+function activationNextStep() {
+  document.getElementById('activationStepNum').textContent = '2';
+  document.getElementById('activationStep1Content').style.display = 'none';
+  document.getElementById('activationStep2Content').style.display = '';
+  document.getElementById('actPrevBtn').style.display = '';
+  document.getElementById('actNextBtn').style.display = 'none';
+  document.getElementById('actConfirmBtn').style.display = '';
+  document.getElementById('actStep1').style.background = '#E5E7EB';
+  document.getElementById('actStep2').style.background = '#E0E7FF';
+  document.getElementById('actStep2').style.color = '#3730A3';
+}
+function activationPrevStep() {
+  document.getElementById('activationStepNum').textContent = '1';
+  document.getElementById('activationStep1Content').style.display = '';
+  document.getElementById('activationStep2Content').style.display = 'none';
+  document.getElementById('actPrevBtn').style.display = 'none';
+  document.getElementById('actNextBtn').style.display = '';
+  document.getElementById('actConfirmBtn').style.display = 'none';
+  document.getElementById('actStep1').style.background = '#E0E7FF';
+  document.getElementById('actStep2').style.background = '#E5E7EB';
+}
+function doExportDevice() { alert('设备请求文件已导出至桌面'); }
+function onLicenseFileSelect(input) {
+  const f = input.files[0];
+  document.getElementById('licenseFileHint').textContent = f ? '📄 ' + f.name + ' ✓' : '📂 点击选择或拖拽文件到此处';
+}
+function doActivate() {
+  const f = document.getElementById('licenseFileInput').files[0];
+  if (!f) { alert('请先选择许可证文件'); return; }
+  document.getElementById('activationWizardOverlay').classList.remove('active');
+  document.getElementById('activationSuccessOverlay').classList.add('active');
+}
+function closeActivationSuccess() {
+  document.getElementById('activationSuccessOverlay').classList.remove('active');
+  const remainingDays = 365;
+  setActivationCache({ activated: true, expiryDate: '2026-12-05', remainingDays });
+  document.getElementById('activationStatus').style.display = '';
+  document.getElementById('activationDays').textContent = remainingDays;
+}
+initActivation();
+
 // 采集状态
 let isRunning = false;
 let totalBottles = 0, totalBoxes = 0;
@@ -1183,7 +1345,11 @@ function testDbConn() {
 }
 
 function confirmExit() {
-  if(confirm('确认退出系统？')) window.close();
+  if (isRunning) {
+    alert('请先停止采集');
+    return;
+  }
+  if (confirm('确认退出系统？')) window.close();
 }
 
 // ── 操作帮助弹窗 ──
