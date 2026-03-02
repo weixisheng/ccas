@@ -1572,8 +1572,8 @@ body {
 <div class="tab-content" id="tab-package">
   <div class="package-layout">
     <div class="toolbar">
-      <button class="btn btn-primary" style="height:40px; padding:0 20px; font-size:14px;" onclick="openPackageImport()">本地导入</button>
-      <button class="btn btn-secondary" style="height:40px; padding:0 20px; font-size:14px;" onclick="alert('正在从在线源拉取码包...')">在线更新</button>
+      <button class="btn btn-primary" style="height:40px; padding:0 20px; font-size:14px;" onclick="alert('正在从在线源拉取码包...')">在线更新</button>
+      <button class="btn btn-secondary" style="height:40px; padding:0 20px; font-size:14px;" onclick="openPackageImport()">本地导入</button>
       <span class="ctrl-help-icon" style="margin-left:4px;" onclick="showPackageHelp()" title="码包导入说明">?</span>
     </div>
     <div class="filter-bar">
@@ -2052,13 +2052,13 @@ body {
 
         <div class="help-section" id="h-package">
           <div class="help-h2">4.2 码包管理</div>
-          <p><strong>用途</strong>：导入包材厂提供的码包文件，用于采集时比对校验（不在码包内的码会被剔除）。支持的码包类型：盖外码小标、盒外码中标、箱外码大标。</p>
+          <p><strong>用途</strong>：导入包材厂提供的码包文件，用于采集时比对校验（不在码包内的码会被剔除）。支持的码包类型：盖外码小标、盒外码中标、箱外码大标。码包文件都是指外码，请不要导入内码。</p>
           <table class="help-table">
             <thead><tr><th>操作</th><th>步骤</th></tr></thead>
             <tbody>
-              <tr><td>启动时在线导入</td><td>软件启动时自动执行，同名码包跳过不重复导入</td></tr>
-              <tr><td>本地导入</td><td>点击「本地导入」→ 先选择码包类型（盖外码小标/盒外码中标/箱外码大标）→ 选择 TXT 文件 → 确认导入。因文件格式相同，系统无法自动识别类型，需人工指定</td></tr>
-              <tr><td>在线更新</td><td>点击「在线更新」→ 从在线源拉取码包（同名跳过），分别拉取三种类型</td></tr>
+              <tr><td>启动时在线导入</td><td>软件启动时自动执行，按上次拉取时间增量拉取，首次全量、后续增量</td></tr>
+              <tr><td>在线更新</td><td>点击「在线更新」→ 按上次拉取时间增量拉取瓶码、盒码、箱码三种码包，拉取完成后列表自动刷新</td></tr>
+              <tr><td>本地导入</td><td>点击「本地导入」→ 输入密码 123456 → 选择码包类型 → 选择 TXT 文件 → 确认导入。无网络时的备选，因文件格式相同需人工指定类型</td></tr>
               <tr><td>查看码包</td><td>点击操作列「查看」→ 弹窗显示该码包所有码，支持搜索与分页</td></tr>
               <tr><td>删除码包</td><td>仅当该码包内无任何已关联码时允许删除；若有已关联码则禁止删除并提示。删除为逻辑删除</td></tr>
             </tbody>
@@ -2416,6 +2416,10 @@ body {
           <button class="btn btn-outline" style="height:36px; padding:0 16px; font-size:13px;" onclick="document.getElementById('packageFileInput').click()">浏览...</button>
           <span id="packageFileName" style="font-size:13px; color:#6B7280;">未选择文件</span>
         </div>
+      </div>
+      <div class="form-row" style="margin-bottom:16px;">
+        <span class="form-label" style="width:100px;">密码 <span style="color:#DC2626;">*</span></span>
+        <input type="password" class="form-input" id="packageImportPwd" placeholder="请输入密码" style="flex:1;" maxlength="12">
       </div>
     </div>
     <div class="modal-footer">
@@ -3595,6 +3599,7 @@ function openPackageImport() {
   document.getElementById('packageImportType').value = '';
   document.getElementById('packageFileName').textContent = '未选择文件';
   document.getElementById('packageFileInput').value = '';
+  document.getElementById('packageImportPwd').value = '';
   document.getElementById('packageImportOverlay').classList.add('active');
 }
 function closePackageImport() { document.getElementById('packageImportOverlay').classList.remove('active'); }
@@ -3605,14 +3610,17 @@ function onPackageFileSelect(el) {
 function doPackageImport() {
   const type = document.getElementById('packageImportType').value;
   const file = document.getElementById('packageFileInput').files[0];
+  const pwd = document.getElementById('packageImportPwd').value;
   if (!type) { alert('请先选择码包类型'); return; }
   if (!file) { alert('请选择要导入的 TXT 文件'); return; }
+  if (!pwd) { alert('请输入密码'); return; }
+  if (pwd !== '123456') { alert('密码错误，请重新输入'); return; }
   alert('导入成功，列表已刷新');
   closePackageImport();
 }
 function showPackageHelp() {
   showHelp('码包导入说明',
-    '本地导入（包材厂给的码包文件）\n1. 点击「本地导入」\n2. 选择码包类型：瓶码 / 盒码 / 箱码（三种文件格式一样，需您指定是哪种）\n3. 选择 TXT 文件，确认导入\n4. 导入成功后列表会自动刷新\n\n在线更新（从服务器拉取最新码包）\n点击「在线更新」后，系统会自动拉取瓶码、盒码、箱码三种码包。已导入过的同名码包不会重复导入。拉取完成后列表自动刷新。\n\n启动自动导入\n软件每次启动时会自动执行一次在线更新，已导入过的不会重复。\n\n码包文件格式（包材厂提供的 TXT 文件）\n- 瓶码：每行一个瓶码\n- 盒码：每行一个盒码\n- 箱码：每行一个箱码\n\n删除\n只有该码包里的码都还没用过时才能删除；有已用过的码则不能删（码替换时需要校验）。删除后数据仍保留，可查记录。\n\n提醒\n生产前请确保码包已正确导入，否则采集时会报错。可通过「查看」检查码包内容。'
+    '码包文件都是指外码，请不要导入内码，防止码包泄露。\n\n在线更新（有网络时首选）\n点击「在线更新」后，系统按上次拉取时间增量拉取瓶码、盒码、箱码三种码包，避免重复拉取。首次拉取全量，后续拉取增量。拉取完成后列表自动刷新。\n\n启动自动导入\n软件每次启动时自动执行一次在线更新，规则同上。\n\n本地导入（无网络时的备选，包材厂给的码包文件）\n1. 点击「本地导入」\n2. 输入密码确认\n3. 选择码包类型：瓶码 / 盒码 / 箱码（三种文件格式一样，需您指定）\n4. 选择 TXT 文件，确认导入\n5. 导入成功后列表自动刷新\n\n码包文件格式（包材厂提供的 TXT 文件）\n- 瓶码：每行一个瓶码\n- 盒码：每行一个盒码\n- 箱码：每行一个箱码\n\n删除\n只有该码包里的码都还没用过时才能删除；有已用过的码则不能删（码替换时需要校验）。删除后数据仍保留，可查记录。\n\n提醒\n生产前请确保码包已正确导入，否则采集时会报错。可通过「查看」检查码包内容。'
   );
 }
 function tryDeletePackage(name) {
