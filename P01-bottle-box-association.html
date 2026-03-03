@@ -263,6 +263,37 @@
   .dot-green { background: #16A34A; }
   .dot-red { background: #DC2626; }
 
+  /* 任务控制帮助图标 */
+  .ctrl-help-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: #F3F4F6;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px; font-weight: 600; color: #6B7280;
+    cursor: pointer;
+  }
+  .ctrl-help-icon:hover { background: #E5E7EB; color: #374151; }
+  .ctrl-title-no-border { border-bottom: none !important; padding-bottom: 0 !important; }
+
+  /* 帮助弹窗（与P02一致） */
+  .help-popup {
+    display: none;
+    position: absolute;
+    background: #fff;
+    border: 1px solid #CCCCCC;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #333;
+    max-width: 350px;
+    z-index: 300;
+    line-height: 1.7;
+  }
+  .help-popup.show { display: block; }
+
   /* 右侧栏 */
   .right-panel {
     flex: 1;
@@ -689,6 +720,9 @@
 </head>
 <body>
 
+<!-- 帮助弹窗（与P02一致，置于body开头确保可见） -->
+<div class="help-popup" id="helpPopup" onclick="event.stopPropagation()"></div>
+
 <!-- 菜单栏 -->
 <div class="menu-bar">
   <div class="menu-item">
@@ -763,10 +797,13 @@
 
     <!-- 任务控制 -->
     <div class="card" style="flex-shrink:0; min-height:140px; padding:18px 16px;">
-      <div class="card-title">任务控制</div>
+      <div class="ctrl-title-row" style="display:flex; align-items:center; gap:6px; margin-bottom:12px; border-bottom:none; padding-bottom:0;">
+        <span class="card-title ctrl-title-no-border" style="margin-bottom:0;">任务控制</span>
+        <span class="ctrl-help-icon" onclick="event.stopPropagation(); showTaskHelp();" title="任务控制说明">?</span>
+      </div>
       <div class="op-row" style="margin-top:8px;">
         <button class="btn btn-primary" id="startBtn" onclick="toggleCapture()" style="height:48px; font-size:16px; font-weight:600;">开始采集</button>
-        <button class="btn btn-secondary" onclick="clearScreen()" style="height:48px; font-size:16px; font-weight:600;">清屏</button>
+        <button class="btn btn-danger" onclick="closeAlarm()" style="height:48px; font-size:16px; font-weight:600;">关闭报警</button>
       </div>
     </div>
 
@@ -1324,10 +1361,9 @@ function prependLog(areaId, html) {
   if(entries.length > 100) entries[entries.length-1].remove();
 }
 
-function clearScreen() {
-  if(confirm('确认清屏？将清除数据接收区显示记录')) {
-    document.getElementById('dataLogArea').innerHTML = '';
-  }
+function closeAlarm() {
+  // 关闭长报警：重置报警状态（停止声光报警器、蜂鸣器等）
+  console.log('关闭报警');
 }
 
 // 系统设置 - 密码验证
@@ -1428,6 +1464,26 @@ function confirmExit() {
   if (confirm('确认退出系统？')) window.close();
 }
 
+// ── 任务控制帮助提示（与P02 showHelp一致）──
+function showTaskHelp() {
+  showHelp('任务控制', '开始采集：系统检测设备后开始采集；再次点击停止。\n关闭报警：长报警时点击可重置报警状态（停止声光报警器、蜂鸣器）');
+}
+function showHelp(title, content) {
+  const popup = document.getElementById('helpPopup');
+  if (!popup) return;
+  popup.innerHTML = '<strong style="display:block; margin-bottom:8px; color:#1F2937;">' + title + '</strong><div style="white-space:pre-line; font-size:13px; color:#374151; line-height:1.7;">' + content + '</div>';
+  popup.style.top = '50%';
+  popup.style.left = '50%';
+  popup.style.transform = 'translate(-50%, -50%)';
+  popup.style.position = 'fixed';
+  popup.classList.add('show');
+  setTimeout(function() { document.addEventListener('click', hideHelp, {once: true}); }, 100);
+}
+function hideHelp() {
+  const p = document.getElementById('helpPopup');
+  if (p) p.classList.remove('show');
+}
+
 // ── 操作帮助弹窗 ──
 function openHelpModal() {
   const overlay = document.getElementById('helpOverlay');
@@ -1469,7 +1525,7 @@ function onHelpScroll() {
 // ESC关闭弹窗
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') {
-    closePwd(); closeSys(); closeHelpModal();
+    closePwd(); closeSys(); closeHelpModal(); hideHelp();
   }
 });
 </script>
@@ -1547,10 +1603,10 @@ document.addEventListener('keydown', e => {
             <li>绿色文字：设备已连接 ✓</li>
             <li>红色文字：设备未连接，请检查设备连接后重启</li>
           </ul>
-          <div class="help-h2">2.3 清屏</div>
+          <div class="help-h2">2.3 关闭报警</div>
           <ul class="help-ul">
-            <li>点击「清屏」按钮：清空数据接收区显示记录</li>
-            <li class="help-warn">⚠ 清屏不影响计数和数据库数据</li>
+            <li>长报警时（设备未连接、连续重码3次等），点击「关闭报警」按钮可重置报警状态（停止声光报警器、蜂鸣器）</li>
+            <li class="help-warn">⚠ 短报警（重码/错码/超码/缺码等单次异常）自动关闭，不需人工操作</li>
           </ul>
         </div>
 
@@ -1594,7 +1650,7 @@ document.addEventListener('keydown', e => {
           <div class="help-step-title">成垛与自动上传：</div>
           <ul class="help-ul">
             <li>箱数达到预设值时自动成垛，成垛后<strong>自动上传</strong>数据至云端</li>
-            <li>上传成功：绿灯常亮 + 声音提醒</li>
+            <li>上传成功：绿灯常亮，无蜂鸣/提示音；一分钟后自动熄灭</li>
             <li class="help-warn">上传失败：红灯常亮 + 声音提醒（需处理后手动重传）</li>
           </ul>
           <div class="help-h2">3.3 右侧任务控制</div>
