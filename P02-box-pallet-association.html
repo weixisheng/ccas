@@ -1822,8 +1822,8 @@ body {
 <!-- 状态栏 -->
 <div class="status-bar">
   <div style="display:flex; align-items:center; gap:10px;">
-    <span style="font-size:13px; color:#6B7280;">1号机数据：</span>
-    <span class="sync-indicator sync-ok" id="syncStatus"><span>●</span> 已就绪</span>
+    <span style="font-size:13px; color:#6B7280;">1号机数据同步：</span>
+    <span class="sync-indicator sync-ok" id="syncStatus"><span>●</span> 已同步</span>
   </div>
   <div style="display:flex; align-items:center; gap:12px;">
     <span id="activationStatus2" class="activation-tag" style="display:none;"><span class="activation-tag-dot"></span>授权剩余: <span id="activationDays2">0</span>天</span>
@@ -1942,7 +1942,7 @@ body {
           <div class="help-h2">1.1 系统组成</div>
           <p>本系统采用<strong>四级关联模式</strong>（瓶-盒-箱-垛），由两个独立软件组成：</p>
           <ul class="help-ul">
-            <li><strong>1号机（瓶盒关联软件）</strong>：负责瓶码和盒码的采集关联，数据实时写入共用数据库（2号机直接读取）</li>
+            <li><strong>1号机（瓶盒关联软件）</strong>：负责瓶码和盒码的采集关联，数据实时同步至2号机</li>
             <li><strong>2号机（盒箱垛关联软件）</strong>：负责盒箱垛关联采集、数据管理和数据上传</li>
           </ul>
           <div class="help-h2">1.2 包装规格</div>
@@ -2761,7 +2761,7 @@ function startSimulation2() {
       document.getElementById('rejectCount').textContent = rejectCnt;
     }
 
-    document.getElementById('syncStatus').innerHTML = '<span>●</span> 已就绪';
+    document.getElementById('syncStatus').innerHTML = '<span>●</span> 已同步';
     document.getElementById('syncStatus').className = 'sync-indicator sync-ok';
   }, 3000);
 }
