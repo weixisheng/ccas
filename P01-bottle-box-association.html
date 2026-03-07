@@ -490,27 +490,31 @@
   .help-faq-a { font-size: 14px; color: #374151; line-height: 1.7; }
   .help-badge-warn { display: inline-flex; align-items: center; background: #FEF3C7; color: #92400E; border-radius: 20px; padding: 2px 10px; font-size: 13px; font-weight: 600; border: 1px solid #FCD34D; margin-left: 8px; }
 
-  /* 系统设置弹窗Tabs */
-  .sys-tabs {
-    display: flex;
-    border-bottom: 1px solid #E5E7EB;
-    background: #F9FAFB;
-    padding: 0 16px;
-  }
-  .sys-tab {
-    padding: 12px 20px;
-    font-size: 14px;
-    color: #6B7280;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -1px;
-  }
+  /* 系统设置弹窗（与P02一致：业务、页面配置、设备、连接） */
+  .sys-tab-bar { display: flex; border-bottom: 1px solid #E5E7EB; background: #F9FAFB; padding: 0 16px; }
+  .sys-tab-bar-sub { display: none; padding-left: 24px; }
+  .sys-tab-bar-sub.visible { display: flex; }
+  #sysSubTabsDevice.visible, #sysSubTabsConn.visible, #sysSubTabsBusiness.visible { display: flex; }
+  .sys-tab { padding: 10px 18px; font-size: 14px; color: #6B7280; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; }
   .sys-tab.active { color: #2563EB; border-color: #2563EB; font-weight: 600; }
-  .sys-tabs-sub { display: none; padding-left: 24px; }
-  .sys-tabs-sub.visible { display: flex; }
-  .sys-tab-content { display: none; padding: 20px 24px; }
-  .sys-tab-content.active { display: block; }
-  #tab-basic > .sys-tab-content { padding: 20px 24px; }
+  .sys-tab.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+  .sys-tab-panel { display: none; padding: 20px 24px; overflow-y: auto; }
+  .sys-tab-panel.active { display: flex; }
+  #st-device.sys-tab-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+  #st-device > .sys-tab-panel { display: none; }
+  #st-device > .sys-tab-panel.active { display: block; }
+  #st-io.sys-tab-panel.active, #st-printer.sys-tab-panel.active, #st-alarm.sys-tab-panel.active { display: block; }
+  #st-conn.sys-tab-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+  #st-conn > .sys-tab-panel { display: none; padding: 20px 24px; }
+  #st-conn > .sys-tab-panel.active { display: block; }
+  #st-business.sys-tab-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+  #st-business > .sys-tab-panel { display: none; padding: 20px 24px; }
+  #st-business > .sys-tab-panel.active { display: block; }
+  .toggle-track.disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+  .page-config-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .page-config-table th { background: #F3F4F6; padding: 10px 14px; text-align: left; font-weight: 600; border: 1px solid #E5E7EB; }
+  .page-config-table td { padding: 10px 14px; border: 1px solid #E5E7EB; }
+  #st-pages.sys-tab-panel.active { display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
 
   /* 表单 */
   .form-row {
@@ -528,6 +532,7 @@
   }
   .form-label.db { width: 110px; }
   .form-label.code { width: 140px; }
+  .form-label.virtual { width: 90px; }
   .form-input.fixed { width: 200px; min-width: 200px; flex: none; }
   .form-input.fixed-sm { width: 120px; min-width: 120px; flex: none; }
   .form-input {
@@ -992,191 +997,100 @@
   </div>
 </div>
 
-<!-- 系统设置弹窗 -->
-<div class="modal-overlay" id="sysOverlay" onclick="closeSysIfOutside(event)">
-  <div class="modal" onclick="event.stopPropagation()">
+<!-- 系统设置弹窗（与P02一致：业务、页面配置、设备、连接） -->
+<div class="modal-overlay" id="sysOverlay" onclick="if(event.target===this)closeSys()">
+  <div class="modal-box" style="width:860px; max-height:680px;" onclick="event.stopPropagation()">
     <div class="modal-header">
       <span class="modal-title">系统设置（1号机）</span>
-      <button class="modal-close" onclick="closeSys()">✕</button>
+      <button class="modal-close-btn" onclick="closeSys()">✕</button>
     </div>
-    <div class="sys-tabs" id="sysTabs1">
-      <div class="sys-tab" onclick="switchSysTab1(this,'tab-io')">IO设备管理</div>
-      <div class="sys-tab" onclick="switchSysTab1(this,'tab-printer')">打印机管理</div>
-      <div class="sys-tab" onclick="switchSysTab1(this,'tab-alarm')">报警设置</div>
-      <div class="sys-tab active" onclick="switchSysTab1(this,'tab-basic')">基础设置</div>
+    <div class="sys-tab-bar" id="sysTabs1">
+      <div class="sys-tab active" onclick="switchSysTab1_1(this,'st-business')">业务</div>
+      <div class="sys-tab" onclick="switchSysTab1_1(this,'st-pages')">页面配置</div>
+      <div class="sys-tab" onclick="switchSysTab1_1(this,'st-device')">设备</div>
+      <div class="sys-tab" onclick="switchSysTab1_1(this,'st-conn')">连接</div>
     </div>
-    <div class="sys-tabs sys-tabs-sub visible" id="sysSubTabs1">
-      <div class="sys-tab active" onclick="switchSysTab2(this,'tab-db')">数据库连接</div>
-      <div class="sys-tab" onclick="switchSysTab2(this,'tab-codedigits')">码位数配置</div>
+    <div class="sys-tab-bar sys-tab-bar-sub" id="sysSubTabsDevice">
+      <div class="sys-tab active" onclick="switchSysTab1_Device(this,'st-io')">IO设备管理</div>
+      <div class="sys-tab" onclick="switchSysTab1_Device(this,'st-printer')">打印机管理</div>
+      <div class="sys-tab" onclick="switchSysTab1_Device(this,'st-alarm')">报警设置</div>
     </div>
-    <div class="modal-body">
-      <!-- IO设备管理 -->
-      <div class="sys-tab-content" id="tab-io">
-        <div style="margin-bottom:12px; display:flex; gap:8px;">
-          <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('添加设备')">+ 添加设备</button>
-        </div>
-        <table class="device-table">
-          <thead>
-            <tr>
-              <th>设备名称</th>
-              <th>设备类型</th>
-              <th>连接地址</th>
-              <th>端口</th>
-              <th>状态</th>
-              <th>操作</th>
-            </tr>
-          </thead>
+    <div class="sys-tab-bar sys-tab-bar-sub" id="sysSubTabsConn">
+      <div class="sys-tab active" onclick="switchSysTab1_Conn(this,'st-db')">数据库连接</div>
+    </div>
+    <div class="sys-tab-bar sys-tab-bar-sub visible" id="sysSubTabsBusiness">
+      <div class="sys-tab active" onclick="switchSysTab1_Business(this,'st-codedigits')">码位数配置</div>
+      <div class="sys-tab disabled" title="仅2号机使用">虚拟垛标规则</div>
+      <div class="sys-tab disabled" title="仅2号机使用">上传配置</div>
+    </div>
+    <div id="sysPanels1" style="flex:1; overflow:hidden; display:flex; flex-direction:column; min-height:0;">
+      <div class="sys-tab-panel active" id="st-business">
+      <div class="sys-tab-panel active" id="st-codedigits" style="flex:1; overflow-y:auto; padding:20px 24px;">
+        <div style="font-size:16px; font-weight:600; color:#1F2937; margin-bottom:16px;">码位数配置（采集时校验码位数，-1表示不校验）</div>
+        <div class="form-row"><span class="form-label code">小标位数（瓶码）</span><input type="number" class="form-input fixed-sm" value="14" placeholder="14"></div>
+        <div class="form-row"><span class="form-label code">中标位数（盒码）</span><input type="number" class="form-input fixed-sm" value="14" placeholder="14"></div>
+        <div class="form-row"><span class="form-label code">大标位数（箱码）</span><input type="number" class="form-input fixed-sm" value="-1" placeholder="-1"></div>
+        <div style="font-size:12px; color:#6B7280; margin-bottom:12px;">说明：-1 表示不校验该层级位数；采集时若实际采码位数与配置值不一致，则异常告警、关联失败。</div>
+        <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('码位数配置已保存')">保存</button>
+      </div>
+      </div>
+      <div class="sys-tab-panel" id="st-pages" style="padding:20px 24px;">
+        <div style="font-size:14px; color:#6B7280; margin-bottom:14px;">控制主界面 Tab 栏显示哪些页面。Switch 开启=Tab 显示，关闭=Tab 隐藏。1号机仅数据采集（瓶盒）为必选不可关闭。</div>
+        <table class="page-config-table" style="margin-bottom:16px;">
+          <thead><tr><th>页面名称</th><th>功能说明</th><th style="width:80px;">显示</th></tr></thead>
           <tbody>
-            <tr>
-              <td>瓶1相机</td>
-              <td>网络相机</td>
-              <td>192.168.1.101</td>
-              <td>3000</td>
-              <td><span class="badge badge-green">已连接</span></td>
-              <td style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn-sm btn-sm-blue" onclick="alert('编辑设备')">编辑</button>
-                <button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button>
-                <button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button>
-              </td>
-            </tr>
-            <tr>
-              <td>瓶2相机</td>
-              <td>网络相机</td>
-              <td>192.168.1.102</td>
-              <td>3000</td>
-              <td><span class="badge badge-green">已连接</span></td>
-              <td style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn-sm btn-sm-blue" onclick="alert('编辑设备')">编辑</button>
-                <button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button>
-                <button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button>
-              </td>
-            </tr>
-            <tr>
-              <td>盒码相机</td>
-              <td>网络相机</td>
-              <td>192.168.1.103</td>
-              <td>3000</td>
-              <td><span class="badge badge-green">已连接</span></td>
-              <td style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn-sm btn-sm-blue" onclick="alert('编辑设备')">编辑</button>
-                <button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button>
-                <button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button>
-              </td>
-            </tr>
-            <tr>
-              <td>报警灯</td>
-              <td>串口RS485</td>
-              <td>COM3</td>
-              <td>9600</td>
-              <td><span class="badge badge-green">已连接</span></td>
-              <td style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn-sm btn-sm-blue" onclick="alert('编辑设备')">编辑</button>
-                <button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button>
-                <button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button>
-              </td>
-            </tr>
+            <tr><td>数据采集（瓶盒）</td><td>主界面，瓶盒关联数据采集（必选不可关闭）</td><td><div class="toggle-track on disabled"><div class="toggle-thumb"></div></div></td></tr>
+          </tbody>
+        </table>
+        <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px; align-self:flex-start;" onclick="alert('页面配置已保存至配置文件')">保存</button>
+      </div>
+      <div class="sys-tab-panel" id="st-device">
+      <div class="sys-tab-panel active" id="st-io" style="flex:1; overflow-y:auto;">
+        <div style="margin-bottom:10px;"><button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('添加设备')">+ 添加设备</button></div>
+        <table class="device-table">
+          <thead><tr><th>设备名称</th><th>设备类型</th><th>连接地址</th><th>端口</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>瓶1相机</td><td>网络相机</td><td>192.168.1.101</td><td>3000</td><td><span class="badge badge-green">已连接</span></td><td style="display:flex;gap:6px;"><button class="btn-sm btn-sm-blue">编辑</button><button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button><button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button></td></tr>
+            <tr><td>瓶2相机</td><td>网络相机</td><td>192.168.1.102</td><td>3000</td><td><span class="badge badge-green">已连接</span></td><td style="display:flex;gap:6px;"><button class="btn-sm btn-sm-blue">编辑</button><button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button><button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button></td></tr>
+            <tr><td>盒码相机</td><td>网络相机</td><td>192.168.1.103</td><td>3000</td><td><span class="badge badge-green">已连接</span></td><td style="display:flex;gap:6px;"><button class="btn-sm btn-sm-blue">编辑</button><button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button><button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button></td></tr>
+            <tr><td>报警灯</td><td>串口RS485</td><td>COM3</td><td>9600</td><td><span class="badge badge-green">已连接</span></td><td style="display:flex;gap:6px;"><button class="btn-sm btn-sm-blue">编辑</button><button class="btn-sm btn-sm-green" onclick="alert('连接测试成功')">测试</button><button class="btn-sm btn-sm-red" onclick="alert('确认删除？')">删除</button></td></tr>
           </tbody>
         </table>
       </div>
-
-      <!-- 打印机管理 -->
-      <div class="sys-tab-content" id="tab-printer">
-        <div class="form-row">
-          <span class="form-label">打印机名称</span>
-          <input type="text" class="form-input" value="Canon LBP2900" placeholder="打印机名称">
-        </div>
-        <div class="form-row">
-          <span class="form-label">打印机IP</span>
-          <input type="text" class="form-input" value="192.168.1.200">
-        </div>
-        <div class="form-row">
-          <span class="form-label">打印端口</span>
-          <input type="text" class="form-input" value="9100">
-        </div>
-        <div class="form-row">
-          <span class="form-label">纸张大小</span>
-          <select class="form-select"><option>A4</option><option>A5</option><option>自定义</option></select>
-        </div>
-        <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('打印机设置已保存')">保存</button>
+      <div class="sys-tab-panel" id="st-printer" style="flex:1; overflow-y:auto;">
+        <div class="form-row"><span class="form-label" style="width:120px;">打印机名称</span><input type="text" class="form-input" value="Canon LBP2900" style="flex:1;"></div>
+        <div class="form-row"><span class="form-label" style="width:120px;">打印机IP</span><input type="text" class="form-input" value="192.168.1.200" style="flex:1;"></div>
+        <div class="form-row"><span class="form-label" style="width:120px;">打印端口</span><input type="text" class="form-input" value="9100" style="flex:1;"></div>
+        <div class="form-row"><span class="form-label" style="width:120px;">纸张大小</span><select class="form-select" style="flex:1;"><option>A4</option><option>A5</option><option>自定义</option></select></div>
+        <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('打印机设置已保存')">保存</button>
       </div>
-
-      <!-- 报警设置 -->
-      <div class="sys-tab-content" id="tab-alarm">
-        <div class="form-row" style="margin-bottom:20px;">
-          <span class="form-label">声音报警</span>
-          <div class="toggle-switch">
-            <div class="toggle-track on" id="alarmSound" onclick="this.classList.toggle('on')">
-              <div class="toggle-thumb"></div>
-            </div>
-            <span>开启</span>
+      <div class="sys-tab-panel" id="st-alarm" style="flex:1; overflow-y:auto;">
+        <div class="form-row" style="margin-bottom:16px;"><span class="form-label" style="width:120px;">声音报警</span><div style="display:flex; align-items:center; gap:8px;"><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div><span>开启</span></div></div>
+        <div class="form-row"><span class="form-label" style="width:120px;">报警延时(ms)</span><input type="number" class="form-input" value="500" style="flex:1;"></div>
+        <div class="form-row"><span class="form-label" style="width:120px;">报警间隔(ms)</span><input type="number" class="form-input" value="2000" style="flex:1;"></div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <button class="btn btn-warning" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('测试报警已触发')">测试报警</button>
+          <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('报警设置已保存')">保存</button>
+        </div>
+      </div>
+      </div>
+      <div class="sys-tab-panel" id="st-conn">
+        <div class="sys-tab-panel active" id="st-db" style="flex:1; overflow-y:auto; padding:20px 24px;">
+          <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; margin-bottom:14px; font-size:13px; color:#92400E;">
+            ⚠ 1号机数据存入2号机数据库（局域网访问），请正确配置2号机IP和数据库信息
+          </div>
+          <div class="form-row"><span class="form-label db">2号机IP地址</span><input type="text" class="form-input fixed" value="192.168.1.200" placeholder="如：192.168.1.200"></div>
+          <div class="form-row"><span class="form-label db">数据库端口</span><input type="number" class="form-input fixed" value="3306" placeholder="3306"></div>
+          <div class="form-row"><span class="form-label db">数据库名</span><input type="text" class="form-input fixed" value="production_db" placeholder="数据库名称"></div>
+          <div class="form-row"><span class="form-label db">用户名</span><input type="text" class="form-input fixed" value="admin" placeholder="数据库用户名"></div>
+          <div class="form-row"><span class="form-label db">密码</span><input type="password" class="form-input fixed" value="123456" placeholder="数据库密码"></div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn btn-secondary" style="height:36px; padding:0 16px; font-size:13px;" onclick="testDbConn()">连接测试</button>
+            <button class="btn btn-primary" style="height:36px; padding:0 16px; font-size:13px;" onclick="alert('数据库配置已保存')">保存</button>
+            <span id="dbTestResult" style="font-size:13px;"></span>
           </div>
         </div>
-        <div class="form-row">
-          <span class="form-label">报警延时(ms)</span>
-          <input type="number" class="form-input" value="500">
-        </div>
-        <div class="form-row">
-          <span class="form-label">报警间隔(ms)</span>
-          <input type="number" class="form-input" value="2000">
-        </div>
-        <div style="margin-top:16px; display:flex; gap:12px;">
-          <button class="btn btn-warning" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('测试报警已触发')">测试报警</button>
-          <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('报警设置已保存')">保存</button>
-        </div>
       </div>
-
-      <!-- 基础设置（含二级Tab内容） -->
-      <div class="sys-tab-content active" id="tab-basic">
-        <div class="sys-tab-content active" id="tab-db">
-        <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#92400E;">
-          ⚠ 1号机数据存入2号机数据库（局域网访问），请正确配置2号机IP和数据库信息
-        </div>
-        <div class="form-row">
-          <span class="form-label db">2号机IP地址</span>
-          <input type="text" class="form-input fixed" value="192.168.1.200" placeholder="如：192.168.1.200">
-        </div>
-        <div class="form-row">
-          <span class="form-label db">数据库端口</span>
-          <input type="number" class="form-input fixed" value="3306" placeholder="3306">
-        </div>
-        <div class="form-row">
-          <span class="form-label db">数据库名</span>
-          <input type="text" class="form-input fixed" value="production_db" placeholder="数据库名称">
-        </div>
-        <div class="form-row">
-          <span class="form-label db">用户名</span>
-          <input type="text" class="form-input fixed" value="admin" placeholder="数据库用户名">
-        </div>
-        <div class="form-row">
-          <span class="form-label db">密码</span>
-          <input type="password" class="form-input fixed" value="123456" placeholder="数据库密码">
-        </div>
-        <div style="display:flex; gap:12px; align-items:center;">
-          <button class="btn btn-secondary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="testDbConn()">连接测试</button>
-          <button class="btn btn-primary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="alert('数据库配置已保存')">保存</button>
-          <span id="dbTestResult" style="font-size:13px;"></span>
-        </div>
-      </div>
-      <div class="sys-tab-content" id="tab-codedigits">
-        <div style="font-size:16px; font-weight:600; color:#1F2937; margin-bottom:16px;">码位数配置（采集时校验码位数，-1表示不校验）</div>
-        <div class="form-row">
-          <span class="form-label code">小标位数（瓶码）</span>
-          <input type="number" class="form-input fixed-sm" value="14" placeholder="14">
-        </div>
-        <div class="form-row">
-          <span class="form-label code">中标位数（盒码）</span>
-          <input type="number" class="form-input fixed-sm" value="14" placeholder="14">
-        </div>
-        <div class="form-row">
-          <span class="form-label code">大标位数（箱码）</span>
-          <input type="number" class="form-input fixed-sm" value="-1" placeholder="-1">
-        </div>
-        <div style="font-size:12px; color:#6B7280; margin-bottom:12px;">说明：-1 表示不校验该层级位数；采集时若实际采码位数与配置值不一致，则异常告警、关联失败。</div>
-        <button class="btn btn-primary" style="height:36px; font-size:13px; width:80px;" onclick="alert('码位数配置已保存')">保存</button>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" style="height:36px; font-size:13px; width:auto; padding:0 16px;" onclick="closeSys()">关闭</button>
     </div>
   </div>
 </div>
@@ -1419,29 +1333,54 @@ function closeSys() {
   document.getElementById('sysOverlay').classList.remove('active');
 }
 
-function closeSysIfOutside(e) {
-  if(e.target === document.getElementById('sysOverlay')) closeSys();
-}
-
-function switchSysTab1(el, tabId) {
+function switchSysTab1_1(el, tabId) {
   document.querySelectorAll('#sysTabs1 .sys-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.modal-body > .sys-tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('#sysPanels1 > .sys-tab-panel').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById(tabId).classList.add('active');
-  const subBar = document.getElementById('sysSubTabs1');
-  if (tabId === 'tab-basic') {
-    subBar.classList.add('visible');
-    document.querySelectorAll('#sysSubTabs1 .sys-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('#tab-basic > .sys-tab-content').forEach(c => c.classList.remove('active'));
-    document.getElementById('tab-db').classList.add('active');
-    subBar.querySelector('.sys-tab').classList.add('active');
-  } else {
-    subBar.classList.remove('visible');
+  const subDevice = document.getElementById('sysSubTabsDevice');
+  const subConn = document.getElementById('sysSubTabsConn');
+  const subBusiness = document.getElementById('sysSubTabsBusiness');
+  subDevice.classList.remove('visible');
+  subConn.classList.remove('visible');
+  subBusiness.classList.remove('visible');
+  if (tabId === 'st-business') {
+    subBusiness.classList.add('visible');
+    document.querySelectorAll('#sysSubTabsBusiness .sys-tab:not(.disabled)').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('#st-business > .sys-tab-panel').forEach(c => c.classList.remove('active'));
+    document.getElementById('st-codedigits').classList.add('active');
+    subBusiness.querySelector('.sys-tab:not(.disabled)').classList.add('active');
+  } else if (tabId === 'st-pages') {
+    // 页面配置无二级 Tab
+  } else if (tabId === 'st-device') {
+    subDevice.classList.add('visible');
+    document.querySelectorAll('#sysSubTabsDevice .sys-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('#st-device > .sys-tab-panel').forEach(c => c.classList.remove('active'));
+    document.getElementById('st-io').classList.add('active');
+    subDevice.querySelector('.sys-tab').classList.add('active');
+  } else if (tabId === 'st-conn') {
+    subConn.classList.add('visible');
+    document.querySelectorAll('#sysSubTabsConn .sys-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('#st-conn > .sys-tab-panel').forEach(c => c.classList.remove('active'));
+    document.getElementById('st-db').classList.add('active');
+    subConn.querySelector('.sys-tab').classList.add('active');
   }
 }
-function switchSysTab2(el, tabId) {
-  document.querySelectorAll('#sysSubTabs1 .sys-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('#tab-basic > .sys-tab-content').forEach(c => c.classList.remove('active'));
+function switchSysTab1_Conn(el, tabId) {
+  document.querySelectorAll('#sysSubTabsConn .sys-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#st-conn > .sys-tab-panel').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+function switchSysTab1_Device(el, tabId) {
+  document.querySelectorAll('#sysSubTabsDevice .sys-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#st-device > .sys-tab-panel').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+function switchSysTab1_Business(el, tabId) {
+  document.querySelectorAll('#sysSubTabsBusiness .sys-tab:not(.disabled)').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#st-business > .sys-tab-panel').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   document.getElementById(tabId).classList.add('active');
 }
