@@ -848,6 +848,7 @@ body {
 }
 .cancel-mode-bar {
   display: flex;
+  align-items: center;
   gap: 0;
   flex-shrink: 0;
 }
@@ -866,9 +867,9 @@ body {
 .cancel-mode-btn:last-child { border-radius: 0 6px 6px 0; border-left: none; }
 .cancel-mode-btn.active { background: #2563EB; color: #fff; border-color: #2563EB; }
 .cancel-body { display: flex; flex: 1; gap: 12px; overflow: hidden; min-height: 0; }
-.cancel-left { width: 420px; flex-shrink: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0; }
+.cancel-left { width: 600px; flex-shrink: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0; }
 .cancel-left .card { border-radius: 12px; }
-.cancel-right { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; min-width: 0; }
+.cancel-right { flex: 1; min-width: 500px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
 .cancel-form { display: none; flex-direction: column; gap: 14px; }
 .cancel-form.active { display: flex; }
 .cancel-field-label {
@@ -922,7 +923,7 @@ body {
 /* 批量码列表 */
 .batch-list {
   border: 1px solid #E5E7EB; border-radius: 8px;
-  max-height: 160px; overflow-y: auto; background: #F9FAFB;
+  max-height: 200px; overflow-y: auto; background: #F9FAFB;
 }
 .batch-list-item {
   display: flex; justify-content: space-between; align-items: center;
@@ -1700,8 +1701,9 @@ body {
 
     <!-- 模式切换 -->
     <div class="cancel-mode-bar" style="flex-shrink:0;">
-      <button class="cancel-mode-btn active" id="cancelSingle" onclick="switchCancelMode('single')">单个取消关联</button>
-      <button class="cancel-mode-btn" id="cancelBatch" onclick="switchCancelMode('batch')">批量取消关联</button>
+      <button class="cancel-mode-btn active" id="cancelSingle" onclick="switchCancelMode('single')">单码取消</button>
+      <button class="cancel-mode-btn" id="cancelBatch" onclick="switchCancelMode('batch')">多码取消</button>
+      <span class="help-icon" style="margin-left:8px;" onclick="showHelp('取消关联','单码模式：扫1个下级码（瓶/盒），子查父找上级，取消上级单元及其下全部；不支持箱码/垛码。有上级时需先逐级取消。\n多码模式：输入盒/箱/垛码加入列表，可添加多个、支持混合层级；直接指定要取消的单元，按垛→箱→盒顺序执行。\n通用：取消顺序垛→箱→盒→瓶；已上传须先取消云端再取消本地；操作不可恢复，需密码123456确认。')">?</span>
     </div>
 
     <!-- 主体：左侧表单 + 右侧结果 -->
@@ -1710,18 +1712,13 @@ body {
       <!-- 左侧：表单区（两种模式切换） -->
       <div class="cancel-left">
 
-        <!-- 单个模式表单 -->
+        <!-- 单码取消表单 -->
         <div class="card cancel-form active" id="cancelSingleContent" style="padding:20px;">
-          <div style="font-size:20px; font-weight:700; color:#1F2937; margin-bottom:18px;">单个取消关联</div>
+          <div style="font-size:20px; font-weight:700; color:#1F2937; margin-bottom:18px;">单码取消</div>
 
           <div>
-            <div class="cancel-field-label"><span class="req">*</span> 第一个码 <span class="help-icon" onclick="showHelp('第一个码','请输入同一包装内的任意一个码（瓶码/盒码/箱码均可）')">?</span></div>
-            <input type="text" class="cancel-input" id="code1" placeholder="如：20241201V010101、20241201B0101" value="20241201V010101">
-          </div>
-
-          <div>
-            <div class="cancel-field-label"><span class="req">*</span> 第二个码 <span class="help-icon" onclick="showHelp('第二个码','请输入与第一个码同一包装内的另一个码')">?</span></div>
-            <input type="text" class="cancel-input" id="code2" placeholder="如：20241201V010102、20241201C001（同一包装内）" value="20241201V010102">
+            <div class="cancel-field-label"><span class="req">*</span> 码（瓶/盒）</div>
+            <input type="text" class="cancel-input" id="code1" placeholder="请输入或扫描瓶码/盒码" value="20241201V010101">
           </div>
 
           <div>
@@ -1737,22 +1734,22 @@ body {
           <div id="cancelBtnHint" style="font-size:13px; color:#9CA3AF; display:none;">⚠ 有上级关联，请先从垛开始逐级解除</div>
         </div>
 
-        <!-- 批量模式表单 -->
+        <!-- 多码取消表单 -->
         <div class="card cancel-form" id="cancelBatchContent" style="padding:20px;">
-          <div style="font-size:20px; font-weight:700; color:#1F2937; margin-bottom:18px;">批量取消关联</div>
+          <div style="font-size:20px; font-weight:700; color:#1F2937; margin-bottom:18px;">多码取消</div>
 
           <div>
-            <div class="cancel-field-label"><span class="req">*</span> 大码 <span class="help-icon" onclick="showHelp('大码','请输入需要取消关联的盒码、箱码或垛码')">?</span></div>
+            <div class="cancel-field-label"><span class="req">*</span> 盒/箱/垛码</div>
             <div style="display:flex; gap:8px;">
-              <input type="text" class="cancel-input" id="batchCode" value="20241201C001" placeholder="如：20241201C001、20241201B0101、P20241201001" style="flex:1;">
+              <input type="text" class="cancel-input" id="batchCode" value="20241201C001" placeholder="盒码、箱码或垛码（垛码为虚拟，可从数据查询等界面复制）" style="flex:1;">
               <button class="btn btn-primary" style="height:48px; width:80px; font-size:16px; font-weight:700;" onclick="addBatchCode()">添加</button>
             </div>
           </div>
 
           <div>
-            <div style="font-size:16px; font-weight:700; color:#1F2937; margin-bottom:8px;">已添加的大码列表</div>
+            <div style="font-size:16px; font-weight:700; color:#1F2937; margin-bottom:8px;">已添加的码列表</div>
             <div class="batch-list" id="batchCodeList">
-              <div style="color:#9CA3AF; font-size:14px; text-align:center; padding:20px 0;">暂无添加的大码</div>
+              <div style="color:#9CA3AF; font-size:14px; text-align:center; padding:20px 0;">暂无添加</div>
             </div>
           </div>
 
@@ -1764,7 +1761,7 @@ body {
 
           <div class="cancel-action-row">
             <button class="btn btn-secondary" style="height:48px; width:80px; font-size:16px;" onclick="clearBatch()">清空</button>
-            <button class="btn btn-danger" style="height:48px; flex:1; font-size:15px; font-weight:700;" onclick="openCancelConfirm('batch')">确认批量取消关联</button>
+            <button class="btn btn-danger" style="height:48px; flex:1; font-size:15px; font-weight:700;" onclick="openCancelConfirm('batch')">确认取消关联</button>
           </div>
         </div>
 
@@ -2143,20 +2140,20 @@ body {
               <li>系统自动检查云端数据并先解除云端关联，确保数据一致</li>
             </ul>
           </div>
-          <div class="help-step-title">单个取消关联操作步骤：</div>
+          <div class="help-step-title">单码取消操作步骤：</div>
           <ol class="help-ol">
-            <li>选择「单个取消关联」模式</li>
-            <li>输入同一包装内的任意两个码</li>
+            <li>选择「单码取消」模式</li>
+            <li>输入或扫描1个瓶码/盒码（不支持箱码、垛码）</li>
             <li>点击「识别」→ 右侧显示识别结果（含上级关联链路）</li>
             <li>如有上级关联，先从垛开始逐级解除上级，再回来解除当前级</li>
             <li>无上级关联后，点击「确认取消关联」→ 输入密码 <strong>123456</strong> → 确认执行</li>
           </ol>
-          <div class="help-step-title">批量取消关联操作步骤：</div>
+          <div class="help-step-title">多码取消操作步骤：</div>
           <ol class="help-ol">
-            <li>选择「批量取消关联」模式</li>
-            <li>逐一输入大码（盒码/箱码/垛码）→ 点击「添加」</li>
+            <li>选择「多码取消」模式</li>
+            <li>逐一输入盒码/箱码/垛码 → 点击「添加」</li>
             <li>点击「识别」→ 右侧显示所有包装单元的识别结果</li>
-            <li>处理有上级关联的单元后，点击「确认批量取消关联」→ 输入密码 <strong>123456</strong> → 执行</li>
+            <li>处理有上级关联的单元后，点击「确认取消关联」→ 输入密码 <strong>123456</strong> → 执行</li>
           </ol>
           <p class="help-warn">⚠ 操作不可恢复，请确认无误后操作</p>
         </div>
@@ -3255,7 +3252,7 @@ function switchCancelMode(mode) {
   document.getElementById('cancelSingleContent').classList.toggle('active', mode === 'single');
   document.getElementById('cancelBatchContent').classList.toggle('active', mode === 'batch');
   // 切换时清空识别结果提示
-  resetRecognizeResult(mode === 'single' ? '请在左侧输入码值并点击识别' : '请在左侧添加大码并点击识别');
+  resetRecognizeResult(mode === 'single' ? '请在左侧输入码值并点击识别' : '请在左侧添加盒/箱/垛码并点击识别');
 }
 
 function resetRecognizeResult(msg) {
@@ -3282,12 +3279,20 @@ function buildChain(code) {
   return nodes.reverse(); // 根 -> ... -> 当前码
 }
 
+// 统计底层瓶数（码关系数）
+function countBottleDescendants(code) {
+  const d = mockData[code];
+  if(!d) return 0;
+  if(!d.children || d.children.length === 0) return 1; // 瓶码或无子级
+  return d.children.reduce((sum, c) => sum + countBottleDescendants(c), 0);
+}
+
 // 根据 mockData 分析一个码的可解除状态
 function analyzeCancelCode(code) {
   const d = mockData[code];
   if(!d) return null;
   const hasParent = !!d.parent;
-  const childCount = d.children ? d.children.length : 0;
+  const childCount = countBottleDescendants(code);
   // 构建完整链路（不含当前码本身）
   const chain = buildChain(code).filter(n => n.code !== code);
   return { code, level: d.level, hasParent, childCount, chain };
@@ -3297,47 +3302,59 @@ function renderCancelItem(info) {
   if(!info) return '';
   const levelColor = { '垛码':'#7C3AED','箱码':'#C2410C','盒码':'#15803D','瓶码':'#1D4ED8' };
   const col = levelColor[info.level] || '#374151';
+  const levelMap = { '垛码':'垛','箱码':'箱','盒码':'盒','瓶码':'瓶' };
   if(!info.hasParent) {
-    const childDesc = info.childCount > 0 ? `，解除 <b>${info.childCount}</b> 个` : '（已是底层，无下级）';
+    const n = info.childCount > 0 ? info.childCount : 0;
     return `<div class="cr-item cr-ok">
-      <span class="cr-badge cr-badge-ok">可解除关联</span>
-      <span style="color:${col};font-weight:700;">${info.level} ${info.code}</span>${childDesc}
+      <span style="color:${col};font-weight:700;">${info.level} ${info.code}</span>，可取消关联，取消<b>${n}</b>个
     </div>`;
   } else {
-    const levelMap = { '垛码':'垛','箱码':'箱','盒码':'盒','瓶码':'瓶' };
     const parentLabel = info.chain.length > 0 ? info.chain[info.chain.length-1].level : '上级';
-    const chainStr = info.chain.map(n => `${n.level} ${n.code}`).join(' → ');
+    const reason = `${levelMap[info.level]}已关联至${parentLabel}，请先取消上级`;
+    const chainStr = info.chain.map(n => `${n.level} ${n.code}`).join('→') + (info.chain.length ? `→${info.code}` : info.code);
     return `<div class="cr-item cr-err">
-      <span class="cr-badge cr-badge-err">不可解除关联</span>
-      <span style="color:${col};font-weight:700;">${info.level} ${info.code}</span>
-      <span style="color:#DC2626;">（${levelMap[info.level]}已关联至${parentLabel}，请先解除上级）</span>
-      <div class="cr-chain">链路: ${chainStr} → <b>${info.code}</b></div>
+      <span style="color:${col};font-weight:700;">${info.level} ${info.code}</span>，不可取消关联（${reason}）
+      <div class="cr-chain">链路: ${chainStr}</div>
     </div>`;
   }
 }
 
-// 单个识别
+// 单码识别（子查父：扫瓶/盒找上级，取消上级单元）
 function doRecognize() {
-  const c1 = document.getElementById('code1').value.trim();
-  const c2 = document.getElementById('code2').value.trim();
-  if(!c1 || !c2) { alert('请输入两个码后再点击识别'); return; }
+  const code = document.getElementById('code1').value.trim();
+  if(!code) { alert('请输入或扫描瓶码/盒码'); return; }
 
-  const info1 = analyzeCancelCode(c1);
-  const info2 = analyzeCancelCode(c2);
-
-  let html = '';
-  let canCancel = false;
-
-  if(!info1 && !info2) {
-    html = `<div style="color:#DC2626;font-size:14px;padding:16px;">✗ 两个码均未在系统中找到，请检查码值</div>`;
-  } else {
-    // 找到的码显示识别结果
-    [info1, info2].filter(Boolean).forEach(info => { html += renderCancelItem(info); });
-    // 只要有一个码无上级关联，就允许解除（该码对应的关系）
-    const cancelableInfos = [info1, info2].filter(i => i && !i.hasParent);
-    canCancel = cancelableInfos.length > 0;
-    cancelRecognizeInfo = { type: 'single', items: [info1, info2].filter(Boolean) };
+  const d = mockData[code];
+  if(!d) {
+    document.getElementById('recognizeResult').innerHTML = `<div style="color:#DC2626;font-size:14px;padding:16px;">✗ 该码未在系统中找到，请检查码值</div>`;
+    document.getElementById('recognizeHint').textContent = '✗ 未找到';
+    document.getElementById('confirmCancelBtn').disabled = true;
+    document.getElementById('cancelBtnHint').style.display = 'none';
+    cancelRecognizeInfo = null;
+    return;
   }
+  // 单码模式不支持箱码、垛码
+  if(d.level === '箱码' || d.level === '垛码') {
+    document.getElementById('recognizeResult').innerHTML = `<div style="color:#DC2626;font-size:14px;padding:16px;">✗ 单码模式不支持箱码、垛码。整箱/整垛取消请使用多码模式。</div>`;
+    document.getElementById('recognizeHint').textContent = '✗ 不支持';
+    document.getElementById('confirmCancelBtn').disabled = true;
+    document.getElementById('cancelBtnHint').style.display = 'none';
+    cancelRecognizeInfo = null;
+    return;
+  }
+  // 子查父：瓶码→找盒；盒码→找箱。分析上级单元
+  const parentCode = d.parent;
+  if(!parentCode) {
+    document.getElementById('recognizeResult').innerHTML = `<div style="color:#DC2626;font-size:14px;padding:16px;">✗ 该码无上级关联</div>`;
+    document.getElementById('recognizeHint').textContent = '✗ 无上级';
+    document.getElementById('confirmCancelBtn').disabled = true;
+    document.getElementById('cancelBtnHint').style.display = 'none';
+    cancelRecognizeInfo = null;
+    return;
+  }
+  const info = analyzeCancelCode(parentCode);
+  const html = renderCancelItem(info);
+  const canCancel = info && !info.hasParent;
 
   document.getElementById('recognizeResult').innerHTML = html;
   document.getElementById('recognizeHint').textContent =
@@ -3347,11 +3364,11 @@ function doRecognize() {
   const hint = document.getElementById('cancelBtnHint');
   btn.disabled = !canCancel;
   hint.style.display = canCancel ? 'none' : 'block';
+  cancelRecognizeInfo = { type: 'single', items: [info] };
 }
 
 function clearCancel() {
   document.getElementById('code1').value = '20241201V010101';
-  document.getElementById('code2').value = '20241201V010102';
   document.getElementById('confirmCancelBtn').disabled = true;
   document.getElementById('cancelBtnHint').style.display = 'none';
   resetRecognizeResult('请在左侧输入码值并点击识别');
@@ -3372,7 +3389,7 @@ function addBatchCode() {
 function renderBatchList() {
   const list = document.getElementById('batchCodeList');
   if(batchCodes.length === 0) {
-    list.innerHTML = '<div style="color:#9CA3AF;font-size:14px;text-align:center;padding:20px;">暂无添加的大码</div>';
+    list.innerHTML = '<div style="color:#9CA3AF;font-size:14px;text-align:center;padding:20px;">暂无添加</div>';
     return;
   }
   list.innerHTML = batchCodes.map((c, i) => {
@@ -3391,7 +3408,7 @@ function clearBatch() {
   batchCodes.length = 0;
   renderBatchList();
   document.getElementById('batchCode').value = '20241201C001';
-  resetRecognizeResult('请在左侧添加大码并点击识别');
+  resetRecognizeResult('请在左侧添加盒/箱/垛码并点击识别');
   cancelRecognizeInfo = null;
 }
 
@@ -3415,14 +3432,14 @@ function doBatchRecognize() {
   });
 
   if(cancelableCount > 0) {
-    html += `<div class="cr-summary">📊 总影响范围：<b>${cancelableCount}</b> 个包装单元可解除，涉及 <b>${cancelableRelations}</b> 个码关系</div>`;
+    html += `<div class="cr-summary">📊 总影响范围：<b>${cancelableCount}</b> 个可取消，涉及 <b>${cancelableRelations}</b> 个码关系</div>`;
   } else {
     html += `<div class="cr-summary" style="background:#FEF2F2;border-color:#FCA5A5;color:#991B1B;">⚠ 所有单元均有上级关联，请先从垛开始逐级解除</div>`;
   }
 
   document.getElementById('recognizeResult').innerHTML = html;
   document.getElementById('recognizeHint').textContent = cancelableCount > 0
-    ? `✓ 识别完成，${cancelableCount}个单元可解除` : '⚠ 全部有上级关联';
+    ? `✓ 识别完成，${cancelableCount}个可取消` : '⚠ 全部有上级关联';
   cancelRecognizeInfo = { type: 'batch', items: infos, cancelableCount, cancelableRelations };
 }
 
@@ -3432,7 +3449,7 @@ function openCancelConfirm(mode) {
     if(batchCodes.length === 0) { alert('请先添加大码'); return; }
     if(!cancelRecognizeInfo) { alert('请先点击识别'); return; }
     const { cancelableCount, cancelableRelations } = cancelRecognizeInfo;
-    document.getElementById('confirmTitle').textContent = '批量取消关联确认';
+    document.getElementById('confirmTitle').textContent = '取消关联确认';
     document.getElementById('confirmMsg').innerHTML =
       `将批量取消关联 <b>${cancelableCount}</b> 个包装单元，涉及 <b>${cancelableRelations}</b> 个码关系<br>
        <span style="color:#DC2626;font-size:13px;">此操作不可恢复，请仔细核对后确认！</span>`;
@@ -3468,10 +3485,11 @@ function execCancelConfirm(mode) {
       if(uploaded) {
         logHtml += `<div class="cl-entry"><span class="cl-ts">${ts}</span>🌐 云端检查：${info.level} ${info.code} 已上传，正在云端解除...</div>`;
       }
-      logHtml += `<div class="cl-entry cl-ok"><span class="cl-ts">${ts}</span>✓ ${info.level} ${info.code} 取消关联成功，解除 ${info.childCount} 个关联关系${uploaded ? '（含云端）' : ''}</div>`;
+      logHtml += `<div class="cl-entry cl-ok"><span class="cl-ts">${ts}</span>✓ ${info.level} ${info.code} 取消${info.childCount}个</div>`;
     });
     log.insertAdjacentHTML('afterbegin', logHtml);
-    clearCancel();
+    document.getElementById('code1').value = '';
+    cancelRecognizeInfo = null;
   } else {
     const { items, cancelableCount, cancelableRelations } = cancelRecognizeInfo || {};
     const cancelableItems = (items || []).filter(i => !i.hasParent);
@@ -3481,7 +3499,7 @@ function execCancelConfirm(mode) {
       logHtml += `<div class="cl-entry"><span class="cl-ts">${ts}</span>🌐 云端检查：${cancelableCount}个单元已上传，正在批量云端解除...</div>`;
     }
     cancelableItems.forEach(info => {
-      logHtml += `<div class="cl-entry cl-ok"><span class="cl-ts">${ts}</span>✓ ${info.level} ${info.code} 取消关联成功，解除 ${info.childCount} 个关联关系</div>`;
+      logHtml += `<div class="cl-entry cl-ok"><span class="cl-ts">${ts}</span>✓ ${info.level} ${info.code} 取消${info.childCount}个</div>`;
     });
     logHtml += `<div class="cl-entry cl-ok" style="font-weight:700;"><span class="cl-ts">${ts}</span>✓ 批量操作完成：${cancelableCount}个单元，共解除 ${cancelableRelations} 个码关系${uploaded?'（云端+本地）':'（本地）'}</div>`;
     log.insertAdjacentHTML('afterbegin', logHtml);
