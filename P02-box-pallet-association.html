@@ -463,12 +463,14 @@ body {
 /* 实时上传数据区 - 参考 pen */
 .upload-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 4px;
   background: #EFF6FF;
   border-radius: 8px;
   padding: 10px 12px;
 }
+.upload-row-top { display: flex; align-items: center; justify-content: space-between; }
+.upload-row-box { font-size: 14px; color: #6B7280; }
 .upload-tag {
   font-size: 14px;
   font-weight: 600;
@@ -1011,6 +1013,10 @@ body {
 .ul-green { color: #16A34A; font-weight: 600; }
 .ul-red { color: #DC2626; font-weight: 600; }
 
+.upload-query-result { font-size: 14px; line-height: 2.2; text-align: left; }
+.upload-query-row { display: flex; align-items: center; gap: 12px; }
+.upload-query-label { width: 90px; flex-shrink: 0; text-align: right; color: #6B7280; }
+
 /* 系统设置 */
 .sys-tab-bar { display: flex; border-bottom: 1px solid #E5E7EB; background: #F9FAFB; padding: 0 16px; }
 .sys-tab-bar-sub { display: none; padding-left: 24px; }
@@ -1239,16 +1245,25 @@ body {
         <div class="card-title">实时上传数据区</div>
         <div id="uploadDataList" style="flex:1; display:flex; flex-direction:column; gap:8px; overflow-y:auto;">
           <div class="upload-row">
-            <span style="font-size:18px; color:#4B5563;">垛 P20241201001</span>
-            <span class="upload-tag upload-tag-pending">待上传</span>
+            <div class="upload-row-top">
+              <span style="font-size:18px; color:#4B5563;">垛 P20241201001</span>
+              <span class="upload-tag upload-tag-pending">待上传</span>
+            </div>
+            <div class="upload-row-box">70箱</div>
           </div>
           <div class="upload-row">
-            <span style="font-size:18px; color:#4B5563;">垛 P20241201002</span>
-            <span class="upload-tag upload-tag-done">已上传</span>
+            <div class="upload-row-top">
+              <span style="font-size:18px; color:#4B5563;">垛 P20241201002</span>
+              <span class="upload-tag upload-tag-done">已上传</span>
+            </div>
+            <div class="upload-row-box">70箱</div>
           </div>
           <div class="upload-row">
-            <span style="font-size:18px; color:#4B5563;">垛 P20241201003</span>
-            <span class="upload-tag upload-tag-done">已上传</span>
+            <div class="upload-row-top">
+              <span style="font-size:18px; color:#4B5563;">垛 P20241201003</span>
+              <span class="upload-tag upload-tag-done">已上传</span>
+            </div>
+            <div class="upload-row-box">70箱</div>
           </div>
         </div>
       </div>
@@ -1798,15 +1813,15 @@ body {
           上传信息（最新在上）
         </div>
         <div class="upload-log" id="uploadLogArea">
-          <div class="ul-entry ul-green"><span class="ts">14:35:20</span>垛码 P20241201005 上传成功</div>
-          <div class="ul-entry ul-blue"><span class="ts">14:35:18</span>垛码 P20241201005 上传中...</div>
-          <div class="ul-entry ul-gray"><span class="ts">14:35:15</span>垛码 P20241201005 开始上传</div>
-          <div class="ul-entry ul-red"><span class="ts">14:30:22</span>垛码 P20241201004 上传失败，网络超时</div>
-          <div class="ul-entry ul-blue"><span class="ts">14:30:21</span>垛码 P20241201004 上传中...</div>
-          <div class="ul-entry ul-gray"><span class="ts">14:30:20</span>垛码 P20241201004 开始上传</div>
-          <div class="ul-entry ul-green"><span class="ts">14:25:10</span>垛码 P20241201003 上传成功</div>
-          <div class="ul-entry ul-blue"><span class="ts">14:25:08</span>垛码 P20241201003 上传中...</div>
-          <div class="ul-entry ul-gray"><span class="ts">14:25:05</span>垛码 P20241201003 开始上传</div>
+          <div class="ul-entry ul-green"><span class="ts">14:35:20</span>垛码 P20241201005 70箱 上传成功</div>
+          <div class="ul-entry ul-blue"><span class="ts">14:35:18</span>垛码 P20241201005 70箱 上传中...</div>
+          <div class="ul-entry ul-gray"><span class="ts">14:35:15</span>垛码 P20241201005 70箱 开始上传</div>
+          <div class="ul-entry ul-red"><span class="ts">14:30:22</span>垛码 P20241201004 70箱 上传失败，网络超时</div>
+          <div class="ul-entry ul-blue"><span class="ts">14:30:21</span>垛码 P20241201004 70箱 上传中...</div>
+          <div class="ul-entry ul-gray"><span class="ts">14:30:20</span>垛码 P20241201004 70箱 开始上传</div>
+          <div class="ul-entry ul-green"><span class="ts">14:25:10</span>垛码 P20241201003 70箱 上传成功</div>
+          <div class="ul-entry ul-blue"><span class="ts">14:25:08</span>垛码 P20241201003 70箱 上传中...</div>
+          <div class="ul-entry ul-gray"><span class="ts">14:25:05</span>垛码 P20241201003 70箱 开始上传</div>
         </div>
       </div>
     </div>
@@ -2877,8 +2892,9 @@ function appendOpLog(msg) {
 function addUploadLog(palletCode) {
   const area = document.getElementById('uploadLogArea');
   const ts = getTs();
-  area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts}</span>垛码 ${palletCode} 上传成功</div>`);
-  area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-blue"><span class="ts">${ts}</span>垛码 ${palletCode} 上传中...</div>`);
+  const maxCase = parseInt(document.getElementById('casePerPallet')?.value) || 70;
+  area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts}</span>垛码 ${palletCode} ${maxCase}箱 上传成功</div>`);
+  area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-blue"><span class="ts">${ts}</span>垛码 ${palletCode} ${maxCase}箱 上传中...</div>`);
 }
 
 function closeAlarmDC() {
@@ -3559,10 +3575,10 @@ function doManualUpload() {
   area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-gray"><span class="ts">${ts}</span>手动上传：正在查找所有未上传的垛数据...</div>`);
   setTimeout(() => {
     const ts2 = getTs();
-    area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-blue"><span class="ts">${ts2}</span>垛码 P20241201011 上传中...</div>`);
+    area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-blue"><span class="ts">${ts2}</span>垛码 P20241201011 70箱 上传中...</div>`);
     setTimeout(() => {
       const ts3 = getTs();
-      area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts3}</span>垛码 P20241201011 上传成功</div>`);
+      area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts3}</span>垛码 P20241201011 70箱 上传成功</div>`);
       area.insertAdjacentHTML('afterbegin', `<div class="ul-entry ul-green"><span class="ts">${ts3}</span>手动上传完成，成功1个，失败0个</div>`);
     }, 2000);
   }, 1000);
@@ -3576,12 +3592,12 @@ function queryUploadStatus() {
   const st = isKnown ? statuses[Math.floor(Math.random()*2)] : '未上传';
   const stClass = st==='成功'?'badge-green':st==='失败'?'badge-red':'badge-gray';
   document.getElementById('uploadQueryResult').innerHTML = `
-    <div style="font-size:14px; line-height:2.2;">
-      <div>垛码：<span style="color:#2563EB; font-size:16px; font-weight:700;">${code}</span></div>
-      <div>状态：<span class="badge ${stClass}">${st}</span></div>
-      <div>上传时间：${st!=='未上传' ? '2024-12-01 14:35:20' : '—'}</div>
-      <div>箱数：70</div>
-      <div>失败原因：${st==='失败' ? '网络超时' : '—'}</div>
+    <div class="upload-query-result">
+      <div class="upload-query-row"><span class="upload-query-label">垛码：</span><span style="color:#2563EB; font-size:16px; font-weight:700;">${code}</span></div>
+      <div class="upload-query-row"><span class="upload-query-label">状态：</span><span class="badge ${stClass}">${st}</span></div>
+      <div class="upload-query-row"><span class="upload-query-label">上传时间：</span><span>${st!=='未上传' ? '2024-12-01 14:35:20' : '—'}</span></div>
+      <div class="upload-query-row"><span class="upload-query-label">箱数：</span><span>70</span></div>
+      <div class="upload-query-row"><span class="upload-query-label">失败原因：</span><span>${st==='失败' ? '网络超时' : '—'}</span></div>
     </div>
   `;
 }
