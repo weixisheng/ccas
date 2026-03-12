@@ -2542,6 +2542,48 @@ body {
   </div>
 </div>
 
+<!-- 提取工单未成垛弹窗 -->
+<div class="modal-overlay" id="extractUnfinishedOverlay" onclick="if(event.target===this)closeExtractUnfinished()">
+  <div onclick="event.stopPropagation()" style="width:560px;background:#fff;border-radius:12px;border:1px solid #D9E1EC;display:flex;flex-direction:column;overflow:hidden;">
+    <!-- 标题栏 -->
+    <div style="height:56px;background:#F5F7FA;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 24px;">
+      <span style="font-size:18px;font-weight:600;color:#1F2937;">提取工单未成垛</span>
+      <button onclick="closeExtractUnfinished()" style="border:none;background:none;font-size:20px;color:#6B7280;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <!-- 内容区 -->
+    <div style="padding:24px;display:flex;flex-direction:column;gap:16px;">
+      <!-- 说明 -->
+      <div style="font-size:14px;color:#6B7280;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:12px 16px;">
+        请输入或扫描未完成垛中的任意一个<strong>箱码</strong>，系统将查出对应的生产订单数据。
+      </div>
+      <!-- 输入框 -->
+      <div>
+        <div style="font-size:14px;font-weight:600;color:#374151;margin-bottom:8px;">箱码</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="extractBoxCodeInput" placeholder="请输入或扫码箱码" autofocus
+            style="flex:1;height:40px;padding:0 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:15px;outline:none;"
+            onkeydown="if(event.key==='Enter')queryUnfinishedByBox()">
+          <button onclick="queryUnfinishedByBox()" style="height:40px;padding:0 20px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">查询</button>
+        </div>
+      </div>
+      <!-- 查询结果区 -->
+      <div id="extractUnfinishedResult" style="display:none;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;">
+        <div style="background:#F9FAFB;padding:10px 16px;font-size:14px;font-weight:600;color:#374151;border-bottom:1px solid #E5E7EB;">查询结果</div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:8px;font-size:14px;color:#1F2937;" id="extractUnfinishedInfo"></div>
+      </div>
+      <!-- 未找到提示 -->
+      <div id="extractUnfinishedEmpty" style="display:none;text-align:center;color:#EF4444;font-size:14px;padding:8px 0;">
+        未找到对应的未成垛记录，请确认箱码是否正确。
+      </div>
+    </div>
+    <!-- 底部按钮 -->
+    <div style="height:72px;background:#F9FAFB;border-top:1px solid #E5E7EB;display:flex;align-items:center;justify-content:center;gap:12px;">
+      <button onclick="closeExtractUnfinished()" style="height:40px;width:90px;background:#F3F4F6;border:none;border-radius:8px;font-size:16px;font-weight:600;color:#374151;cursor:pointer;">取消</button>
+      <button id="extractConfirmBtn" onclick="confirmExtractUnfinished()" disabled style="height:40px;width:90px;background:#D1D5DB;border:none;border-radius:8px;font-size:16px;font-weight:600;color:#fff;cursor:not-allowed;">确认</button>
+    </div>
+  </div>
+</div>
+
 <!-- 产品选择弹窗 -->
 <div class="modal-overlay" id="productModalOverlay" onclick="if(event.target===this)closeProductModal()">
   <div onclick="event.stopPropagation()" style="width:800px;max-height:600px;background:#fff;border-radius:12px;border:1px solid #D9E1EC;display:flex;flex-direction:column;overflow:hidden;">
@@ -2915,8 +2957,68 @@ function forcePallet() {
   }
 }
 
+// 提取工单未成垛
+const mockUnfinishedPallets = [
+  { boxCodes:['20241130C001','20241130C002','20241130C003'], product:'石湾头曲 52度 500ml', productCode:'SW-52-500', orderNo:'20241130001', doneBoxes:45, totalBoxes:70, lastTime:'2024-11-30 17:42:18' },
+  { boxCodes:['20241129C010','20241129C011'], product:'石湾头曲 38度 500ml', productCode:'SW-38-500', orderNo:'20241129002', doneBoxes:30, totalBoxes:70, lastTime:'2024-11-29 16:55:04' }
+];
+let extractFoundRecord = null;
+
 function extractUnfinished() {
-  alert('查询未成垛数据...\n\n未成垛记录：\n1. 生产单20241130001 - 进度 45/70箱\n\n请选择后继续生产');
+  extractFoundRecord = null;
+  document.getElementById('extractBoxCodeInput').value = '';
+  document.getElementById('extractUnfinishedResult').style.display = 'none';
+  document.getElementById('extractUnfinishedEmpty').style.display = 'none';
+  const btn = document.getElementById('extractConfirmBtn');
+  btn.disabled = true; btn.style.background='#D1D5DB'; btn.style.cursor='not-allowed';
+  document.getElementById('extractUnfinishedOverlay').classList.add('active');
+  setTimeout(() => document.getElementById('extractBoxCodeInput').focus(), 100);
+}
+
+function closeExtractUnfinished() {
+  document.getElementById('extractUnfinishedOverlay').classList.remove('active');
+}
+
+function queryUnfinishedByBox() {
+  const code = document.getElementById('extractBoxCodeInput').value.trim();
+  if(!code) { document.getElementById('extractBoxCodeInput').focus(); return; }
+  const found = mockUnfinishedPallets.find(r => r.boxCodes.some(c => c.toLowerCase() === code.toLowerCase()));
+  document.getElementById('extractUnfinishedResult').style.display = 'none';
+  document.getElementById('extractUnfinishedEmpty').style.display = 'none';
+  const btn = document.getElementById('extractConfirmBtn');
+  if(found) {
+    extractFoundRecord = found;
+    document.getElementById('extractUnfinishedInfo').innerHTML = `
+      <div style="display:flex;gap:8px;"><span style="color:#6B7280;width:80px;flex-shrink:0;">产品名称</span><span style="font-weight:600;">${found.product}</span></div>
+      <div style="display:flex;gap:8px;"><span style="color:#6B7280;width:80px;flex-shrink:0;">产品编号</span><span>${found.productCode}</span></div>
+      <div style="display:flex;gap:8px;"><span style="color:#6B7280;width:80px;flex-shrink:0;">生产单号</span><span>${found.orderNo}</span></div>
+      <div style="display:flex;gap:8px;"><span style="color:#6B7280;width:80px;flex-shrink:0;">已完成箱数</span><span style="color:#2563EB;font-weight:600;">${found.doneBoxes} / ${found.totalBoxes} 箱</span></div>
+      <div style="display:flex;gap:8px;"><span style="color:#6B7280;width:80px;flex-shrink:0;">最后采集</span><span>${found.lastTime}</span></div>`;
+    document.getElementById('extractUnfinishedResult').style.display = 'block';
+    btn.disabled = false; btn.style.background='#2563EB'; btn.style.cursor='pointer';
+  } else {
+    extractFoundRecord = null;
+    document.getElementById('extractUnfinishedEmpty').style.display = 'block';
+    btn.disabled = true; btn.style.background='#D1D5DB'; btn.style.cursor='not-allowed';
+  }
+}
+
+function confirmExtractUnfinished() {
+  if(!extractFoundRecord) return;
+  const r = extractFoundRecord;
+  // 回显到主页面
+  document.getElementById('productDisplayName').textContent = r.product;
+  document.getElementById('productDisplayName').style.color = '#1F2937';
+  document.getElementById('productCodeArea').style.display = 'block';
+  document.getElementById('productCodeDisplay').textContent = r.productCode;
+  document.getElementById('orderNum').value = r.orderNo;
+  closeExtractUnfinished();
+  // 操作日志提示
+  const logArea = document.getElementById('opLogArea');
+  if(logArea) {
+    const ts = new Date().toLocaleString('zh-CN',{hour12:false}).replace(/\//g,'-');
+    logArea.insertAdjacentHTML('afterbegin',`<div class="log-entry log-info"><span class="log-ts">${ts}</span>已提取未成垛：生产单 ${r.orderNo}，已完成 ${r.doneBoxes}/${r.totalBoxes} 箱，继续生产</div>`);
+  }
 }
 
 function resetReject() {
