@@ -1226,12 +1226,12 @@ body {
           <div style="display:flex; flex-direction:column; gap:10px;">
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-size:16px;">1垛</span>
-              <input type="number" id="casePerPallet" value="70" min="1" class="qty-input" title="每垛箱数" style="width:70px; height:44px; font-size:26px;" oninput="document.getElementById('dispCasePerPallet').textContent=this.value||'70'">
+              <input type="number" id="casePerPallet" value="70" min="1" max="999" step="1" class="qty-input" title="每垛箱数" style="width:90px; height:44px; font-size:26px;" oninput="validateQtyInput(this,'dispCasePerPallet',70)">
               <span style="font-size:16px;">箱</span>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-size:16px;">1箱</span>
-              <input type="number" id="boxPerCase" value="4" min="1" class="qty-input" title="每箱盒数" style="width:70px; height:44px; font-size:26px;" oninput="document.getElementById('dispBoxPerCase').textContent=this.value||'4'">
+              <input type="number" id="boxPerCase" value="4" min="1" max="999" step="1" class="qty-input" title="每箱盒数" style="width:90px; height:44px; font-size:26px;" oninput="validateQtyInput(this,'dispBoxPerCase',4)">
               <span style="font-size:16px;">盒</span>
             </div>
           </div>
@@ -1378,7 +1378,7 @@ body {
         <div class="card-title">采集规格设置</div>
         <div style="display:flex; align-items:center; gap:8px;">
           <span style="font-size:16px;">1盒</span>
-          <input type="number" id="manualN" value="6" min="1" max="24" class="qty-input" style="width:70px; height:44px; font-size:26px;" oninput="var e=document.getElementById('manualPerCount');if(e)e.textContent=this.value||'6'">
+          <input type="number" id="manualN" value="6" min="1" max="999" step="1" class="qty-input" style="width:90px; height:44px; font-size:26px;" oninput="validateQtyInput(this,'manualPerCount',6)">
           <span style="font-size:16px;">瓶</span>
         </div>
       </div>
@@ -2795,6 +2795,21 @@ let isCollecting = false;
 let curBoxes = 0, curCases = 0, rejectCnt = 0, palletCnt = 0;
 let simInterval2 = null;
 
+function validateQtyInput(el, dispId, defaultVal) {
+  // 只保留整数部分，拒绝小数点
+  let raw = el.value.replace(/[^0-9]/g, '');
+  if(raw === '') { el.value = ''; }
+  else {
+    let num = parseInt(raw, 10);
+    if(num < 1) num = 1;
+    if(num > 999) num = 999;
+    el.value = num;
+    raw = String(num);
+  }
+  const disp = document.getElementById(dispId);
+  if(disp) disp.textContent = raw || String(defaultVal);
+}
+
 function toggleCollect() {
   const btn = document.getElementById('collectBtn');
   if(!isCollecting) {
@@ -2809,10 +2824,25 @@ function toggleCollect() {
       document.getElementById('orderNum').focus();
       return;
     }
+    // 采集规格校验：不能为空、仅整数、范围 1～999
+    const caseInput = document.getElementById('casePerPallet');
+    const boxInput  = document.getElementById('boxPerCase');
+    const caseVal = caseInput.value.trim();
+    const boxVal  = boxInput.value.trim();
+    if(!caseVal || !/^\d+$/.test(caseVal) || parseInt(caseVal) < 1 || parseInt(caseVal) > 999) {
+      alert('每垛箱数须为 1～999 的整数，请重新输入！');
+      caseInput.focus();
+      return;
+    }
+    if(!boxVal || !/^\d+$/.test(boxVal) || parseInt(boxVal) < 1 || parseInt(boxVal) > 999) {
+      alert('每箱盒数须为 1～999 的整数，请重新输入！');
+      boxInput.focus();
+      return;
+    }
     // 二次确认：展示生产信息和包装比例
     const productName = productPage.selected.name;
-    const maxCase = parseInt(document.getElementById('casePerPallet').value) || 70;
-    const maxBox = parseInt(document.getElementById('boxPerCase').value) || 4;
+    const maxCase = parseInt(caseVal);
+    const maxBox  = parseInt(boxVal);
     document.getElementById('startCollectProductInfo').textContent = `产品：${productName}`;
     document.getElementById('startCollectOrderInfo').textContent = `生产单：${orderNum}`;
     document.getElementById('startCollectRatioInfo').textContent = `1垛 ${maxCase} 箱，1箱 ${maxBox} 盒`;
@@ -3104,6 +3134,12 @@ function toggleManualCollect() {
   const btn = document.getElementById('manualCollectBtn');
   const manualN = document.getElementById('manualN');
   if(!isManualCollecting) {
+    const nVal = manualN.value.trim();
+    if(!nVal || !/^\d+$/.test(nVal) || parseInt(nVal) < 1 || parseInt(nVal) > 999) {
+      alert('每盒瓶数须为 1～999 的整数，请重新输入！');
+      manualN.focus();
+      return;
+    }
     manualN.disabled = true;
     isManualCollecting = true;
     btn.textContent = '停止采集';
