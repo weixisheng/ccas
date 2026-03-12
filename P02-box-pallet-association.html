@@ -2447,7 +2447,8 @@ body {
     <div style="font-size:18px; font-weight:700; color:#1F2937; margin-bottom:16px;">开始采集确认</div>
     <div style="font-size:14px; color:#374151; margin-bottom:16px; line-height:1.8;" id="startCollectConfirmMsg">
       <div style="margin-bottom:8px;"><strong>生产信息：</strong></div>
-      <div id="startCollectProductInfo" style="margin-bottom:12px; padding-left:12px;">产品：—，生产单：—</div>
+      <div id="startCollectProductInfo" style="margin-bottom:4px; padding-left:12px;">产品：—</div>
+      <div id="startCollectOrderInfo" style="margin-bottom:12px; padding-left:12px;">生产单：—</div>
       <div style="margin-bottom:8px;"><strong>包装比例：</strong></div>
       <div id="startCollectRatioInfo" style="padding-left:12px;">1垛 — 箱，1箱 — 盒</div>
     </div>
@@ -2797,11 +2798,10 @@ let simInterval2 = null;
 function toggleCollect() {
   const btn = document.getElementById('collectBtn');
   if(!isCollecting) {
-    const productSel = document.getElementById('productSelect');
     const orderNum = document.getElementById('orderNum').value.trim();
-    if(!productSel.value) {
+    if(!productPage.selected) {
       alert('请先选择生产产品后再开始采集！');
-      productSel.focus();
+      openProductModal();
       return;
     }
     if(!orderNum) {
@@ -2810,10 +2810,11 @@ function toggleCollect() {
       return;
     }
     // 二次确认：展示生产信息和包装比例
-    const productName = productSel.options[productSel.selectedIndex].text;
+    const productName = productPage.selected.name;
     const maxCase = parseInt(document.getElementById('casePerPallet').value) || 70;
     const maxBox = parseInt(document.getElementById('boxPerCase').value) || 4;
-    document.getElementById('startCollectProductInfo').textContent = `产品：${productName}，生产单：${orderNum}`;
+    document.getElementById('startCollectProductInfo').textContent = `产品：${productName}`;
+    document.getElementById('startCollectOrderInfo').textContent = `生产单：${orderNum}`;
     document.getElementById('startCollectRatioInfo').textContent = `1垛 ${maxCase} 箱，1箱 ${maxBox} 盒`;
     document.getElementById('startCollectConfirmOverlay').classList.add('active');
   } else {
