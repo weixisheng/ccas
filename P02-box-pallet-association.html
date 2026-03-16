@@ -1703,7 +1703,7 @@ body {
 
         <!-- 单码取消表单 -->
         <div class="card cancel-form active" id="cancelSingleContent" style="padding:20px;">
-          <div style="font-size:20px; font-weight:700; color:#1F2937; margin-bottom:18px;">单码取消</div>
+          <div style="font-size:24px; font-weight:700; color:#1F2937; margin-bottom:18px;">单码取消</div>
 
           <div>
             <div class="cancel-field-label"><span class="req">*</span> 码（瓶/盒）</div>
@@ -1725,7 +1725,7 @@ body {
 
         <!-- 多码取消表单 -->
         <div class="card cancel-form" id="cancelBatchContent" style="padding:20px;">
-          <div style="font-size:20px; font-weight:700; color:#1F2937; margin-bottom:18px;">多码取消</div>
+          <div style="font-size:24px; font-weight:700; color:#1F2937; margin-bottom:18px;">多码取消</div>
 
           <div>
             <div class="cancel-field-label"><span class="req">*</span> 盒/箱/垛码</div>
@@ -3617,7 +3617,7 @@ function clearBatch() {
 
 // 批量识别
 function doBatchRecognize() {
-  if(batchCodes.length === 0) { alert('请先添加大码'); return; }
+  if(batchCodes.length === 0) { alert('请先添加盒/箱/垛码'); return; }
   const infos = batchCodes.map(c => analyzeCancelCode(c) || { code: c, level:'未知', hasParent:true, childCount:0, chain:[], notFound:true });
   let html = '';
   let cancelableCount = 0, cancelableRelations = 0;
@@ -3649,7 +3649,7 @@ function doBatchRecognize() {
 // 统一确认入口
 function openCancelConfirm(mode) {
   if(mode === 'batch') {
-    if(batchCodes.length === 0) { alert('请先添加大码'); return; }
+    if(batchCodes.length === 0) { alert('请先添加盒/箱/垛码'); return; }
     if(!cancelRecognizeInfo) { alert('请先点击识别'); return; }
     const { cancelableCount, cancelableRelations } = cancelRecognizeInfo;
     document.getElementById('confirmTitle').textContent = '取消关联确认';
