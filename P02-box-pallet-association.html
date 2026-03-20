@@ -1373,11 +1373,13 @@ body {
         <div class="log-section" style="flex:1; min-height:0;">
           <div class="log-section-header">📡 数据接收区 <span style="font-size:11px; color:#9CA3AF; font-weight:400;">（最新在上）</span></div>
           <div class="log-section-body" id="manualDataArea">
-            <div class="log-entry le-success"><span class="ts">10:30:38</span>盒码关联成功：20241201002001（6瓶→1盒）</div>
-            <div class="log-entry le-data"><span class="ts">10:30:36</span>扫码完成，请扫盒码</div>
-            <div class="log-entry le-data"><span class="ts">10:30:35</span>瓶码采集：20241201010006</div>
-            <div class="log-entry le-data"><span class="ts">10:30:34</span>瓶码采集：20241201010005</div>
-            <div class="log-entry le-data"><span class="ts">10:30:33</span>瓶码采集：20241201010004</div>
+            <div class="log-entry le-success"><span class="ts">10:30:38</span>盒码关联成功 20241201002001（6瓶）</div>
+            <div class="log-entry le-data"><span class="ts">10:30:36</span>瓶码采集 20241201010006</div>
+            <div class="log-entry le-data"><span class="ts">10:30:35</span>瓶码采集 20241201010005</div>
+            <div class="log-entry le-data"><span class="ts">10:30:34</span>瓶码采集 20241201010004</div>
+            <div class="log-entry le-data"><span class="ts">10:30:33</span>瓶码采集 20241201010003</div>
+            <div class="log-entry le-data"><span class="ts">10:30:32</span>瓶码采集 20241201010002</div>
+            <div class="log-entry le-data"><span class="ts">10:30:31</span>瓶码采集 20241201010001</div>
           </div>
         </div>
       </div>
@@ -3390,29 +3392,28 @@ function submitManualCode() {
   const dataArea = document.getElementById('manualDataArea');
   const manualN = parseInt(document.getElementById('manualN').value) || 6;
 
-  function addEntry(text, color) {
+  function addEntry(text, cls) {
     if(!dataArea) return;
     const d = document.createElement('div');
-    d.className = 'log-entry';
-    d.style.color = color || '#1F2937';
+    d.className = `log-entry ${cls || 'le-data'}`;
     d.innerHTML = `<span class="ts">${ts}</span>${text}`;
     dataArea.insertBefore(d, dataArea.firstChild);
   }
 
   if(!code) {
-    addEntry('输入内容无效，请重新扫码或输入', '#DC2626');
+    addEntry('输入内容无效，请重新扫码或输入', 'le-error');
     return;
   }
 
   if(manualPhase === 'bottle') {
-    // 校验：简单模拟 - 重码检查
+    // 校验：重码检查
     if(manualBottleCodes.includes(code)) {
-      addEntry(`瓶码 ${code}：重复出现`, '#DC2626');
+      addEntry(`瓶码 ${code}：重复出现`, 'le-error');
       return;
     }
     manualBottleCodes.push(code);
     const cur = manualBottleCodes.length;
-    addEntry(`瓶码采集 ${code}`, '#1F2937');
+    addEntry(`瓶码采集 ${code}`, 'le-data');
     document.getElementById('manualCurrentCount').textContent = cur;
     // 达到规格数量，切换到盒码阶段
     if(cur >= manualN) {
@@ -3421,8 +3422,7 @@ function submitManualCode() {
     }
   } else {
     // 盒码阶段 - 触发瓶盒关联
-    const bottleList = manualBottleCodes.join('、');
-    addEntry(`盒码关联成功 ${code}（${manualN}瓶）`, '#16A34A');
+    addEntry(`盒码关联成功 ${code}（${manualN}瓶）`, 'le-success');
     // 生产总数累计
     const totalEl = document.getElementById('manualTotal');
     const curTotal = parseInt(totalEl.textContent) || 0;
