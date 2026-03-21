@@ -742,7 +742,7 @@ body {
   gap: 8px;
 }
 .prompt-main { font-size: 18px; font-weight: 600; color: #374151; font-family:'Microsoft YaHei',sans-serif; }
-.prompt-code-big { font-size: 44px; font-weight: 700; color: #2563EB; font-family:'Microsoft YaHei',sans-serif; line-height: 1.1; }
+.prompt-code-big { font-size: 44px; font-weight: 700; color: #2563EB; font-family:'Microsoft YaHei',sans-serif; line-height: 1.1; transition: color 0.2s; }
 
 /* 手工采集 - 右侧单位实时统计、任务控制 参考 pen */
 .manual-stats-card { padding: 14px 14px 24px 14px; }
@@ -3367,9 +3367,11 @@ function updateManualPrompt() {
   const input = document.getElementById('manualCodeInput');
   if(manualPhase === 'bottle') {
     el.textContent = '瓶码';
+    el.style.color = '#2563EB';
     input.placeholder = '扫描或输入瓶码';
   } else {
     el.textContent = '盒码';
+    el.style.color = '#DC2626';
     input.placeholder = '扫描或输入盒码';
   }
 }
